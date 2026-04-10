@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Padel Chief — Rankings</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --surface: #FFFFFF;
+    --background: #E8EEF5;
+    --on-background: #0F172A;
+    --on-surface: #0F172A;
+    --on-surface-variant: #475569;
+    --primary: #125fa9;
+    --primary-container: #2268b2;
+    --on-primary-container: #FFFFFF;
+    --secondary-fixed: #d8ef00;
+    --on-secondary-fixed: #1a1e00;
+    --outline: #94A3B8;
+    --outline-variant: #E2E8F0;
+    --surface-container: #F1F5F9;
+    --surface-container-high: #E2E8F0;
+    --pickle: #0d9488;
+    --pickle-bg: rgba(13,148,136,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #0a0c10;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ===== PHONE FRAME ===== */
+  .phone-frame {
+    width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+    position: relative; background: var(--background); flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+                0 0 0 2px rgba(255,255,255,0.06),
+                0 40px 80px rgba(0,0,0,0.5);
+  }
+  .phone-frame::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 30px; background: #0F172A;
+    border-radius: 0 0 18px 18px; z-index: 100;
+  }
+  .screen {
+    width: 100%; height: 100%; overflow-y: auto; position: relative;
+    scrollbar-width: none; display: flex; flex-direction: column;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+
+  .phone-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .screen-label {
+    color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .screen-state-badge {
+    margin-top: 16px; display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 9999px; padding: 5px 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+  .screen-state-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--secondary-fixed);
+  }
+
+  /* ===== ICON BUTTON ===== */
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--surface-container); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--on-surface-variant); transition: all 0.18s; position: relative; flex-shrink: 0;
+  }
+  .icon-btn:active { transform: scale(0.92); }
+  .icon-btn .material-symbols-outlined { font-size: 22px; }
+  .icon-btn.active-btn { background: rgba(18,95,169,0.10); color: var(--primary); }
+  .filter-badge {
+    position: absolute; top: 7px; right: 7px; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--primary); border: 2px solid var(--background);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 800; color: white; line-height: 1;
+  }
+
+  /* ===== STICKY HEADER ===== */
+  .rankings-header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(248,250,252,0.92);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    flex-shrink: 0;
+  }
+  .header-top-row {
+    padding: 44px 20px 12px;
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .header-title-group { display: flex; flex-direction: column; }
+  .header-title { font-size: 24px; font-weight: 800; color: var(--on-background); letter-spacing: -0.02em; line-height: 1; }
+  .header-subtitle { font-size: 11px; font-weight: 600; color: var(--on-surface-variant); margin-top: 3px; }
+
+  /* ===== SEGMENTED CONTROLS ===== */
+  .toggle-row { padding: 0 20px 10px; }
+  .seg-control {
+    display: flex; background: var(--surface-container); border-radius: 14px; padding: 4px; gap: 2px;
+  }
+  .seg-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 8px 6px; border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--on-surface-variant); border: none; background: transparent;
+    cursor: pointer; transition: all 0.18s; white-space: nowrap;
+  }
+  .seg-btn .material-symbols-outlined { font-size: 14px; }
+  .seg-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .seg-btn.active {
+    background: var(--surface); font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .seg-btn.active.padel   { color: var(--primary); }
+  .seg-btn.active.pickle  { color: var(--pickle); }
+  .seg-btn.active.official   { color: var(--primary); }
+  .seg-btn.active.community  { color: #d97706; }
+
+  .header-divider { height: 1px; background: var(--outline-variant); }
+
+  /* ===== CONTENT AREA ===== */
+  .rankings-content { flex: 1; padding: 12px 16px 8px; display: flex; flex-direction: column; gap: 8px; }
+
+  /* ===== YOUR POSITION CARD ===== */
+  .your-pos-card {
+    background: rgba(18,95,169,0.05);
+    border: 1.5px solid rgba(18,95,169,0.16);
+    border-radius: 16px; padding: 10px 14px; flex-shrink: 0;
+  }
+  .your-pos-label {
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--primary); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .your-pos-label .material-symbols-outlined {
+    font-size: 12px; font-variation-settings: 'FILL' 1, 'wght' 400;
+  }
+
+  /* ===== PODIUM SECTION ===== */
+  .podium-section {
+    display: flex; gap: 6px; align-items: flex-end;
+    padding: 0 16px 4px;
+  }
+  .podium-card {
+    flex: 1; border-radius: 18px; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center;
+    padding-bottom: 14px; cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .podium-card:active { transform: scale(0.96); }
+  .podium-card.p1 { padding-top: 20px; background: rgba(217,119,6,0.07); border: 1.5px solid rgba(217,119,6,0.22); }
+  .podium-card.p2 { padding-top: 32px; background: rgba(100,116,139,0.06); border: 1.5px solid rgba(100,116,139,0.18); }
+  .podium-card.p3 { padding-top: 42px; background: rgba(176,120,80,0.06); border: 1.5px solid rgba(176,120,80,0.18); }
+
+  .rank-badge {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: white;
+    margin-bottom: 8px; flex-shrink: 0;
+  }
+  .rank-badge.b1 { background: linear-gradient(135deg, #fbbf24, #d97706); box-shadow: 0 2px 8px rgba(217,119,6,0.40); }
+  .rank-badge.b2 { background: linear-gradient(135deg, #e2e8f0, #94a3b8); box-shadow: 0 2px 6px rgba(100,116,139,0.30); color: #475569; }
+  .rank-badge.b3 { background: linear-gradient(135deg, #d4a27a, #b07850); box-shadow: 0 2px 6px rgba(176,120,80,0.30); }
+
+  .podium-avatar {
+    width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; margin-bottom: 8px;
+    border: 2.5px solid rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  }
+  .podium-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  .podium-name {
+    font-size: 11px; font-weight: 700; color: var(--on-surface);
+    text-align: center; padding: 0 6px; line-height: 1.25;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+  }
+  .podium-loc { font-size: 9px; font-weight: 500; color: var(--on-surface-variant); margin-top: 1px; }
+  .podium-rating { font-size: 17px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-top: 4px; }
+  .podium-conf {
+    font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;
+  }
+  .podium-conf.high   { color: #0d9488; }
+  .podium-conf.medium { color: #d97706; }
+  .podium-conf.low    { color: #dc2626; }
+
+  /* Podium expand chevron */
+  .podium-chevron {
+    font-size: 15px; color: var(--on-surface-variant); opacity: 0.40; margin-top: 4px;
+    transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+    font-variation-settings: 'FILL' 0, 'wght' 300;
+  }
+  .podium-card.expanded .podium-chevron { transform: rotate(180deg); }
+
+  /* Podium expand — 2×2 stats grid */
+  .podium-stats {
+    display: grid; grid-template-rows: 0fr; width: 100%;
+    transition: grid-template-rows 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+  .podium-card.expanded .podium-stats { grid-template-rows: 1fr; }
+  .podium-stats-inner {
+    overflow: hidden; display: grid; grid-template-columns: 1fr 1fr;
+    padding: 0 8px; margin-top: 0;
+    border-top: 0px solid rgba(0,0,0,0.07);
+    transition: margin-top 0.25s, padding-top 0.25s, border-top-width 0.25s;
+  }
+  .podium-card.expanded .podium-stats-inner {
+    margin-top: 10px; padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,0.07);
+  }
+  .podium-stat { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 5px 2px; }
+  .podium-stat:nth-child(n+3) { border-top: 1px solid rgba(0,0,0,0.05); }
+  .podium-stat-val { font-size: 13px; font-weight: 800; color: var(--on-surface); }
+  .podium-stat-val.pos { color: #0d9488; }
+  .podium-stat-val.neg { color: #dc2626; }
+  .podium-stat-key { font-size: 7px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--on-surface-variant); }
+
+  /* ===== RANK LIST (positions 4+) ===== */
+  .rank-list-divider {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px 8px;
+  }
+  .rank-list-divider::before, .rank-list-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--outline-variant);
+  }
+  .rank-list-divider span {
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--on-surface-variant);
+  }
+  .rank-list-wrap { background: var(--surface); border-radius: 16px; overflow: hidden; margin: 0 16px; box-shadow: 0 1px 3px rgba(15,23,42,0.06); }
+
+  .rank-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .rank-row:active { background: rgba(15,23,42,0.03); }
+  .rank-row.is-me-row { background: rgba(18,95,169,0.04); }
+  .rank-row + .rank-row { border-top: 1px solid var(--outline-variant); }
+  .rank-row-stats + .rank-row { border-top: 1px solid var(--outline-variant); }
+
+  .rank-row-num {
+    width: 20px; text-align: center; flex-shrink: 0;
+    font-size: 12px; font-weight: 700; color: var(--on-surface-variant);
+  }
+  .rank-row-avatar {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; overflow: hidden;
+  }
+  .rank-row-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .rank-row-info { flex: 1; min-width: 0; }
+  .rank-row-name { font-size: 13px; font-weight: 700; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-row-loc { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 1px; }
+  .rank-row-right { text-align: right; flex-shrink: 0; }
+  .rank-row-rating { font-size: 17px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; line-height: 1; }
+  .rank-row-conf { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; display: block; }
+  .rank-row-conf.high   { color: #0d9488; }
+  .rank-row-conf.medium { color: #d97706; }
+  .rank-row-conf.low    { color: #dc2626; }
+
+  /* Row expand chevron */
+  .row-chevron {
+    font-size: 16px; color: var(--on-surface-variant); opacity: 0.40; flex-shrink: 0;
+    transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+    font-variation-settings: 'FILL' 0, 'wght' 300;
+  }
+  .rank-row.expanded .row-chevron { transform: rotate(180deg); }
+
+  /* Inline stats for list rows */
+  .rank-row-stats {
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s cubic-bezier(0.4,0,0.2,1);
+    background: var(--surface);
+  }
+  .rank-row-stats.visible { grid-template-rows: 1fr; }
+  .rank-row-stats-inner {
+    overflow: hidden; display: flex; padding: 0 14px;
+    border-top: 0px solid var(--outline-variant);
+    transition: padding-top 0.25s, padding-bottom 0.25s, border-top-width 0.25s;
+  }
+  .rank-row-stats.visible .rank-row-stats-inner {
+    padding-top: 10px; padding-bottom: 12px;
+    border-top: 1px solid var(--outline-variant);
+  }
+
+  /* Shared stat columns (used by list rows) */
+  .stat-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .stat-col + .stat-col { border-left: 1px solid var(--outline-variant); }
+  .stat-val { font-size: 12px; font-weight: 700; color: var(--on-surface); }
+  .stat-val.pos { color: #0d9488; }
+  .stat-val.neg { color: #dc2626; }
+  .stat-val.neu { color: var(--on-surface-variant); }
+  .stat-key {
+    font-size: 8px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--on-surface-variant);
+  }
+
+  /* Empty state */
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 24px; gap: 10px; text-align: center;
+  }
+  .empty-icon { font-size: 52px; color: var(--outline); display: block; }
+  .empty-title { font-size: 16px; font-weight: 700; color: var(--on-surface); }
+  .empty-sub { font-size: 13px; font-weight: 500; color: var(--on-surface-variant); max-width: 210px; line-height: 1.55; }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: sticky; bottom: 0; z-index: 50;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0; display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px 28px; box-shadow: 0 -8px 32px rgba(0,0,0,0.04); flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    text-decoration: none; cursor: pointer; transition: all 0.2s; min-width: 48px;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-item .material-symbols-outlined { font-size: 24px; }
+  .nav-item-label { font-size: 9px; font-weight: 600; }
+  .nav-item.active .material-symbols-outlined { color: var(--primary); font-variation-settings: 'FILL' 1, 'wght' 200; }
+  .nav-item.active .nav-item-label { color: var(--primary); }
+  .nav-item:not(.active) .material-symbols-outlined { color: var(--on-surface-variant); }
+  .nav-item:not(.active) .nav-item-label { color: var(--on-surface-variant); }
+  .nav-create .material-symbols-outlined { font-size: 28px; }
+
+  /* ===== BOTTOM SHEET ===== */
+  .sheet-overlay {
+    position: absolute; inset: 0; background: rgba(15,23,42,0.36);
+    backdrop-filter: blur(2px); z-index: 60;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    pointer-events: none; opacity: 0; transition: opacity 0.25s;
+  }
+  .sheet-overlay.open { pointer-events: all; opacity: 1; }
+  .sheet {
+    background: var(--surface); border-radius: 28px 28px 0 0;
+    box-shadow: 0 -16px 48px rgba(0,0,0,0.12);
+    transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+    max-height: 75%; display: flex; flex-direction: column;
+  }
+  .sheet-overlay.open .sheet { transform: translateY(0); }
+  .sheet-handle { width: 36px; height: 4px; border-radius: 9999px; background: var(--outline-variant); margin: 12px auto 0; flex-shrink: 0; }
+  .sheet-title-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px 16px; flex-shrink: 0; border-bottom: 1px solid var(--outline-variant);
+  }
+  .sheet-title { font-size: 17px; font-weight: 700; color: var(--on-background); }
+  .sheet-reset-link {
+    font-size: 13px; font-weight: 600; color: var(--on-surface-variant);
+    background: none; border: none; cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif; padding: 0;
+  }
+  .sheet-body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+  .sheet-body::-webkit-scrollbar { display: none; }
+  .sheet-section { padding: 16px 20px 0; }
+  .sheet-section:last-child { padding-bottom: 4px; }
+  .sheet-section-title {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--on-surface-variant); margin-bottom: 10px;
+  }
+  .sheet-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .sheet-chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 7px 14px; border-radius: 9999px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600;
+    border: none; cursor: pointer;
+    background: var(--surface-container); color: var(--on-surface-variant); transition: all 0.18s;
+  }
+  .sheet-chip.selected { background: var(--primary-container); color: white; font-weight: 700; }
+  .sheet-footer { padding: 12px 20px 28px; flex-shrink: 0; border-top: 1px solid var(--outline-variant); }
+  .sheet-apply {
+    width: 100%; padding: 14px; border-radius: 14px; border: none; cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700;
+    background: var(--primary-container); color: white;
+  }
+
+  /* ===== UX FLOW PANEL ===== */
+  .flow-panel { width: 300px; flex-shrink: 0; align-self: flex-start; margin-top: 60px; }
+  .flow-panel-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); margin-bottom: 14px;
+  }
+  .flow-steps { display: flex; flex-direction: column; gap: 2px; }
+  .flow-step {
+    border-radius: 16px; padding: 14px 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.2s; background: rgba(255,255,255,0.03);
+  }
+  .flow-step.current { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); }
+  .flow-step-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .flow-step-num {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 800;
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.35);
+  }
+  .flow-step.current .flow-step-num { background: var(--primary-container); color: white; }
+  .flow-step-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.40); }
+  .flow-step.current .flow-step-title { color: rgba(255,255,255,0.90); }
+  .flow-step-body { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.25); line-height: 1.6; padding-left: 30px; }
+  .flow-step.current .flow-step-body { color: rgba(255,255,255,0.55); }
+  .flow-connector { width: 1px; height: 10px; background: rgba(255,255,255,0.08); margin-left: 22px; }
+  .flow-note {
+    margin-top: 20px; padding: 14px 16px; border-radius: 16px;
+    background: rgba(216,239,0,0.06); border: 1px solid rgba(216,239,0,0.15);
+  }
+  .flow-note-label { font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: #89a300; margin-bottom: 6px; }
+  .flow-note-text { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.50); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+  <div class="screen-label">Rankings — Interactive</div>
+  <div class="phone-frame">
+    <div class="screen" id="main-screen">
+
+      <!-- ── STICKY HEADER ── -->
+      <div class="rankings-header" id="rankings-header">
+
+        <!-- Row 1: Title + tune -->
+        <div class="header-top-row">
+          <div class="header-title-group">
+            <span class="header-title">Rankings</span>
+            <span class="header-subtitle" id="result-count-label">8 players</span>
+          </div>
+          <button class="icon-btn" id="btn-tune" title="Filters">
+            <span class="material-symbols-outlined">tune</span>
+          </button>
+        </div>
+
+        <!-- Row 2: Sport toggle (binary) -->
+        <div class="toggle-row">
+          <div class="seg-control" id="sport-toggle">
+            <button class="seg-btn active padel" data-sport="padel">
+              <span class="material-symbols-outlined">sports_tennis</span>Padel
+            </button>
+            <button class="seg-btn pickle" data-sport="pickle">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+              Pickleball
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 3: Official / Community toggle -->
+        <div class="toggle-row" style="padding-top:0;">
+          <div class="seg-control" id="type-toggle">
+            <button class="seg-btn active official" data-type="official">
+              <span class="material-symbols-outlined">verified</span>Official
+            </button>
+            <button class="seg-btn community" data-type="community">
+              <span class="material-symbols-outlined">groups</span>Community
+            </button>
+          </div>
+        </div>
+
+        <div class="header-divider"></div>
+      </div><!-- /rankings-header -->
+
+      <!-- ── CONTENT ── -->
+      <div class="rankings-content" id="rankings-content"></div>
+
+      <!-- ── SHEET ── -->
+      <div class="sheet-overlay" id="sheet-overlay">
+        <div class="sheet">
+          <div class="sheet-handle"></div>
+          <div class="sheet-title-row">
+            <span class="sheet-title">Filters</span>
+            <button class="sheet-reset-link" id="btn-sheet-reset">Reset all</button>
+          </div>
+          <div class="sheet-body">
+
+            <!-- Time Period -->
+            <div class="sheet-section">
+              <div class="sheet-section-title">Time Period</div>
+              <div class="sheet-chips" id="period-chips">
+                <button class="sheet-chip selected" data-period="all-time">All Time</button>
+                <button class="sheet-chip" data-period="year">This Year</button>
+                <button class="sheet-chip" data-period="month">This Month</button>
+                <button class="sheet-chip" data-period="week">This Week</button>
+              </div>
+            </div>
+
+            <!-- Gender -->
+            <div class="sheet-section">
+              <div class="sheet-section-title">Gender</div>
+              <div class="sheet-chips" id="gender-chips">
+                <button class="sheet-chip selected" data-gender="all">All</button>
+                <button class="sheet-chip" data-gender="men">Men</button>
+                <button class="sheet-chip" data-gender="women">Women</button>
+              </div>
+            </div>
+
+            <!-- Country -->
+            <div class="sheet-section">
+              <div class="sheet-section-title">Country</div>
+              <div class="sheet-chips" id="country-chips">
+                <button class="sheet-chip" data-country="all">All Countries</button>
+                <button class="sheet-chip selected" data-country="lk">🇱🇰 Sri Lanka</button>
+                <button class="sheet-chip" data-country="es">🇪🇸 Spain</button>
+                <button class="sheet-chip" data-country="in">🇮🇳 India</button>
+              </div>
+            </div>
+
+            <!-- City (dynamic) -->
+            <div class="sheet-section" id="city-section" style="padding-bottom:16px;">
+              <div class="sheet-section-title">City</div>
+              <div class="sheet-chips" id="city-chips"></div>
+            </div>
+
+          </div><!-- /sheet-body -->
+          <div class="sheet-footer">
+            <button class="sheet-apply" id="btn-sheet-apply">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BOTTOM NAV ── -->
+      <nav class="bottom-nav">
+        <a class="nav-item" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="#"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item active" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="#"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+
+    </div><!-- /screen -->
+  </div><!-- /phone-frame -->
+
+  <div class="screen-state-badge" id="state-badge">
+    <div class="dot"></div>
+    <span id="state-label">Official · Padel · Sri Lanka</span>
+  </div>
+</div>
+
+<!-- ── UX FLOW PANEL ── -->
+<div class="flow-panel">
+  <div class="flow-panel-title">UX Flow</div>
+  <div class="flow-steps">
+
+    <div class="flow-step current" id="flow-1">
+      <div class="flow-step-header">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-title">Default Rankings</div>
+      </div>
+      <div class="flow-step-body">Official Padel · All Time · Sri Lanka. Top 3 shown as a gold/silver/bronze podium — tap to expand stats. Ranks 4+ are a compact list. Your position (Marco) pinned above.</div>
+    </div>
+
+    <div class="flow-connector"></div>
+
+    <div class="flow-step" id="flow-2">
+      <div class="flow-step-header">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-title">Switch Sport</div>
+      </div>
+      <div class="flow-step-body">Toggle between Padel and Pickleball — ratings are sport-specific so the list is entirely separate. Active sport is highlighted in its brand color.</div>
+    </div>
+
+    <div class="flow-connector"></div>
+
+    <div class="flow-step" id="flow-3">
+      <div class="flow-step-header">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-title">Official vs Community</div>
+      </div>
+      <div class="flow-step-body">Official rankings are computed by the platform algorithm. Community rankings weight peer-reported results and local tournament data more heavily.</div>
+    </div>
+
+    <div class="flow-connector"></div>
+
+    <div class="flow-step" id="flow-4">
+      <div class="flow-step-header">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-title">Open Filters</div>
+      </div>
+      <div class="flow-step-body">Sheet slides up for Time Period, Gender, and Location (Country → City). The tune badge shows how many filters deviate from their defaults.</div>
+    </div>
+
+  </div>
+  <div class="flow-note">
+    <div class="flow-note-label">Rating System</div>
+    <div class="flow-note-text">
+      <strong style="color:rgba(255,255,255,0.75);">SOS</strong> = Strength of Schedule. <strong style="color:rgba(255,255,255,0.75);">+/−</strong> = rating change since last update. <strong style="color:rgba(255,255,255,0.75);">Contrib.</strong> = total contribution points earned. Confidence reflects how many matches the algorithm has to work with — more matches = higher confidence.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Avatar palette ── */
+const AVATAR_PALETTE = [
+  { bg:'rgba(18,95,169,0.12)',  color:'#125fa9' },
+  { bg:'rgba(13,148,136,0.12)', color:'#0d9488' },
+  { bg:'rgba(245,158,11,0.12)', color:'#d97706' },
+  { bg:'rgba(139,92,246,0.12)', color:'#7c3aed' },
+  { bg:'rgba(239,68,68,0.10)',  color:'#dc2626' },
+  { bg:'rgba(16,185,129,0.12)', color:'#059669' },
+  { bg:'rgba(244,63,94,0.10)',  color:'#e11d48' },
+  { bg:'rgba(234,179,8,0.12)',  color:'#ca8a04' },
+];
+
+const ME_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAh1XAO-IAaDtFYze1H6ItXznupkIpQq57kMTi_52QyddYnd_VgcgiTeLjViSwWnKVp1fP3-WPngKFhsgk70w9rA3SB4rCW1OLw8o0X4nSgd94h5OPQglz_WhWSei-lN_vew_87WJOkCK02zKV5FrBHZISvq8KQPO_PNNEa_vLbLg6GC-DL46VLVQXMp2bErF4d1rx3DuCkxuowfSgOLHEZUWG7Mf3EzLk2h87Y0dCKXB_YY5BiU_aT9aEepmfkewHVvCXNsw_xFiv';
+
+/* ── Player data ── */
+const PLAYERS = [
+  // Padel — Men — Sri Lanka
+  { id:1,  sport:'padel', gender:'men',   country:'lk', city:'Colombo', name:'Ishan Perera',         initials:'IP', isMe:false, rating:1546, ratingChange:+1,  confidence:'high',   stats:{t:1, m:8,  w:4, wp:50, sos:1484, diff:+1,  contrib:51 } },
+  { id:2,  sport:'padel', gender:'men',   country:'lk', city:'Colombo', name:'Dilshan Mendis',       initials:'DM', isMe:false, rating:1536, ratingChange:+2,  confidence:'high',   stats:{t:1, m:7,  w:3, wp:43, sos:1485, diff:+2,  contrib:52 } },
+  { id:3,  sport:'padel', gender:'men',   country:'lk', city:'Negombo', name:'Pindi Jayawardena',    initials:'PJ', isMe:false, rating:1480, ratingChange:+7,  confidence:'medium', stats:{t:1, m:7,  w:5, wp:71, sos:1481, diff:+7,  contrib:57 } },
+  { id:4,  sport:'padel', gender:'men',   country:'lk', city:'Colombo', name:'Rishen Fernando',      initials:'RF', isMe:false, rating:1470, ratingChange:0,   confidence:'high',   stats:{t:1, m:7,  w:3, wp:43, sos:1495, diff:0,   contrib:50 } },
+  { id:5,  sport:'padel', gender:'men',   country:'lk', city:'Galle',   name:'Angus Reid',           initials:'AR', isMe:false, rating:1440, ratingChange:+15, confidence:'low',    stats:{t:1, m:8,  w:7, wp:88, sos:1478, diff:+15, contrib:65 } },
+  { id:6,  sport:'padel', gender:'men',   country:'lk', city:'Colombo', name:'Marco Silva',          initials:'MS', isMe:true,  rating:1420, ratingChange:-3,  confidence:'high',   stats:{t:2, m:14, w:9, wp:64, sos:1490, diff:-3,  contrib:88 } },
+  { id:7,  sport:'padel', gender:'men',   country:'lk', city:'Colombo', name:'Tharaka Wijesinghe',   initials:'TW', isMe:false, rating:1360, ratingChange:+2,  confidence:'low',    stats:{t:1, m:6,  w:2, wp:33, sos:1450, diff:+2,  contrib:29 } },
+  { id:8,  sport:'padel', gender:'men',   country:'lk', city:'Kandy',   name:'Kamal Peris',          initials:'KP', isMe:false, rating:1340, ratingChange:-5,  confidence:'medium', stats:{t:1, m:5,  w:2, wp:40, sos:1445, diff:-5,  contrib:22 } },
+  // Padel — Women — Sri Lanka
+  { id:9,  sport:'padel', gender:'women', country:'lk', city:'Colombo', name:'Sara Chen',            initials:'SC', isMe:false, rating:1490, ratingChange:-1,  confidence:'medium', stats:{t:2, m:10, w:6, wp:60, sos:1465, diff:-1,  contrib:61 } },
+  { id:10, sport:'padel', gender:'women', country:'lk', city:'Kandy',   name:'Amara Silva',          initials:'AS', isMe:false, rating:1380, ratingChange:+8,  confidence:'medium', stats:{t:1, m:5,  w:3, wp:60, sos:1460, diff:+8,  contrib:38 } },
+  { id:11, sport:'padel', gender:'women', country:'lk', city:'Colombo', name:'Nadia Fernando',       initials:'NF', isMe:false, rating:1320, ratingChange:+3,  confidence:'high',   stats:{t:1, m:6,  w:3, wp:50, sos:1440, diff:+3,  contrib:31 } },
+  { id:12, sport:'padel', gender:'women', country:'lk', city:'Negombo', name:'Priya Cooray',         initials:'PC', isMe:false, rating:1290, ratingChange:-2,  confidence:'low',    stats:{t:1, m:4,  w:1, wp:25, sos:1430, diff:-2,  contrib:18 } },
+  // Padel — International
+  { id:13, sport:'padel', gender:'men',   country:'es', city:'Madrid',  name:'Carlos Ruiz',          initials:'CR', isMe:false, rating:1580, ratingChange:+4,  confidence:'high',   stats:{t:3, m:18, w:12,wp:67, sos:1510, diff:+4,  contrib:112} },
+  { id:14, sport:'padel', gender:'women', country:'in', city:'Mumbai',  name:'Kavya Nair',           initials:'KN', isMe:false, rating:1510, ratingChange:+5,  confidence:'high',   stats:{t:1, m:6,  w:5, wp:83, sos:1470, diff:+5,  contrib:42 } },
+  { id:15, sport:'padel', gender:'men',   country:'in', city:'Mumbai',  name:'Rohan Bhat',           initials:'RB', isMe:false, rating:1455, ratingChange:+9,  confidence:'medium', stats:{t:2, m:10, w:6, wp:60, sos:1460, diff:+9,  contrib:67 } },
+  // Pickleball — Sri Lanka
+  { id:16, sport:'pickle', gender:'men',   country:'lk', city:'Colombo', name:'Rohan Gunawardena',   initials:'RG', isMe:false, rating:1520, ratingChange:+6,  confidence:'high',   stats:{t:2, m:12, w:8, wp:67, sos:1480, diff:+6,  contrib:74 } },
+  { id:17, sport:'pickle', gender:'men',   country:'lk', city:'Negombo', name:'Nishan Cooray',       initials:'NC', isMe:false, rating:1465, ratingChange:-2,  confidence:'medium', stats:{t:1, m:8,  w:4, wp:50, sos:1462, diff:-2,  contrib:48 } },
+  { id:18, sport:'pickle', gender:'men',   country:'lk', city:'Colombo', name:'Bimal Senanayake',    initials:'BS', isMe:false, rating:1440, ratingChange:+9,  confidence:'low',    stats:{t:1, m:7,  w:5, wp:71, sos:1455, diff:+9,  contrib:55 } },
+  { id:19, sport:'pickle', gender:'men',   country:'lk', city:'Galle',   name:'Kasun Rathnayake',    initials:'KR', isMe:false, rating:1390, ratingChange:+1,  confidence:'medium', stats:{t:1, m:6,  w:3, wp:50, sos:1440, diff:+1,  contrib:36 } },
+  { id:20, sport:'pickle', gender:'women', country:'lk', city:'Colombo', name:'Priya Chandrasekaran',initials:'PC', isMe:false, rating:1498, ratingChange:+3,  confidence:'high',   stats:{t:2, m:9,  w:6, wp:67, sos:1470, diff:+3,  contrib:58 } },
+  { id:21, sport:'pickle', gender:'women', country:'lk', city:'Kandy',   name:'Layla Rasheed',       initials:'LR', isMe:false, rating:1412, ratingChange:-4,  confidence:'medium', stats:{t:1, m:6,  w:3, wp:50, sos:1448, diff:-4,  contrib:35 } },
+  // Pickleball — International
+  { id:22, sport:'pickle', gender:'men',   country:'in', city:'Delhi',   name:'Arjun Kapoor',        initials:'AK', isMe:false, rating:1540, ratingChange:+11, confidence:'high',   stats:{t:2, m:11, w:8, wp:73, sos:1490, diff:+11, contrib:80 } },
+  { id:23, sport:'pickle', gender:'women', country:'in', city:'Mumbai',  name:'Deepa Menon',         initials:'DM', isMe:false, rating:1460, ratingChange:+2,  confidence:'medium', stats:{t:1, m:7,  w:4, wp:57, sos:1445, diff:+2,  contrib:44 } },
+];
+
+/* ── Location data ── */
+const COUNTRY_CITIES = {
+  all: [],
+  lk:  ['Colombo', 'Negombo', 'Kandy', 'Galle'],
+  es:  ['Madrid'],
+  in:  ['Mumbai', 'Delhi'],
+};
+
+/* ── State ── */
+const state = {
+  sport:       'padel',
+  rankingType: 'official',
+  period:      'all-time',
+  gender:      'all',
+  country:     'lk',
+  city:        'all',
+  sheetOpen:   false,
+};
+
+/* ── Filtering ── */
+function getResults() {
+  return PLAYERS
+    .filter(p => {
+      const matchSport   = p.sport   === state.sport;
+      const matchGender  = state.gender  === 'all' || p.gender  === state.gender;
+      const matchCountry = state.country === 'all' || p.country === state.country;
+      const matchCity    = state.city    === 'all' || p.city    === state.city;
+      return matchSport && matchGender && matchCountry && matchCity;
+    })
+    .sort((a, b) => b.rating - a.rating);
+}
+
+/* ── Helpers ── */
+function diffText(d) {
+  if (d > 0) return `+${d}`;
+  if (d < 0) return `${d}`;
+  return '0';
+}
+function diffClass(d) {
+  return d > 0 ? 'pos' : d < 0 ? 'neg' : 'neu';
+}
+function cityFlag(country) {
+  return { lk:'🇱🇰', es:'🇪🇸', in:'🇮🇳', all:'' }[country] || '';
+}
+
+/* ── Build podium card (top 3) ── */
+function buildPodiumCard(p, rank) {
+  const palette = AVATAR_PALETTE[(p.id - 1) % AVATAR_PALETTE.length];
+  const avatarHTML = p.isMe
+    ? `<img src="${ME_AVATAR}" alt="You"/>`
+    : `<span style="color:${palette.color}">${p.initials}</span>`;
+  const avatarBg = p.isMe ? 'rgba(18,95,169,0.08)' : palette.bg;
+  const posClass = `p${rank}`;
+  const badgeClass = `b${rank}`;
+  const confShort = { high: '● High', medium: '● Med', low: '● Low' }[p.confidence];
+  const firstName = p.name.split(' ')[0];
+
+  return `
+    <div class="podium-card ${posClass}" data-player-id="${p.id}">
+      <div class="rank-badge ${badgeClass}">${rank}</div>
+      <div class="podium-avatar" style="background:${avatarBg}">${avatarHTML}</div>
+      <div class="podium-name">${firstName}</div>
+      <div class="podium-loc">${cityFlag(p.country)} ${p.city}</div>
+      <div class="podium-rating">${p.rating}</div>
+      <span class="podium-conf ${p.confidence}">${confShort}</span>
+      <span class="material-symbols-outlined podium-chevron">keyboard_arrow_down</span>
+      <div class="podium-stats">
+        <div class="podium-stats-inner">
+          <div class="podium-stat">
+            <span class="podium-stat-val">${p.stats.m}</span>
+            <span class="podium-stat-key">Matches</span>
+          </div>
+          <div class="podium-stat">
+            <span class="podium-stat-val">${p.stats.wp}%</span>
+            <span class="podium-stat-key">Win %</span>
+          </div>
+          <div class="podium-stat">
+            <span class="podium-stat-val">${p.stats.sos}</span>
+            <span class="podium-stat-key">SOS</span>
+          </div>
+          <div class="podium-stat">
+            <span class="podium-stat-val ${diffClass(p.stats.diff)}">${diffText(p.stats.diff)}</span>
+            <span class="podium-stat-key">+/−</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ── Build compact list row (rank 4+) ── */
+function buildListRow(p, rank) {
+  const palette = AVATAR_PALETTE[(p.id - 1) % AVATAR_PALETTE.length];
+  const avatarHTML = p.isMe
+    ? `<img src="${ME_AVATAR}" alt="You"/>`
+    : `<span style="color:${palette.color}">${p.initials}</span>`;
+  const avatarBg = p.isMe ? 'rgba(18,95,169,0.08)' : palette.bg;
+  const confShort = { high: 'High', medium: 'Med', low: 'Low' }[p.confidence];
+
+  const rowHTML = `
+    <div class="rank-row${p.isMe ? ' is-me-row' : ''}" data-player-id="${p.id}">
+      <div class="rank-row-num">${rank}</div>
+      <div class="rank-row-avatar" style="background:${avatarBg}">${avatarHTML}</div>
+      <div class="rank-row-info">
+        <div class="rank-row-name">${p.name}${p.isMe ? ' <span style="font-size:9px;font-weight:700;color:var(--primary);background:rgba(18,95,169,0.08);padding:1px 6px;border-radius:9999px;margin-left:3px;">You</span>' : ''}</div>
+        <div class="rank-row-loc">${cityFlag(p.country)} ${p.city}</div>
+      </div>
+      <div class="rank-row-right">
+        <div class="rank-row-rating">${p.rating}</div>
+        <span class="rank-row-conf ${p.confidence}">${confShort}</span>
+      </div>
+      <span class="material-symbols-outlined row-chevron">keyboard_arrow_down</span>
+    </div>
+    <div class="rank-row-stats" data-for="${p.id}">
+      <div class="rank-row-stats-inner">
+        <div class="stat-col"><span class="stat-val">${p.stats.t}</span><span class="stat-key">Tourn.</span></div>
+        <div class="stat-col"><span class="stat-val">${p.stats.m}</span><span class="stat-key">Matches</span></div>
+        <div class="stat-col"><span class="stat-val">${p.stats.w}</span><span class="stat-key">Wins</span></div>
+        <div class="stat-col"><span class="stat-val">${p.stats.wp}%</span><span class="stat-key">Win %</span></div>
+        <div class="stat-col"><span class="stat-val">${p.stats.sos}</span><span class="stat-key">SOS</span></div>
+        <div class="stat-col"><span class="stat-val ${diffClass(p.stats.diff)}">${diffText(p.stats.diff)}</span><span class="stat-key">+/−</span></div>
+        <div class="stat-col"><span class="stat-val">${p.stats.contrib}</span><span class="stat-key">Contrib.</span></div>
+      </div>
+    </div>`;
+  return rowHTML;
+}
+
+/* ── Your Position card ── */
+function buildYourPosCard(me, myRank) {
+  const palette = AVATAR_PALETTE[(me.id - 1) % AVATAR_PALETTE.length];
+  const avatarHTML = `<img src="${ME_AVATAR}" alt="You"/>`;
+  const confShort = { high: 'High conf.', medium: 'Med. conf.', low: 'Low conf.' }[me.confidence];
+  return `
+    <div class="your-pos-card">
+      <div class="your-pos-label">
+        <span class="material-symbols-outlined">person</span>Your position
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:2px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(18,95,169,0.08);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+          ${avatarHTML}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;color:var(--on-surface);">Marco Silva <span style="font-size:9px;font-weight:700;color:var(--primary);background:rgba(18,95,169,0.10);padding:1px 6px;border-radius:9999px;">You</span></div>
+          <div style="font-size:10px;color:var(--on-surface-variant);">🇱🇰 Colombo</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);">Rank <span style="color:var(--primary);font-size:16px;font-weight:800;">#${myRank}</span></div>
+          <div style="font-size:17px;font-weight:800;color:var(--primary);letter-spacing:-0.02em;line-height:1.1;">${me.rating}</div>
+          <div style="font-size:9px;font-weight:700;color:#0d9488;text-transform:uppercase;letter-spacing:0.05em;">${confShort}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ── Render ── */
+function render() {
+  const results = getResults();
+  const me = PLAYERS.find(p => p.isMe && p.sport === state.sport);
+  const myRankIdx = results.findIndex(p => p.isMe);
+  const myRank = myRankIdx + 1; // 0 if not in results
+
+  /* Count label */
+  document.getElementById('result-count-label').textContent =
+    `${results.length} player${results.length !== 1 ? 's' : ''}`;
+
+  /* Tune badge */
+  const nonDefault =
+    (state.period  !== 'all-time' ? 1 : 0) +
+    (state.gender  !== 'all'      ? 1 : 0) +
+    (state.country !== 'lk'       ? 1 : 0) +
+    (state.city    !== 'all'      ? 1 : 0);
+  const tuneBtn = document.getElementById('btn-tune');
+  const existingBadge = tuneBtn.querySelector('.filter-badge');
+  if (existingBadge) existingBadge.remove();
+  if (nonDefault > 0) {
+    const badge = document.createElement('span');
+    badge.className = 'filter-badge';
+    badge.textContent = nonDefault;
+    tuneBtn.appendChild(badge);
+  }
+  tuneBtn.classList.toggle('active-btn', nonDefault > 0);
+
+  /* Build content */
+  const content = document.getElementById('rankings-content');
+
+  if (results.length === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <span class="material-symbols-outlined empty-icon">leaderboard</span>
+        <span class="empty-title">No players found</span>
+        <span class="empty-sub">Try a different sport, region, or adjust the filters above</span>
+      </div>`;
+    updateFlowPanel(); updateStateBadge();
+    return;
+  }
+
+  /* Your position card */
+  let yourPosHTML = '';
+  if (me && myRank > 0) {
+    yourPosHTML = buildYourPosCard(me, myRank);
+  } else if (me) {
+    yourPosHTML = `<div class="your-pos-card"><div class="your-pos-label"><span class="material-symbols-outlined">person</span>Your position</div><div style="font-size:12px;font-weight:500;color:var(--on-surface-variant);margin-top:6px;">You're not ranked in this filtered view.</div></div>`;
+  }
+
+  /* Split: exclude "me", first 3 = podium, rest = list */
+  const ranked = results.filter(p => !p.isMe);
+  const podiumPlayers = ranked.slice(0, 3);
+  const listPlayers   = ranked.slice(3);
+
+  /* Podium order: #2 (left), #1 (center, tallest), #3 (right) */
+  const podiumOrder = [podiumPlayers[1], podiumPlayers[0], podiumPlayers[2]].filter(Boolean);
+
+  /* Assign actual ranks in original results order */
+  function actualRank(p) {
+    return results.findIndex(r => r.id === p.id) + 1;
+  }
+
+  const podiumHTML = podiumPlayers.length
+    ? `<div class="podium-section">${podiumOrder.map(p => buildPodiumCard(p, actualRank(p))).join('')}</div>`
+    : '';
+
+  const listDivider = listPlayers.length
+    ? `<div class="rank-list-divider"><span>Ranked</span></div>`
+    : '';
+
+  const listHTML = listPlayers.length
+    ? `<div class="rank-list-wrap">${listPlayers.map(p => buildListRow(p, actualRank(p))).join('')}</div>`
+    : '';
+
+  content.innerHTML = yourPosHTML + podiumHTML + listDivider + listHTML + '<div style="height:16px;"></div>';
+
+  /* Podium expand/collapse */
+  content.querySelectorAll('.podium-card').forEach(card => {
+    card.addEventListener('click', () => card.classList.toggle('expanded'));
+  });
+
+  /* List row expand/collapse */
+  content.querySelectorAll('.rank-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const pid = row.dataset.playerId;
+      const statsDiv = content.querySelector(`.rank-row-stats[data-for="${pid}"]`);
+      row.classList.toggle('expanded');
+      if (statsDiv) statsDiv.classList.toggle('visible');
+    });
+  });
+
+  updateFlowPanel();
+  updateStateBadge();
+}
+
+/* ── City chips ── */
+function renderCityChips() {
+  const cities = COUNTRY_CITIES[state.country] || [];
+  const citySection = document.getElementById('city-section');
+  const cityChips = document.getElementById('city-chips');
+
+  if (cities.length === 0) { citySection.style.display = 'none'; return; }
+  citySection.style.display = '';
+
+  cityChips.innerHTML = [
+    `<button class="sheet-chip${state.city === 'all' ? ' selected' : ''}" data-city="all">All</button>`,
+    ...cities.map(c => `<button class="sheet-chip${state.city === c ? ' selected' : ''}" data-city="${c}">${c}</button>`)
+  ].join('');
+
+  cityChips.querySelectorAll('.sheet-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      state.city = chip.dataset.city;
+      cityChips.querySelectorAll('.sheet-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+    });
+  });
+}
+
+/* ── State badge ── */
+function updateStateBadge() {
+  const typeLabel = state.rankingType === 'official' ? 'Official' : 'Community';
+  const sportLabel = state.sport === 'padel' ? 'Padel' : 'Pickleball';
+  const countryLabel = { all: 'Global', lk: 'Sri Lanka', es: 'Spain', in: 'India' }[state.country];
+  let label = `${typeLabel} · ${sportLabel} · ${countryLabel}`;
+  if (state.sheetOpen) label = 'Filters open';
+  document.getElementById('state-label').textContent = label;
+}
+
+/* ── Flow panel ── */
+function updateFlowPanel() {
+  let step = 1;
+  if (state.sheetOpen) step = 4;
+  else if (state.rankingType === 'community') step = 3;
+  else if (state.sport === 'pickle') step = 2;
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById(`flow-${i}`).classList.toggle('current', i === step);
+  }
+}
+
+/* ── Event listeners ── */
+
+/* Sport toggle */
+document.querySelectorAll('#sport-toggle .seg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.sport = btn.dataset.sport;
+    document.querySelectorAll('#sport-toggle .seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  });
+});
+
+/* Ranking type toggle */
+document.querySelectorAll('#type-toggle .seg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.rankingType = btn.dataset.type;
+    document.querySelectorAll('#type-toggle .seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  });
+});
+
+/* Tune open */
+document.getElementById('btn-tune').addEventListener('click', () => {
+  state.sheetOpen = true;
+  document.getElementById('sheet-overlay').classList.add('open');
+  renderCityChips();
+  updateFlowPanel();
+  updateStateBadge();
+});
+
+/* Close sheet on overlay tap */
+document.getElementById('sheet-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('sheet-overlay')) {
+    state.sheetOpen = false;
+    document.getElementById('sheet-overlay').classList.remove('open');
+    render();
+  }
+});
+
+/* Period chips */
+document.querySelectorAll('#period-chips .sheet-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    state.period = chip.dataset.period;
+    document.querySelectorAll('#period-chips .sheet-chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+  });
+});
+
+/* Gender chips */
+document.querySelectorAll('#gender-chips .sheet-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    state.gender = chip.dataset.gender;
+    document.querySelectorAll('#gender-chips .sheet-chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+  });
+});
+
+/* Country chips */
+document.querySelectorAll('#country-chips .sheet-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    state.country = chip.dataset.country;
+    state.city = 'all';
+    document.querySelectorAll('#country-chips .sheet-chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    renderCityChips();
+  });
+});
+
+/* Sheet apply */
+document.getElementById('btn-sheet-apply').addEventListener('click', () => {
+  state.sheetOpen = false;
+  document.getElementById('sheet-overlay').classList.remove('open');
+  render();
+});
+
+/* Sheet reset */
+document.getElementById('btn-sheet-reset').addEventListener('click', () => {
+  state.period  = 'all-time';
+  state.gender  = 'all';
+  state.country = 'lk';
+  state.city    = 'all';
+  document.querySelectorAll('#period-chips .sheet-chip').forEach(c =>  c.classList.toggle('selected', c.dataset.period  === 'all-time'));
+  document.querySelectorAll('#gender-chips .sheet-chip').forEach(c =>  c.classList.toggle('selected', c.dataset.gender  === 'all'));
+  document.querySelectorAll('#country-chips .sheet-chip').forEach(c => c.classList.toggle('selected', c.dataset.country === 'lk'));
+  renderCityChips();
+  state.sheetOpen = false;
+  document.getElementById('sheet-overlay').classList.remove('open');
+  render();
+});
+
+/* ── Init ── */
+renderCityChips();
+render();
+</script>
+</body>
+</html>
