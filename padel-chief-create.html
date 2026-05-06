@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Padel Chief — Create Tournament</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --surface: #FFFFFF;
+    --background: #E8EEF5;
+    --on-background: #0F172A;
+    --on-surface: #0F172A;
+    --on-surface-variant: #475569;
+    --primary: #125fa9;
+    --primary-container: #2268b2;
+    --on-primary-container: #FFFFFF;
+    --secondary-fixed: #d8ef00;
+    --outline: #94A3B8;
+    --outline-variant: #E2E8F0;
+    --surface-container: #F1F5F9;
+    --surface-container-high: #E2E8F0;
+    --pickle: #0d9488;
+    --pickle-bg: rgba(13,148,136,0.08);
+    --trad: #d97706;
+    --trad-bg: rgba(217,119,6,0.06);
+    --trad-border: rgba(217,119,6,0.20);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #0a0c10;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ===== PHONE FRAME ===== */
+  .phone-frame {
+    width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+    position: relative; background: var(--background); flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+                0 0 0 2px rgba(255,255,255,0.06),
+                0 40px 80px rgba(0,0,0,0.5);
+  }
+  .phone-frame::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 30px; background: #0F172A;
+    border-radius: 0 0 18px 18px; z-index: 100;
+  }
+  .screen {
+    width: 100%; height: 100%; overflow-y: auto; position: relative;
+    scrollbar-width: none; display: flex; flex-direction: column;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .phone-wrapper { display: flex; flex-direction: column; align-items: center; }
+  .screen-label {
+    color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .screen-state-badge {
+    margin-top: 16px; display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 9999px; padding: 5px 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+  .screen-state-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--secondary-fixed); }
+
+  /* ===== STICKY HEADER ===== */
+  .create-header {
+    position: sticky; top: 0; z-index: 50; flex-shrink: 0;
+    background: rgba(248,250,252,0.92);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .create-header-inner {
+    display: flex; align-items: center; gap: 10px;
+    padding: 44px 16px 12px;
+  }
+  .header-close-btn {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-container); border: none; cursor: pointer;
+    text-decoration: none; color: var(--on-surface-variant);
+    transition: background 0.15s; -webkit-tap-highlight-color: transparent;
+  }
+  .header-close-btn:active { background: var(--surface-container-high); }
+  .header-close-btn .material-symbols-outlined { font-size: 18px; }
+  .create-header-title {
+    flex: 1; font-size: 17px; font-weight: 700; color: var(--on-background);
+    letter-spacing: -0.01em; text-align: center;
+  }
+  .step-dots { display: flex; gap: 6px; align-items: center; flex-shrink: 0; width: 36px; justify-content: flex-end; }
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--outline-variant); transition: all 0.25s cubic-bezier(0.4,0,0.2,1); flex-shrink: 0;
+  }
+  .step-dot.active { width: 20px; border-radius: 4px; background: var(--primary); }
+  .step-dot.done { background: var(--primary); opacity: 0.35; }
+
+  /* ===== WIZARD BODY ===== */
+  .wizard-body { flex: 1; padding: 20px 16px 40px; }
+  .wizard-step { display: none; }
+  .wizard-step.active { display: block; animation: stepIn 0.22s cubic-bezier(0.4,0,0.2,1) both; }
+  .wizard-step.active.back-dir { animation: stepInBack 0.22s cubic-bezier(0.4,0,0.2,1) both; }
+  @keyframes stepIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes stepInBack { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+
+  /* ===== FORM LABELS ===== */
+  .form-label {
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.10em; color: var(--on-surface-variant);
+    margin-bottom: 8px; margin-top: 20px; display: block;
+  }
+  .form-label:first-child, .form-label.no-top { margin-top: 0; }
+
+  /* ===== SPORT SELECTOR (segmented control) ===== */
+  .sport-seg {
+    display: flex; background: var(--surface-container); border-radius: 14px; padding: 4px; gap: 2px;
+  }
+  .sport-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 9px 6px; border-radius: 10px; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--on-surface-variant); background: transparent; cursor: pointer;
+    transition: all 0.18s; -webkit-tap-highlight-color: transparent;
+  }
+  .sport-btn .material-symbols-outlined { font-size: 14px; }
+  .sport-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sport-btn.active { background: var(--surface); font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  .sport-btn.active.padel { color: var(--primary); }
+  .sport-btn.active.pickle { color: var(--pickle); }
+
+  /* ===== TEXT INPUT / TEXTAREA ===== */
+  .form-input {
+    width: 100%; padding: 13px 14px; border-radius: 12px;
+    border: 1.5px solid var(--outline-variant);
+    background: var(--surface); font-size: 15px; font-weight: 500;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--on-surface); outline: none; transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--primary); }
+  .form-input::placeholder { color: var(--outline); font-weight: 400; }
+  textarea.form-input { resize: none; line-height: 1.6; font-size: 14px; }
+  input[type=date].form-input, input[type=time].form-input { font-size: 14px; }
+
+  /* ===== TYPE CARDS ===== */
+  .type-grid-padel  { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .type-grid-pickle { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .type-card {
+    border: 1.5px solid var(--outline-variant); border-radius: 14px;
+    padding: 12px 10px 10px; background: var(--surface); cursor: pointer;
+    display: flex; flex-direction: column; gap: 3px;
+    transition: border-color 0.15s, background 0.15s, transform 0.12s;
+    position: relative; -webkit-tap-highlight-color: transparent; user-select: none;
+  }
+  .type-card:active { transform: scale(0.97); }
+  .type-card.selected { border-color: var(--primary); background: rgba(18,95,169,0.04); }
+  .type-card.trad-card.selected { border-color: var(--trad); background: var(--trad-bg); }
+  /* Checkmark */
+  .type-card-check {
+    position: absolute; top: 9px; right: 9px;
+    width: 17px; height: 17px; border-radius: 50%;
+    background: var(--outline-variant); display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s; flex-shrink: 0;
+  }
+  .type-card-check .material-symbols-outlined {
+    font-size: 11px; color: transparent; transition: color 0.15s;
+    font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 20;
+  }
+  .type-card.selected .type-card-check { background: var(--primary); }
+  .type-card.selected .type-card-check .material-symbols-outlined { color: white; }
+  .type-card.trad-card.selected .type-card-check { background: var(--trad); }
+  .type-card-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-container); margin-bottom: 6px; flex-shrink: 0;
+  }
+  .type-card-icon .material-symbols-outlined {
+    font-size: 16px; color: var(--on-surface-variant);
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .type-card.selected .type-card-icon { background: rgba(18,95,169,0.10); }
+  .type-card.selected .type-card-icon .material-symbols-outlined { color: var(--primary); }
+  .type-card.trad-card.selected .type-card-icon { background: rgba(217,119,6,0.12); }
+  .type-card.trad-card.selected .type-card-icon .material-symbols-outlined { color: var(--trad); }
+  .type-card-name { font-size: 12px; font-weight: 700; color: var(--on-surface); padding-right: 20px; }
+  .type-card-desc { font-size: 9px; font-weight: 500; color: var(--on-surface-variant); line-height: 1.4; }
+  .type-card.selected .type-card-name { color: var(--primary); }
+  .type-card.trad-card.selected .type-card-name { color: var(--trad); }
+
+  /* ===== ROTATION PILLS ===== */
+  .seg-row { display: flex; gap: 6px; }
+  .seg-pill {
+    flex: 1; padding: 11px 0; text-align: center; border-radius: 11px;
+    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    font-size: 13px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--on-surface-variant); cursor: pointer; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .seg-pill.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
+  .seg-pill:active { transform: scale(0.97); }
+
+  /* ===== FORMAT DESCRIPTION TEXT ===== */
+  .format-desc {
+    font-size: 11px; font-weight: 500; color: var(--on-surface-variant);
+    line-height: 1.55; margin-top: 6px;
+  }
+
+  /* ===== NATIVE SELECT (rounds) ===== */
+  .select-wrap { position: relative; }
+  .form-select {
+    width: 100%; padding: 13px 38px 13px 14px; border-radius: 12px;
+    border: 1.5px solid var(--outline-variant);
+    background: var(--surface); font-size: 14px; font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--on-surface); outline: none; appearance: none; cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .form-select:focus { border-color: var(--primary); }
+  .select-arrow {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    pointer-events: none; font-size: 18px; color: var(--outline);
+  }
+
+  /* ===== ESTIMATE BOX ===== */
+  .estimate-box {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 10px 12px; border-radius: 12px;
+    background: var(--surface-container); border: 1px solid var(--outline-variant);
+  }
+  .estimate-box .material-symbols-outlined {
+    font-size: 16px; color: var(--on-surface-variant); margin-top: 1px; flex-shrink: 0;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  }
+  .estimate-main { font-size: 12px; font-weight: 600; color: var(--on-surface); line-height: 1.5; }
+  .estimate-sub { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 2px; }
+
+  /* ===== TWO-COLUMN GRID ===== */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .two-col-label {
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.10em; color: var(--on-surface-variant);
+    margin-bottom: 6px; display: block;
+  }
+
+  /* ===== STEPPER ===== */
+  .stepper {
+    display: flex; align-items: center;
+    border: 1.5px solid var(--outline-variant); border-radius: 12px;
+    overflow: hidden; background: var(--surface);
+  }
+  .stepper-btn {
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+    border: none; background: none; cursor: pointer; color: var(--primary);
+    font-size: 22px; font-weight: 300; line-height: 1; flex-shrink: 0;
+    transition: background 0.12s; -webkit-tap-highlight-color: transparent;
+  }
+  .stepper-btn:active { background: var(--surface-container); }
+  .stepper-val {
+    flex: 1; text-align: center; font-size: 16px; font-weight: 800; color: var(--on-surface);
+    border-left: 1px solid var(--outline-variant); border-right: 1px solid var(--outline-variant);
+    padding: 11px 0;
+  }
+
+  /* ===== DATE PILL ===== */
+  .date-pill {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 12px;
+    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    cursor: pointer; transition: border-color 0.15s; -webkit-tap-highlight-color: transparent;
+  }
+  .date-pill:active { border-color: var(--primary); }
+  .date-pill .material-symbols-outlined { font-size: 18px; color: var(--primary); flex-shrink: 0; }
+  .date-pill-body { flex: 1; }
+  .date-pill-main { font-size: 13px; font-weight: 600; color: var(--on-surface); }
+  .date-pill-sub  { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 1px; }
+  .date-pill-chev { font-size: 18px; color: var(--outline); flex-shrink: 0; }
+
+  /* ===== FORMAT PRESETS (Traditional) ===== */
+  .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .preset-card {
+    border: 1.5px solid var(--outline-variant); border-radius: 12px;
+    padding: 11px 10px; text-align: left; cursor: pointer; background: var(--surface);
+    transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+  }
+  .preset-card:active { transform: scale(0.97); }
+  .preset-card.selected { border-color: var(--trad); background: var(--trad-bg); }
+  .preset-card-name { font-size: 11px; font-weight: 700; color: var(--on-surface); }
+  .preset-card-desc { font-size: 9px; font-weight: 500; color: var(--on-surface-variant); margin-top: 2px; line-height: 1.4; }
+  .preset-card-dur  { font-size: 9px; font-weight: 700; color: var(--on-surface-variant); margin-top: 4px; }
+  .preset-card.selected .preset-card-name { color: var(--trad); }
+  .preset-card.preset-full { grid-column: 1 / -1; } /* Custom spans full width */
+
+  /* ===== STRUCTURE CARDS (Traditional) ===== */
+  .structure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .structure-card {
+    border: 1.5px solid var(--outline-variant); border-radius: 12px;
+    padding: 11px 10px; cursor: pointer; background: var(--surface);
+    transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+  }
+  .structure-card:active { transform: scale(0.97); }
+  .structure-card.selected { border-color: var(--trad); background: var(--trad-bg); }
+  .structure-card-name { font-size: 12px; font-weight: 700; color: var(--on-surface); }
+  .structure-card-desc { font-size: 9px; font-weight: 500; color: var(--on-surface-variant); margin-top: 3px; line-height: 1.4; }
+  .structure-card.selected .structure-card-name { color: var(--trad); }
+
+  /* ===== TOGGLE ROWS ===== */
+  .toggle-section {
+    border: 1.5px solid var(--outline-variant); border-radius: 14px;
+    background: var(--surface); overflow: hidden;
+  }
+  .toggle-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 14px; gap: 12px;
+  }
+  .toggle-item + .toggle-item { border-top: 1px solid var(--outline-variant); }
+  .toggle-item-text { flex: 1; min-width: 0; }
+  .toggle-item-label { font-size: 13px; font-weight: 600; color: var(--on-surface); }
+  .toggle-item-sub { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 2px; line-height: 1.4; }
+  .toggle-sw { display: inline-block; cursor: pointer; flex-shrink: 0; line-height: 0; }
+  .toggle-sw input { display: none; }
+  .toggle-track {
+    display: block; width: 44px; height: 26px; border-radius: 13px;
+    background: var(--outline-variant); transition: background 0.2s; position: relative;
+  }
+  .toggle-sw input:checked ~ .toggle-track { background: var(--primary); }
+  .toggle-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: white; transition: transform 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.22);
+  }
+  .toggle-sw input:checked ~ .toggle-track .toggle-thumb { transform: translateX(18px); }
+
+  /* ===== STAND-ALONE TOGGLE CARD ===== */
+  .toggle-card {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 13px 14px; border-radius: 14px;
+    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .toggle-card.on { border-color: rgba(18,95,169,0.25); background: rgba(18,95,169,0.04); }
+  .toggle-card-icon { font-size: 20px; color: var(--primary); flex-shrink: 0; }
+  .toggle-card-text { flex: 1; }
+  .toggle-card-label { font-size: 13px; font-weight: 600; color: var(--on-surface); }
+  .toggle-card-sub   { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 2px; }
+
+  /* ===== INFO BOX ===== */
+  .info-box {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 10px 12px; border-radius: 10px;
+    background: rgba(18,95,169,0.05); border: 1px solid rgba(18,95,169,0.15);
+  }
+  .info-box .material-symbols-outlined {
+    font-size: 16px; color: var(--primary); margin-top: 1px; flex-shrink: 0;
+    font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  }
+  .info-box-text { font-size: 11px; font-weight: 500; color: var(--on-surface-variant); line-height: 1.55; }
+
+  /* ===== COLLAPSIBLE SECTION ===== */
+  .collapsible-trigger {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; padding: 10px; border: none; background: none; cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--on-surface-variant); transition: color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .collapsible-trigger:hover { color: var(--on-surface); }
+  .collapsible-trigger .material-symbols-outlined {
+    font-size: 18px; transition: transform 0.2s;
+  }
+  .collapsible-trigger.open .material-symbols-outlined { transform: rotate(180deg); }
+  .collapsible-body {
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+  .collapsible-body.open { grid-template-rows: 1fr; }
+  .collapsible-inner { overflow: hidden; }
+
+  /* ===== SCORE INPUT MODE BUTTONS ===== */
+  .score-mode-row { display: flex; gap: 6px; }
+  .score-mode-btn {
+    flex: 1; padding: 11px 8px; border-radius: 11px; text-align: center;
+    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    font-size: 12px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--on-surface-variant); cursor: pointer; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .score-mode-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
+
+  /* ===== CHAMPIONSHIP ROUNDS ===== */
+  .champ-count-row { display: flex; gap: 6px; margin-top: 10px; }
+  .champ-count-btn {
+    flex: 1; padding: 10px 0; border-radius: 10px; text-align: center;
+    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    font-size: 13px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--on-surface-variant); cursor: pointer; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .champ-count-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
+
+  /* ===== RANKING BUTTONS ===== */
+  .rank-row { display: flex; gap: 6px; }
+  .rank-btn {
+    flex: 1; padding: 10px 0; border-radius: 10px; text-align: center;
+    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    font-size: 12px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--on-surface-variant); cursor: pointer; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .rank-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
+
+  /* ===== SECTION DIVIDER ===== */
+  .section-divider {
+    display: flex; align-items: center; gap: 10px;
+    padding: 4px 0 8px;
+  }
+  .section-divider::before, .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--outline-variant);
+  }
+  .section-divider span {
+    font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--on-surface-variant);
+  }
+
+  /* ===== ACTION BUTTONS ===== */
+  .btn-primary {
+    width: 100%; padding: 15px; border-radius: 14px; border: none;
+    background: var(--primary); color: white;
+    font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; transition: opacity 0.15s; display: block; text-align: center; line-height: 1;
+  }
+  .btn-primary:active { opacity: 0.82; }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-ghost {
+    padding: 14px 18px; border-radius: 14px; border: 1.5px solid var(--outline-variant);
+    background: var(--surface); color: var(--on-surface-variant);
+    font-size: 14px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; white-space: nowrap; line-height: 1;
+    transition: background 0.12s; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-ghost:active { background: var(--surface-container); }
+  .btn-outline {
+    flex: 1; padding: 14px; border-radius: 14px;
+    border: 1.5px solid var(--primary); background: transparent; color: var(--primary);
+    font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; line-height: 1; transition: background 0.12s; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-outline:active { background: rgba(18,95,169,0.06); }
+  .step-actions { display: flex; gap: 8px; margin-top: 24px; }
+  .step-actions-stack { margin-top: 10px; }
+
+  /* ===== OPTIONAL CHIP ===== */
+  .optional-chip {
+    display: inline-block; font-size: 8px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.10em; padding: 3px 8px; border-radius: 6px;
+    background: rgba(18,95,169,0.09); color: var(--primary);
+  }
+  .step-subtitle {
+    font-size: 12px; font-weight: 500; color: var(--on-surface-variant);
+    line-height: 1.6; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: absolute; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1e293b; color: white; border-radius: 14px;
+    padding: 12px 18px; display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 600; white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.30); z-index: 200;
+    transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast .material-symbols-outlined {
+    font-size: 16px; color: #4ade80;
+    font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+  }
+
+  /* ===== UX FLOW PANEL ===== */
+  .flow-panel { width: 300px; flex-shrink: 0; align-self: flex-start; margin-top: 60px; }
+  .flow-panel-title { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 14px; }
+  .flow-steps { display: flex; flex-direction: column; gap: 2px; }
+  .flow-step { border-radius: 16px; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.06); transition: all 0.2s; background: rgba(255,255,255,0.03); }
+  .flow-step.current { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); }
+  .flow-step-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .flow-step-num { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.35); }
+  .flow-step.current .flow-step-num { background: var(--primary-container); color: white; }
+  .flow-step-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.40); }
+  .flow-step.current .flow-step-title { color: rgba(255,255,255,0.90); }
+  .flow-step-body { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.25); line-height: 1.6; padding-left: 30px; }
+  .flow-step.current .flow-step-body { color: rgba(255,255,255,0.55); }
+  .flow-connector { width: 1px; height: 10px; background: rgba(255,255,255,0.08); margin-left: 22px; }
+  .flow-note { margin-top: 20px; padding: 14px 16px; border-radius: 16px; background: rgba(216,239,0,0.06); border: 1px solid rgba(216,239,0,0.15); }
+  .flow-note-label { font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: #89a300; margin-bottom: 6px; }
+  .flow-note-text { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.50); line-height: 1.6; }
+
+  /* ===== SPACING UTILS ===== */
+  .mt-10 { margin-top: 10px; }
+  .mt-14 { margin-top: 14px; }
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+  <div class="screen-label">Create Tournament — 3-Step Wizard</div>
+  <div class="phone-frame">
+    <div class="screen" id="main-screen">
+
+      <!-- ══ STICKY HEADER ══ -->
+      <header class="create-header">
+        <div class="create-header-inner">
+          <a class="header-close-btn" href="padel-chief-dashboard.html">
+            <span class="material-symbols-outlined">close</span>
+          </a>
+          <span class="create-header-title">Create Tournament</span>
+          <div class="step-dots">
+            <div class="step-dot active" id="dot-1"></div>
+            <div class="step-dot" id="dot-2"></div>
+            <div class="step-dot" id="dot-3"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ══ WIZARD BODY ══ -->
+      <div class="wizard-body">
+
+        <!-- ─────────────────────────────────────── -->
+        <!--  STEP 1 · Sport → Name → Format         -->
+        <!-- ─────────────────────────────────────── -->
+        <div class="wizard-step active" id="step-1">
+
+          <span class="form-label no-top">Sport</span>
+          <div class="sport-seg" id="sport-seg">
+            <button class="sport-btn active padel" data-sport="padel">
+              <span class="material-symbols-outlined">sports_tennis</span> Padel
+            </button>
+            <button class="sport-btn pickle" data-sport="pickle">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+              Pickleball
+            </button>
+          </div>
+
+          <span class="form-label">Tournament name</span>
+          <input class="form-input" id="name-input" type="text"
+                 placeholder="e.g. Summer Americano League"
+                 autocomplete="off" spellcheck="false"/>
+
+          <span class="form-label">Format</span>
+
+          <!-- Padel grid (2×2) -->
+          <div class="type-grid-padel" id="type-grid-padel">
+            <div class="type-card" data-type="rotating">
+              <div class="type-card-check"><span class="material-symbols-outlined">check</span></div>
+              <div class="type-card-icon"><span class="material-symbols-outlined">sync_alt</span></div>
+              <div class="type-card-name">Rotating</div>
+              <div class="type-card-desc">Partners change each round</div>
+            </div>
+            <div class="type-card" data-type="team">
+              <div class="type-card-check"><span class="material-symbols-outlined">check</span></div>
+              <div class="type-card-icon"><span class="material-symbols-outlined">groups</span></div>
+              <div class="type-card-name">Team</div>
+              <div class="type-card-desc">Fixed pairs, rotating opponents</div>
+            </div>
+            <div class="type-card" data-type="mix">
+              <div class="type-card-check"><span class="material-symbols-outlined">check</span></div>
+              <div class="type-card-icon"><span class="material-symbols-outlined">diversity_3</span></div>
+              <div class="type-card-name">Mixed</div>
+              <div class="type-card-desc">Gender-balanced rotating pairs</div>
+            </div>
+            <div class="type-card trad-card" data-type="traditional">
+              <div class="type-card-check"><span class="material-symbols-outlined">check</span></div>
+              <div class="type-card-icon"><span class="material-symbols-outlined">account_tree</span></div>
+              <div class="type-card-name">Traditional</div>
+              <div class="type-card-desc">Bracket format, fixed pairs</div>
+            </div>
+          </div>
+
+          <!-- Pickleball grid (3-col, no Traditional) -->
+          <div class="type-grid-pickle" id="type-grid-pickle" style="display:none">
+            <div class="type-card" data-type="rotating">
+              <div class="type-card-check"><span class="material-symbols-outlined">check</span></div>
+              <div class="type-card-icon"><span class="material-symbols-outlined">sync_alt</span></div>
+              <div class="type-card-name">Rotating</div>
+              <div class="type-card-desc">Partners rotate every round</div>
+            </div>
+            <div class="type-card" data-type="team">
+              <div class="type-card-check"><span class="material-symbols-outlined">check</span></div>
+              <div class="type-card-icon"><span class="material-symbols-outlined">groups</span></div>
+              <div class="type-card-name">Team</div>
+              <div class="type-card-desc">Fixed pairs, rotating opponents</div>
+            </div>
+            <div class="type-card" data-type="mix">
+              <div class="type-card-check"><span class="material-symbols-outlined">check</span></div>
+              <div class="type-card-icon"><span class="material-symbols-outlined">diversity_3</span></div>
+              <div class="type-card-name">Mixed</div>
+              <div class="type-card-desc">Gender-balanced pairs</div>
+            </div>
+          </div>
+
+          <div class="step-actions" style="margin-top:28px">
+            <button class="btn-primary" id="step1-next" disabled onclick="goToStep(2)">Next →</button>
+          </div>
+
+        </div><!-- /step-1 -->
+
+        <!-- ─────────────────────────────────────── -->
+        <!--  STEP 2 · Format settings + Date        -->
+        <!-- ─────────────────────────────────────── -->
+        <div class="wizard-step" id="step-2">
+
+          <!-- ── Americano path ── -->
+          <div id="americano-path">
+
+            <span class="form-label no-top">Rotation</span>
+            <div class="seg-row" id="rotation-seg">
+              <button class="seg-pill selected" data-rot="single">Single</button>
+              <button class="seg-pill" data-rot="double">Double</button>
+              <button class="seg-pill" data-rot="triple">Triple</button>
+            </div>
+            <p class="format-desc" id="rotation-desc">Everyone partners with everyone once. You may not play against everyone.</p>
+
+            <span class="form-label">Rounds</span>
+            <div class="select-wrap">
+              <select class="form-select" id="rounds-select">
+                <!-- populated by JS -->
+              </select>
+              <span class="material-symbols-outlined select-arrow">expand_more</span>
+            </div>
+
+          </div><!-- /americano-path -->
+
+          <!-- ── Traditional path ── -->
+          <div id="traditional-path" style="display:none">
+
+            <span class="form-label no-top">Format preset</span>
+            <div class="preset-grid" id="preset-grid">
+              <div class="preset-card selected" data-preset="standard_best_of_3">
+                <div class="preset-card-name">Standard Best of 3</div>
+                <div class="preset-card-desc">6 games/set, advantage deuce, tiebreak at 6-6</div>
+                <div class="preset-card-dur">~60-90 min</div>
+              </div>
+              <div class="preset-card" data-preset="fip_pro_2026">
+                <div class="preset-card-name">FIP Pro (2026)</div>
+                <div class="preset-card-desc">6 games/set, Star Point deuce, super tiebreak 3rd</div>
+                <div class="preset-card-dur">~50-75 min</div>
+              </div>
+              <div class="preset-card" data-preset="short_format">
+                <div class="preset-card-name">Short Format</div>
+                <div class="preset-card-desc">1 set of 4 games, golden point, tiebreak at 4-4</div>
+                <div class="preset-card-dur">~15-25 min</div>
+              </div>
+              <div class="preset-card" data-preset="social_quick">
+                <div class="preset-card-name">Social Quick</div>
+                <div class="preset-card-desc">1 set of 6 games, golden point, super tiebreak</div>
+                <div class="preset-card-dur">~25-40 min</div>
+              </div>
+              <div class="preset-card" data-preset="pro_set">
+                <div class="preset-card-name">Pro Set</div>
+                <div class="preset-card-desc">First to 8 games, advantage deuce, tiebreak at 8-8</div>
+                <div class="preset-card-dur">~40-60 min</div>
+              </div>
+              <div class="preset-card" data-preset="extended_pro_set">
+                <div class="preset-card-name">Extended Pro Set</div>
+                <div class="preset-card-desc">9 games, golden point, tiebreak at 8-8</div>
+                <div class="preset-card-dur">~50-70 min</div>
+              </div>
+              <div class="preset-card preset-full" data-preset="custom">
+                <div class="preset-card-name">Custom — Configure every scoring rule yourself</div>
+                <div class="preset-card-dur">~Varies</div>
+              </div>
+            </div>
+
+            <span class="form-label">Structure</span>
+            <div class="structure-grid" id="structure-grid">
+              <div class="structure-card selected" data-struct="double_elimination">
+                <div class="structure-card-name">Double Elimination</div>
+                <div class="structure-card-desc">Need to lose twice to be eliminated</div>
+              </div>
+              <div class="structure-card" data-struct="round_robin">
+                <div class="structure-card-name">Round Robin</div>
+                <div class="structure-card-desc">Everyone plays everyone once</div>
+              </div>
+            </div>
+
+            <!-- Grand Final toggle — shown when double elimination is selected -->
+            <div id="grand-final-row" class="mt-10">
+              <div class="toggle-section">
+                <div class="toggle-item">
+                  <div class="toggle-item-text">
+                    <div class="toggle-item-label">Grand Final Bracket</div>
+                    <div class="toggle-item-sub">WB winner vs LB winner — winner takes the title</div>
+                  </div>
+                  <label class="toggle-sw">
+                    <input type="checkbox" id="grand-final-chk" checked/>
+                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /traditional-path -->
+
+          <!-- ── Estimate box (both paths) ── -->
+          <div class="estimate-box mt-14" id="estimate-box">
+            <span class="material-symbols-outlined">schedule</span>
+            <div>
+              <div class="estimate-main" id="estimate-main">8 players · 14 matches, ~3h 10m</div>
+              <div class="estimate-sub" id="estimate-sub">7 rounds · ~27 min/match · 10 min rest</div>
+            </div>
+          </div>
+
+          <!-- ── Courts + Points (Americano) / Courts only (Traditional) ── -->
+          <div id="courts-points-americano">
+            <div class="two-col">
+              <div>
+                <span class="two-col-label">Courts</span>
+                <div class="stepper">
+                  <button class="stepper-btn" id="courts-dec">−</button>
+                  <div class="stepper-val" id="courts-val">2</div>
+                  <button class="stepper-btn" id="courts-inc">+</button>
+                </div>
+              </div>
+              <div>
+                <span class="two-col-label" id="points-label">Points / Match</span>
+                <div class="stepper">
+                  <button class="stepper-btn" id="points-dec">−</button>
+                  <div class="stepper-val" id="points-val">32</div>
+                  <button class="stepper-btn" id="points-inc">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="courts-only-traditional" style="display:none">
+            <span class="form-label">Courts</span>
+            <div class="stepper">
+              <button class="stepper-btn" id="courts-trad-dec">−</button>
+              <div class="stepper-val" id="courts-trad-val">2</div>
+              <button class="stepper-btn" id="courts-trad-inc">+</button>
+            </div>
+          </div>
+
+          <!-- ── Max Players ── -->
+          <span class="form-label" id="players-label">Max Players</span>
+          <div class="stepper">
+            <button class="stepper-btn" id="players-dec">−</button>
+            <div class="stepper-val" id="players-val">8</div>
+            <button class="stepper-btn" id="players-inc">+</button>
+          </div>
+
+          <!-- ── Date & Time ── -->
+          <span class="form-label">Date &amp; time</span>
+          <div class="date-pill" id="date-pill-btn">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <div class="date-pill-body">
+              <div class="date-pill-main" id="date-display">Sat, 2 May 2026</div>
+              <div class="date-pill-sub" id="time-display">2:00 PM</div>
+            </div>
+            <span class="material-symbols-outlined date-pill-chev">chevron_right</span>
+          </div>
+          <input type="datetime-local" id="datetime-native"
+                 style="display:none;position:absolute;opacity:0;pointer-events:none"
+                 value="2026-05-02T14:00"/>
+
+          <!-- ── Actions ── -->
+          <div class="step-actions">
+            <button class="btn-ghost" onclick="goToStep(1)">← Back</button>
+            <button class="btn-outline" onclick="goToStep(3)">Advanced →</button>
+          </div>
+          <div class="step-actions-stack">
+            <button class="btn-primary" onclick="createTournament()">Create Tournament</button>
+          </div>
+
+        </div><!-- /step-2 -->
+
+        <!-- ─────────────────────────────────────── -->
+        <!--  STEP 3 · Advanced (matches real app)   -->
+        <!-- ─────────────────────────────────────── -->
+        <div class="wizard-step" id="step-3">
+
+          <p class="step-subtitle">
+            Advanced controls — all changeable later <span class="optional-chip">Optional</span>
+          </p>
+
+          <div class="info-box">
+            <span class="material-symbols-outlined">info</span>
+            <span class="info-box-text">All settings below can be changed after the tournament is created.</span>
+          </div>
+
+          <!-- Date + Start Time -->
+          <span class="form-label" style="margin-top:16px">Date &amp; start time</span>
+          <div class="two-col">
+            <input class="form-input" type="date" value="2026-05-02" style="font-size:13px;padding:11px 10px"/>
+            <input class="form-input" type="time" value="14:00" style="font-size:13px;padding:11px 10px"/>
+          </div>
+
+          <!-- Max Players + Rest -->
+          <span class="form-label">Max players &amp; rest time</span>
+          <div class="two-col">
+            <div class="stepper">
+              <button class="stepper-btn">−</button>
+              <div class="stepper-val">8</div>
+              <button class="stepper-btn">+</button>
+            </div>
+            <div style="position:relative">
+              <input class="form-input" type="number" value="10"
+                     style="font-size:14px;font-weight:700;padding-right:36px;text-align:center"/>
+              <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--on-surface-variant);font-weight:600">min</span>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <span class="form-label">Location</span>
+          <input class="form-input" type="text" placeholder="e.g. Central Padel Club"/>
+
+          <!-- Registration Deadline -->
+          <span class="form-label">Registration deadline</span>
+          <input class="form-input" type="date" style="font-size:13px;padding:11px 14px"/>
+
+          <!-- Description -->
+          <span class="form-label">Description</span>
+          <textarea class="form-input" rows="3" placeholder="Add any details about the event…"></textarea>
+          <p style="font-size:10px;color:var(--on-surface-variant);margin-top:4px">
+            Supports **bold**, *italic*, ~underline~, and line breaks.
+          </p>
+
+          <!-- Public Event toggle -->
+          <span class="form-label">Visibility</span>
+          <div class="toggle-card on" id="public-card">
+            <span class="material-symbols-outlined toggle-card-icon">public</span>
+            <div class="toggle-card-text">
+              <div class="toggle-card-label">Public Event</div>
+              <div class="toggle-card-sub" id="public-sub">Anyone can find and join</div>
+            </div>
+            <label class="toggle-sw">
+              <input type="checkbox" id="public-chk" checked onchange="togglePublic()"/>
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+
+          <!-- Score input mode -->
+          <span class="form-label">Who can enter scores?</span>
+          <div class="score-mode-row" id="score-mode-row">
+            <button class="score-mode-btn selected" data-mode="organizers_only">Organizers Only</button>
+            <button class="score-mode-btn" data-mode="players_in_match">Players in Match</button>
+          </div>
+          <p class="format-desc" id="score-mode-desc">Only organizers and co-organizers can update match scores.</p>
+
+          <!-- ══ Americano Advanced ══ -->
+          <div id="americano-advanced">
+            <!-- Championship Rounds -->
+            <span class="form-label">Championship rounds</span>
+            <div class="toggle-section">
+              <div class="toggle-item">
+                <div class="toggle-item-text">
+                  <div class="toggle-item-label" style="display:flex;align-items:center;gap:5px">
+                    <span class="material-symbols-outlined" style="font-size:16px;color:var(--primary);font-variation-settings:'FILL' 0,'wght' 400">emoji_events</span>
+                    Championship Rounds
+                  </div>
+                  <div class="toggle-item-sub" id="champ-sub">No additional rounds after rotation completes</div>
+                </div>
+                <label class="toggle-sw">
+                  <input type="checkbox" id="champ-chk" onchange="toggleChamp()"/>
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+            <!-- Champ count (hidden until enabled) -->
+            <div id="champ-count-section" style="display:none;margin-top:8px">
+              <div class="champ-count-row">
+                <button class="champ-count-btn selected" data-rounds="1">1 Round</button>
+                <button class="champ-count-btn" data-rounds="2">2 Rounds</button>
+                <button class="champ-count-btn" data-rounds="3">3 Rounds</button>
+              </div>
+              <p class="format-desc mt-10">Additional competitive rounds after standard rotation completes.</p>
+            </div>
+
+            <!-- Tiebreaker (collapsible) -->
+            <button class="collapsible-trigger" id="tiebreaker-trigger" onclick="toggleCollapsible('tiebreaker')">
+              Ranking &amp; Tiebreaker
+              <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="collapsible-body" id="tiebreaker-body">
+              <div class="collapsible-inner">
+                <div style="padding-bottom:12px">
+                  <span class="form-label no-top">Ranking primary</span>
+                  <div class="rank-row">
+                    <button class="rank-btn" data-rank="points">Points Scored</button>
+                    <button class="rank-btn selected" data-rank="wins">Wins</button>
+                  </div>
+                  <span class="form-label">Tiebreaker order</span>
+                  <div class="toggle-section">
+                    <div class="toggle-item">
+                      <div class="toggle-item-text">
+                        <div class="toggle-item-label">Head-to-Head</div>
+                        <div class="toggle-item-sub">1st tiebreaker</div>
+                      </div>
+                      <span class="material-symbols-outlined" style="color:var(--outline);font-size:18px">drag_indicator</span>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-item-text">
+                        <div class="toggle-item-label">Point Differential</div>
+                        <div class="toggle-item-sub">2nd tiebreaker</div>
+                      </div>
+                      <span class="material-symbols-outlined" style="color:var(--outline);font-size:18px">drag_indicator</span>
+                    </div>
+                    <div class="toggle-item">
+                      <div class="toggle-item-text">
+                        <div class="toggle-item-label">Points Scored</div>
+                        <div class="toggle-item-sub">3rd tiebreaker</div>
+                      </div>
+                      <span class="material-symbols-outlined" style="color:var(--outline);font-size:18px">drag_indicator</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /americano-advanced -->
+
+          <!-- ══ Traditional Advanced ══ -->
+          <div id="traditional-advanced" style="display:none">
+
+            <!-- Consolation bracket format -->
+            <button class="collapsible-trigger" id="consolation-trigger" onclick="toggleCollapsible('consolation')">
+              Consolation Bracket Format
+              <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            <div class="collapsible-body" id="consolation-body">
+              <div class="collapsible-inner">
+                <div style="padding-bottom:12px">
+                  <div class="toggle-section">
+                    <div class="toggle-item">
+                      <div class="toggle-item-text">
+                        <div class="toggle-item-label">Same as Winners Bracket</div>
+                        <div class="toggle-item-sub">Consolation matches use the same format</div>
+                      </div>
+                      <label class="toggle-sw">
+                        <input type="checkbox" checked/>
+                        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Winners Final override -->
+            <span class="form-label">Winners Final — Custom 3rd Set</span>
+            <div class="toggle-section">
+              <div class="toggle-item">
+                <div class="toggle-item-text">
+                  <div class="toggle-item-label">Override deciding set</div>
+                  <div class="toggle-item-sub">e.g. full 3rd set instead of super tiebreak for the Winners Final</div>
+                </div>
+                <label class="toggle-sw">
+                  <input type="checkbox"/>
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Max games per team -->
+            <span class="form-label">Max games per team</span>
+            <div style="display:flex;align-items:center;gap:10px">
+              <input class="form-input" type="number" placeholder="No limit"
+                     style="width:120px;font-size:14px;font-weight:700;text-align:center"/>
+              <p style="font-size:11px;font-weight:500;color:var(--on-surface-variant);line-height:1.5;flex:1">
+                Max real matches a team may play in total. Leave blank for no limit.
+              </p>
+            </div>
+
+          </div><!-- /traditional-advanced -->
+
+          <!-- ── Actions ── -->
+          <div class="step-actions" style="margin-top:24px">
+            <button class="btn-ghost" onclick="goToStep(2)">← Back</button>
+          </div>
+          <div class="step-actions-stack">
+            <button class="btn-primary" onclick="createTournament()">Create Tournament</button>
+          </div>
+
+        </div><!-- /step-3 -->
+
+      </div><!-- /wizard-body -->
+
+    </div><!-- /screen -->
+
+    <!-- Toast (outside .screen so it's not clipped by scroll) -->
+    <div class="toast" id="toast">
+      <span class="material-symbols-outlined">check_circle</span>
+      Tournament created!
+    </div>
+
+  </div><!-- /phone-frame -->
+
+  <div class="screen-state-badge">
+    <div class="dot"></div>
+    <span id="state-label">Step 1 · Padel · Name &amp; Format</span>
+  </div>
+</div><!-- /phone-wrapper -->
+
+<!-- ══ UX FLOW PANEL ══ -->
+<div class="flow-panel">
+  <div class="flow-panel-title">UX Flow</div>
+  <div class="flow-steps">
+
+    <div class="flow-step current" id="flow-1">
+      <div class="flow-step-header">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-title">Sport + Name + Format</div>
+      </div>
+      <div class="flow-step-body">Select Padel or Pickleball first — Traditional disappears for Pickleball. Enter a name and tap a format card. Next enables only when both name and type are filled.</div>
+    </div>
+
+    <div class="flow-connector"></div>
+
+    <div class="flow-step" id="flow-2">
+      <div class="flow-step-header">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-title">Format Settings + Date</div>
+      </div>
+      <div class="flow-step-body">Americano path: Rotation (Single/Double/Triple) → Rounds (auto or manual) → Courts + Points → Players → Date. Traditional path: Format Preset + Structure + Grand Final toggle → Courts → Players → Date. Live estimate updates as inputs change.</div>
+    </div>
+
+    <div class="flow-connector"></div>
+
+    <div class="flow-step" id="flow-3">
+      <div class="flow-step-header">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-title">Advanced (optional)</div>
+      </div>
+      <div class="flow-step-body">Location, registration deadline, description, visibility, score input permissions. Americano: Championship Rounds + Tiebreaker. Traditional: Consolation format, Winners Final override, max games cap.</div>
+    </div>
+
+  </div>
+  <div class="flow-note">
+    <div class="flow-note-label">Format Mapping</div>
+    <div class="flow-note-text">
+      <strong style="color:rgba(255,255,255,0.75)">Americano family</strong> (Rotating/Team/Mixed): points accumulate per rally; partners/opponents rotate. Supported for both Padel &amp; Pickleball.<br/><br/>
+      <strong style="color:rgba(255,255,255,0.75)">Traditional</strong>: bracket tournament with fixed pairs, set/game scoring. Padel only.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════ */
+/*  State                                            */
+/* ══════════════════════════════════════════════════ */
+const state = {
+  step: 1,
+  sport: 'padel',     // 'padel' | 'pickle'
+  name: '',
+  type: null,          // 'rotating' | 'team' | 'mix' | 'traditional'
+  rotation: 'single',  // 'single' | 'double' | 'triple'
+  rounds: 'auto',      // 'auto' | number string
+  courts: 2,
+  points: 32,          // padel default 32, pickle default 11
+  players: 8,
+  preset: 'standard_best_of_3',
+  structure: 'double_elimination',
+};
+
+const PRESET_DURATIONS = {
+  standard_best_of_3: '~60-90 min',
+  fip_pro_2026:       '~50-75 min',
+  short_format:       '~15-25 min',
+  social_quick:       '~25-40 min',
+  pro_set:            '~40-60 min',
+  extended_pro_set:   '~50-70 min',
+  custom:             '~Varies',
+};
+
+const PRESET_DESCS = {
+  standard_best_of_3: '6 games/set, advantage deuce, tiebreak at 6-6',
+  fip_pro_2026:       '6 games/set, Star Point deuce, super tiebreak 3rd',
+  short_format:       '1 set of 4 games, golden point, tiebreak at 4-4',
+  social_quick:       '1 set of 6 games, golden point, super tiebreak at 6-6',
+  pro_set:            'First to 8 games, advantage deuce, tiebreak at 8-8',
+  extended_pro_set:   '9 games, golden point, tiebreak at 8-8',
+  custom:             'Configure every scoring rule yourself',
+};
+
+/* ══════════════════════════════════════════════════ */
+/*  Estimate calculation (simplified)               */
+/* ══════════════════════════════════════════════════ */
+function calcAutoRounds() {
+  const players = state.players;
+  const courts  = state.courts;
+  const mult = { single: 1, double: 2, triple: 3 }[state.rotation];
+  if (state.type === 'team') {
+    const teams = Math.floor(players / 2);
+    return (teams - 1) * mult;
+  } else if (state.type === 'mix') {
+    return Math.floor(players / 2) * mult;
+  } else {
+    // Special case from real app
+    if (players === 16 && courts === 2 && state.rotation === 'single') return 30;
+    return (players - 1) * mult;
+  }
+}
+
+function calcEstimate() {
+  if (state.type === 'traditional') {
+    return {
+      main: `${state.courts} court${state.courts > 1 ? 's' : ''} · ${state.players} players`,
+      sub:  `Estimated per match: ${PRESET_DURATIONS[state.preset]}`,
+    };
+  }
+  const autoR = calcAutoRounds();
+  const rounds = (state.rounds === 'auto' || !state.rounds) ? autoR : parseInt(state.rounds);
+  const ptsPerMatch = state.points;
+  const matchMin = Math.ceil(ptsPerMatch * 30 / 60) + 3; // ~19 min for 32pts, ~9 min for 11pts
+  const restMin  = 10;
+  const totalMatches = rounds * state.courts;
+  const durationMin  = rounds * (matchMin + restMin);
+  const h = Math.floor(durationMin / 60);
+  const m = durationMin % 60;
+  const dStr = h > 0 ? `~${h}h${m > 0 ? ` ${m}m` : ''}` : `~${m}m`;
+  const pLabel = state.type === 'team'
+    ? `${Math.floor(state.players / 2)} teams`
+    : `${state.players} players`;
+  return {
+    main: `${pLabel} · ${totalMatches} matches, ${dStr}`,
+    sub:  `${rounds} rounds · ~${matchMin} min/match · ${restMin} min rest`,
+  };
+}
+
+function updateEstimate() {
+  const est = calcEstimate();
+  document.getElementById('estimate-main').textContent = est.main;
+  document.getElementById('estimate-sub').textContent  = est.sub;
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  Rounds dropdown                                  */
+/* ══════════════════════════════════════════════════ */
+function buildRoundsSelect() {
+  const auto = calcAutoRounds();
+  const sel  = document.getElementById('rounds-select');
+  const cur  = state.rounds;
+  sel.innerHTML = `<option value="auto">Auto (${auto} rounds)</option>` +
+    [3,4,5,6,7,8,9,10,12,14,15,18,21,30]
+      .map(n => `<option value="${n}"${n.toString() === cur ? ' selected' : ''}>${n} rounds</option>`)
+      .join('');
+  if (cur === 'auto') sel.value = 'auto';
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  Step navigation                                  */
+/* ══════════════════════════════════════════════════ */
+function goToStep(n) {
+  const goingBack = n < state.step;
+  document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active','back-dir'));
+  const next = document.getElementById(`step-${n}`);
+  if (goingBack) next.classList.add('back-dir');
+  next.classList.add('active');
+  state.step = n;
+  updateDots();
+  updateStateLabel();
+  updateFlowPanel();
+  if (n === 2) { buildRoundsSelect(); updateEstimate(); }
+  document.getElementById('main-screen').scrollTop = 0;
+}
+
+function updateDots() {
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById(`dot-${i}`);
+    dot.classList.remove('active','done');
+    if (i === state.step) dot.classList.add('active');
+    else if (i < state.step) dot.classList.add('done');
+  }
+}
+
+function updateStateLabel() {
+  const typeMap = { rotating:'Rotating', team:'Team', mix:'Mixed', traditional:'Traditional' };
+  const sportLabel = state.sport === 'padel' ? 'Padel' : 'Pickleball';
+  const labels = [
+    `Step 1 · ${sportLabel} · Name & Format`,
+    `Step 2 · ${typeMap[state.type] || '–'} · ${state.players} Players`,
+    'Step 3 · Advanced',
+  ];
+  document.getElementById('state-label').textContent = labels[state.step - 1];
+}
+
+function updateFlowPanel() {
+  for (let i = 1; i <= 3; i++)
+    document.getElementById(`flow-${i}`).classList.toggle('current', i === state.step);
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  Conditional sections                             */
+/* ══════════════════════════════════════════════════ */
+function updateConditional() {
+  const isTrad = state.type === 'traditional';
+  document.getElementById('americano-path').style.display  = isTrad ? 'none' : '';
+  document.getElementById('traditional-path').style.display = isTrad ? '' : 'none';
+  document.getElementById('courts-points-americano').style.display = isTrad ? 'none' : '';
+  document.getElementById('courts-only-traditional').style.display = isTrad ? '' : 'none';
+  document.getElementById('americano-advanced').style.display   = isTrad ? 'none' : '';
+  document.getElementById('traditional-advanced').style.display = isTrad ? '' : 'none';
+
+  // Players label
+  const isTeam = state.type === 'team';
+  document.getElementById('players-label').textContent = isTeam ? 'Max Teams' : 'Max Players';
+
+  // Points label (sport-specific)
+  const ptsLabel = state.sport === 'pickle' ? 'Points to Win' : 'Points / Match';
+  const plEl = document.getElementById('points-label');
+  if (plEl) plEl.textContent = ptsLabel;
+
+  // Estimate
+  updateEstimate();
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  Sport toggle                                     */
+/* ══════════════════════════════════════════════════ */
+document.querySelectorAll('.sport-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.sport = btn.dataset.sport;
+    document.querySelectorAll('.sport-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Show appropriate type grid
+    const isPadel = state.sport === 'padel';
+    document.getElementById('type-grid-padel').style.display  = isPadel ? '' : 'none';
+    document.getElementById('type-grid-pickle').style.display = isPadel ? 'none' : '';
+
+    // If traditional was selected and we switch to pickleball → deselect
+    if (!isPadel && state.type === 'traditional') {
+      state.type = null;
+      document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    }
+
+    // Default points for sport
+    state.points = isPadel ? 32 : 11;
+    document.getElementById('points-val').textContent = state.points;
+
+    checkStep1();
+    updateStateLabel();
+    updateEstimate();
+  });
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Type card selection                              */
+/* ══════════════════════════════════════════════════ */
+// Attach click to all type cards (both grids)
+document.querySelectorAll('.type-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const type = card.dataset.type;
+    // Deselect all cards in both grids
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    // Select matching cards in both grids (same data-type)
+    document.querySelectorAll(`.type-card[data-type="${type}"]`).forEach(c => c.classList.add('selected'));
+    state.type = type;
+    checkStep1();
+    updateStateLabel();
+    updateConditional();
+  });
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Name input                                       */
+/* ══════════════════════════════════════════════════ */
+document.getElementById('name-input').addEventListener('input', e => {
+  state.name = e.target.value;
+  checkStep1();
+});
+function checkStep1() {
+  document.getElementById('step1-next').disabled = !(state.name.trim() && state.type);
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  Rotation pills                                   */
+/* ══════════════════════════════════════════════════ */
+const ROT_DESCS = {
+  single: {
+    rotating: 'Everyone partners with everyone once. You may not play against everyone.',
+    team:     'Each team plays every other team once.',
+    mix:      'Balanced rotation — everyone partners with Group A and B members once.',
+  },
+  double: {
+    rotating: 'Everyone partners with everyone twice, facing different opponents each time.',
+    team:     'Each team plays every other team twice (rematch format).',
+    mix:      'Double rotation — each pairing repeated, more opponent variety.',
+  },
+  triple: {
+    rotating: 'Everyone partners with everyone three times, maximum opponent variety.',
+    team:     'Each team plays every other team three times (multiple rematches).',
+    mix:      'Triple rotation — maximum balance and variety.',
+  },
+};
+document.querySelectorAll('#rotation-seg .seg-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('#rotation-seg .seg-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+    state.rotation = pill.dataset.rot;
+    const typeKey = state.type === 'team' ? 'team' : state.type === 'mix' ? 'mix' : 'rotating';
+    document.getElementById('rotation-desc').textContent = ROT_DESCS[state.rotation][typeKey];
+    buildRoundsSelect();
+    updateEstimate();
+  });
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Rounds select                                    */
+/* ══════════════════════════════════════════════════ */
+document.getElementById('rounds-select').addEventListener('change', e => {
+  state.rounds = e.target.value;
+  updateEstimate();
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Courts steppers                                  */
+/* ══════════════════════════════════════════════════ */
+function bindStepper(decId, incId, valId, stateKey, min, max, step, onChange) {
+  const valEl = document.getElementById(valId);
+  document.getElementById(decId).addEventListener('click', () => {
+    state[stateKey] = Math.max(min, state[stateKey] - step);
+    valEl.textContent = state[stateKey];
+    if (onChange) onChange();
+  });
+  document.getElementById(incId).addEventListener('click', () => {
+    state[stateKey] = Math.min(max, state[stateKey] + step);
+    valEl.textContent = state[stateKey];
+    if (onChange) onChange();
+  });
+}
+
+// Keep courts-trad in sync with main courts value
+function syncTradCourts() {
+  document.getElementById('courts-trad-val').textContent = state.courts;
+  buildRoundsSelect(); updateEstimate();
+}
+
+bindStepper('courts-dec', 'courts-inc', 'courts-val', 'courts', 1, 12, 1, () => { syncTradCourts(); });
+document.getElementById('courts-trad-dec').addEventListener('click', () => {
+  state.courts = Math.max(1, state.courts - 1);
+  document.getElementById('courts-trad-val').textContent = state.courts;
+  document.getElementById('courts-val').textContent = state.courts;
+  buildRoundsSelect(); updateEstimate();
+});
+document.getElementById('courts-trad-inc').addEventListener('click', () => {
+  state.courts = Math.min(12, state.courts + 1);
+  document.getElementById('courts-trad-val').textContent = state.courts;
+  document.getElementById('courts-val').textContent = state.courts;
+  buildRoundsSelect(); updateEstimate();
+});
+
+/* Points stepper */
+bindStepper('points-dec', 'points-inc', 'points-val', 'points', 4, 64, 1, updateEstimate);
+
+/* Players stepper */
+bindStepper('players-dec', 'players-inc', 'players-val', 'players', 4, 64, 4, () => {
+  buildRoundsSelect(); updateEstimate();
+  updateConditional();
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Format presets (Traditional)                     */
+/* ══════════════════════════════════════════════════ */
+document.querySelectorAll('#preset-grid .preset-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('#preset-grid .preset-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.preset = card.dataset.preset;
+    updateEstimate();
+  });
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Tournament structure (Traditional)               */
+/* ══════════════════════════════════════════════════ */
+document.querySelectorAll('#structure-grid .structure-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('#structure-grid .structure-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.structure = card.dataset.struct;
+    document.getElementById('grand-final-row').style.display =
+      state.structure === 'double_elimination' ? '' : 'none';
+  });
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Date picker                                      */
+/* ══════════════════════════════════════════════════ */
+const nativeInput = document.getElementById('datetime-native');
+document.getElementById('date-pill-btn').addEventListener('click', () => {
+  try { nativeInput.showPicker(); } catch { nativeInput.click(); }
+});
+nativeInput.addEventListener('change', () => {
+  const val = nativeInput.value; if (!val) return;
+  const d = new Date(val);
+  const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('date-display').textContent =
+    `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  const h = d.getHours(), m = d.getMinutes();
+  document.getElementById('time-display').textContent =
+    `${h % 12 || 12}:${m.toString().padStart(2,'0')} ${h >= 12 ? 'PM' : 'AM'}`;
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Step 3 — score input mode                        */
+/* ══════════════════════════════════════════════════ */
+const SCORE_DESCS = {
+  organizers_only:  'Only organizers and co-organizers can update match scores.',
+  players_in_match: 'Players can also update scores for matches they\'re playing in.',
+};
+document.querySelectorAll('#score-mode-row .score-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#score-mode-row .score-mode-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('score-mode-desc').textContent = SCORE_DESCS[btn.dataset.mode];
+  });
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Public toggle                                    */
+/* ══════════════════════════════════════════════════ */
+function togglePublic() {
+  const isPublic = document.getElementById('public-chk').checked;
+  const card = document.getElementById('public-card');
+  card.classList.toggle('on', isPublic);
+  document.getElementById('public-sub').textContent =
+    isPublic ? 'Anyone can find and join' : 'Only invited players';
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  Championship rounds                              */
+/* ══════════════════════════════════════════════════ */
+function toggleChamp() {
+  const enabled = document.getElementById('champ-chk').checked;
+  document.getElementById('champ-count-section').style.display = enabled ? '' : 'none';
+  document.getElementById('champ-sub').textContent = enabled
+    ? 'Additional competitive rounds after standard rotation completes'
+    : 'No additional rounds after rotation completes';
+}
+document.querySelectorAll('.champ-count-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.champ-count-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Ranking buttons                                  */
+/* ══════════════════════════════════════════════════ */
+document.querySelectorAll('.rank-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.rank-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+/* ══════════════════════════════════════════════════ */
+/*  Collapsibles                                     */
+/* ══════════════════════════════════════════════════ */
+function toggleCollapsible(id) {
+  const body = document.getElementById(`${id}-body`);
+  const trigger = document.getElementById(`${id}-trigger`);
+  body.classList.toggle('open');
+  if (trigger) trigger.classList.toggle('open');
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  Create tournament action                         */
+/* ══════════════════════════════════════════════════ */
+function createTournament() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => { window.location.href = 'padel-chief-dashboard.html'; }, 400);
+  }, 1900);
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  Init                                             */
+/* ══════════════════════════════════════════════════ */
+updateConditional();
+updateStateLabel();
+buildRoundsSelect();
+</script>
+</body>
+</html>
