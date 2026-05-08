@@ -56,7 +56,7 @@
     border-radius: 44px;
     overflow: hidden;
     position: relative;
-    background: var(--background);
+    background: var(--surface);
     flex-shrink: 0;
     box-shadow:
       inset 0 0 0 1px rgba(255,255,255,0.04),
@@ -115,7 +115,7 @@
 
   /* ===== DASHBOARD ===== */
   .dashboard {
-    background: var(--background);
+    background: var(--surface);
     min-height: 100%;
     display: flex;
     flex-direction: column;
@@ -126,10 +126,11 @@
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(248,250,252,0.92);
+    background: rgba(255,255,255,0.94);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 44px 20px 12px;
+    border-bottom: 1px solid rgba(15,23,42,0.07);
   }
 
   /* Default row */
@@ -334,6 +335,55 @@
   .quick-banner-btn:hover { filter: brightness(1.1); }
   .quick-banner-btn:active { transform: scale(0.96); }
   .quick-banner-btn .material-symbols-outlined { font-size: 16px; }
+
+  /* ===== QUICK ACTION CARDS ===== */
+  .quick-actions-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px; margin-top: 24px;
+  }
+  .qac {
+    border-radius: 20px; padding: 14px 12px 16px;
+    display: flex; flex-direction: column; gap: 6px;
+    cursor: pointer; transition: transform 0.15s;
+    text-decoration: none; position: relative; overflow: hidden;
+    -webkit-tap-highlight-color: transparent; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; text-align: left;
+  }
+  .qac:active { transform: scale(0.94); }
+  .qac-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
+  }
+  .qac-icon .material-symbols-outlined { font-size: 18px; font-variation-settings: 'FILL' 0, 'wght' 400; }
+  .qac-title { font-size: 12px; font-weight: 700; line-height: 1.25; }
+  .qac-sub { font-size: 10px; font-weight: 500; line-height: 1.3; }
+  .qac-venues { background: linear-gradient(135deg, #0d1f38 0%, #163d6a 100%); }
+  .qac-venues::before {
+    content: ''; position: absolute; top: -20px; right: -20px;
+    width: 70px; height: 70px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(216,239,0,0.22) 0%, transparent 70%);
+  }
+  .qac-venues .qac-icon { background: rgba(216,239,0,0.15); }
+  .qac-venues .qac-icon .material-symbols-outlined { color: var(--secondary-fixed); }
+  .qac-venues .qac-title { color: white; }
+  .qac-venues .qac-sub { color: rgba(255,255,255,0.55); }
+  .qac-join { background: var(--primary); }
+  .qac-join .qac-icon { background: rgba(255,255,255,0.15); }
+  .qac-join .qac-icon .material-symbols-outlined { color: white; }
+  .qac-join .qac-title { color: white; }
+  .qac-join .qac-sub { color: rgba(255,255,255,0.65); }
+  .qac-learn { background: var(--surface-container); cursor: default; }
+  .qac-learn:active { transform: none; }
+  .qac-learn .qac-icon { background: rgba(0,0,0,0.06); }
+  .qac-learn .qac-icon .material-symbols-outlined { color: var(--outline); }
+  .qac-learn .qac-title { color: var(--on-surface-variant); }
+  .qac-coming-soon {
+    display: inline-flex; align-self: flex-start;
+    padding: 2px 6px; border-radius: 9999px;
+    background: rgba(0,0,0,0.08); font-size: 8px; font-weight: 800;
+    color: var(--outline); letter-spacing: 0.06em; text-transform: uppercase;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
 
   /* ===== ONGOING MATCH CARD ===== */
   .ongoing-card {
@@ -700,7 +750,7 @@
     justify-content: space-around;
     align-items: center;
     padding: 10px 8px 28px;
-    box-shadow: 0 -8px 32px rgba(0,0,0,0.04);
+    box-shadow: 0 -1px 0 rgba(15,23,42,0.08), 0 -8px 32px rgba(0,0,0,0.06);
     flex-shrink: 0;
   }
   .nav-item {
@@ -849,7 +899,7 @@
   .notif-fullpage {
     position: absolute;
     inset: 0;
-    background: var(--background);
+    background: var(--surface);
     z-index: 70;
     display: flex;
     flex-direction: column;
@@ -1068,16 +1118,29 @@
           </div>
         </div>
 
-        <!-- Quick Action Banner (always visible) -->
-        <div class="quick-banner">
-          <div class="quick-banner-text">
-            <div class="quick-banner-title">Ready for your<br/>next match?</div>
-            <div class="quick-banner-sub">Find opponents near you</div>
-          </div>
-          <button class="quick-banner-btn">
-            <span class="material-symbols-outlined">add</span>
-            Join Match
+        <!-- Quick Action Cards -->
+        <div class="quick-actions-grid">
+          <a class="qac qac-venues" href="padel-chief-venues.html">
+            <div class="qac-icon">
+              <span class="material-symbols-outlined">home_work</span>
+            </div>
+            <div class="qac-title">Explore Venues</div>
+            <div class="qac-sub">Find &amp; book courts</div>
+          </a>
+          <button class="qac qac-join">
+            <div class="qac-icon">
+              <span class="material-symbols-outlined">group_add</span>
+            </div>
+            <div class="qac-title">Join a Game</div>
+            <div class="qac-sub">Find opponents</div>
           </button>
+          <div class="qac qac-learn">
+            <div class="qac-icon">
+              <span class="material-symbols-outlined">menu_book</span>
+            </div>
+            <div class="qac-title">Learn</div>
+            <div class="qac-coming-soon">Coming Soon</div>
+          </div>
         </div>
 
         <!-- Ongoing Match (always visible) -->

@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Padel Chief — Player Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --surface: #FFFFFF;
+    --background: #F8FAFC;
+    --on-background: #0F172A;
+    --on-surface: #0F172A;
+    --on-surface-variant: #475569;
+    --primary: #125fa9;
+    --primary-container: #2268b2;
+    --outline: #94A3B8;
+    --outline-variant: #E2E8F0;
+    --surface-container: #F1F5F9;
+    --surface-container-high: #E2E8F0;
+    --pickle: #0d9488;
+    --community: #d97706;
+    --win: #0d9488;
+    --loss: #dc2626;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #0a0c10;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ===== PHONE FRAME ===== */
+  .phone-frame {
+    width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+    position: relative; background: var(--background); flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+                0 0 0 2px rgba(255,255,255,0.06),
+                0 40px 80px rgba(0,0,0,0.5);
+  }
+  .phone-frame::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 30px; background: #0F172A;
+    border-radius: 0 0 18px 18px; z-index: 100;
+  }
+  .screen {
+    width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: none; display: flex; flex-direction: column;
+    background: var(--background);
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .phone-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .screen-label {
+    color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .screen-state-badge {
+    margin-top: 16px; display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 9999px; padding: 5px 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+  .screen-state-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: #d8ef00; }
+
+  /* ===== IMMERSIVE HERO CARD ===== */
+  .profile-hero-card {
+    background: linear-gradient(135deg, #0d1f38 0%, #163d6a 55%, #1356a8 100%);
+    padding: 0 16px 0; position: relative; overflow: hidden; flex-shrink: 0;
+  }
+  /* Lime glow (matches dashboard quick-banner) + court grid texture */
+  .profile-hero-card::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(circle 200px at 96% -8%, rgba(216,239,0,0.11) 0%, transparent 70%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.022) 0, rgba(255,255,255,0.022) 1px, transparent 1px, transparent 44px),
+      repeating-linear-gradient(0deg,  rgba(255,255,255,0.022) 0, rgba(255,255,255,0.022) 1px, transparent 1px, transparent 44px);
+  }
+  /* Nav row inside hero (replaces .top-bar for this page) */
+  .hero-top-row {
+    display: flex; align-items: center; padding: 44px 0 10px;
+    position: relative; z-index: 1;
+  }
+  .icon-btn-hero {
+    width: 36px; height: 36px; border-radius: 10px; border: none; cursor: pointer;
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.12);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.90); transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .icon-btn-hero:active { background: rgba(255,255,255,0.22); }
+  .icon-btn-hero .material-symbols-outlined { font-size: 20px; }
+  /* Avatar with gradient ring */
+  .hero-avatar-ring {
+    flex-shrink: 0; padding: 2.5px; border-radius: 50%;
+    background: linear-gradient(135deg, #d8ef00 0%, #38bdf8 50%, #0d9488 100%);
+  }
+  .hero-avatar-inner {
+    width: 70px; height: 70px; border-radius: 50%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800; color: white;
+  }
+  .hero-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
+  /* Main row */
+  .hero-main-row {
+    display: flex; align-items: flex-start; gap: 14px;
+    position: relative; z-index: 1;
+  }
+  .hero-text { flex: 1; min-width: 0; padding-top: 2px; }
+  .hero-name-dark {
+    font-size: 20px; font-weight: 800; color: white;
+    letter-spacing: -0.02em; line-height: 1.15;
+  }
+  /* Level badge variants */
+  .hero-level-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 7px; padding: 4px 10px 4px 7px; border-radius: 9999px;
+  }
+  .hero-level-badge.pro  { background: rgba(216,239,0,0.15); border: 1px solid rgba(216,239,0,0.30); }
+  .hero-level-badge.comm { background: rgba(217,119,6,0.18); border: 1px solid rgba(217,119,6,0.32); }
+  .hero-level-badge.new-p{ background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); }
+  .hero-level-icon { font-size: 13px; font-variation-settings: 'FILL' 1, 'wght' 400 !important; }
+  .hero-level-badge.pro  .hero-level-icon { color: #d8ef00; }
+  .hero-level-badge.comm .hero-level-icon { color: #fbbf24; }
+  .hero-level-badge.new-p .hero-level-icon { color: rgba(255,255,255,0.50); }
+  .hero-level-text {
+    font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em;
+  }
+  .hero-level-badge.pro  .hero-level-text { color: #d8ef00; }
+  .hero-level-badge.comm .hero-level-text { color: #fcd34d; }
+  .hero-level-badge.new-p .hero-level-text { color: rgba(255,255,255,0.52); }
+  .hero-level-sep { color: rgba(255,255,255,0.28); font-size: 9px; margin: 0 1px; }
+  .hero-level-pct { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.72); }
+  .hero-since-dark { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.50); margin-top: 7px; }
+  /* Pills row on dark hero */
+  .hero-pills-dark {
+    display: flex; flex-wrap: wrap; gap: 5px;
+    margin-top: 13px; position: relative; z-index: 1;
+  }
+  .hero-pill-dark {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 10px; border-radius: 9999px;
+    background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.12);
+    font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.82);
+  }
+  .hero-pill-dark .material-symbols-outlined { font-size: 12px; color: rgba(255,255,255,0.55); }
+  /* Action row */
+  .hero-actions-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 14px; padding-bottom: 16px; position: relative; z-index: 1;
+  }
+  .hero-btn-contact {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+    padding: 11px 0; border-radius: 12px; border: none; cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700;
+    transition: background 0.18s, color 0.18s; -webkit-tap-highlight-color: transparent;
+  }
+  .hero-btn-contact.add   { background: rgba(255,255,255,0.15); color: white; }
+  .hero-btn-contact.add:active { background: rgba(255,255,255,0.24); }
+  .hero-btn-contact.added { background: rgba(13,148,136,0.22); color: #6ee7b7; border: 1px solid rgba(13,148,136,0.30); }
+  .hero-btn-contact.added:active { background: rgba(13,148,136,0.30); }
+  .hero-btn-contact .material-symbols-outlined { font-size: 17px; }
+  .hero-btn-more {
+    width: 42px; height: 42px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.10); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.80); transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .hero-btn-more:active { background: rgba(255,255,255,0.20); }
+  .hero-btn-more .material-symbols-outlined { font-size: 20px; }
+
+  /* ===== CONTENT ===== */
+  .profile-content { padding: 12px 16px; flex: 1; }
+
+  .section-card {
+    background: var(--surface); border-radius: 20px; padding: 16px 18px;
+    margin-bottom: 10px; box-shadow: 0 1px 3px rgba(15,23,42,0.05);
+  }
+  .section-card-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+  }
+  .section-card-title {
+    font-size: 15px; font-weight: 700; color: var(--on-background);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .section-card-title .material-symbols-outlined { font-size: 19px; color: var(--primary); }
+  .section-link {
+    font-size: 12px; font-weight: 600; color: var(--primary); text-decoration: none;
+    display: flex; align-items: center; gap: 2px; white-space: nowrap;
+  }
+  .section-link .material-symbols-outlined { font-size: 16px; }
+
+  /* ===== RATINGS ===== */
+  .sport-label {
+    display: flex; align-items: center; gap: 5px; margin-bottom: 8px;
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--on-surface-variant);
+  }
+  .sport-label .material-symbols-outlined { font-size: 13px; }
+  .sport-label.padel .material-symbols-outlined { color: var(--primary); }
+
+  .ratings-grid { display: grid; gap: 8px; }
+  .ratings-grid.two { grid-template-columns: 1fr 1fr; }
+  .ratings-grid.one { grid-template-columns: 1fr; }
+
+  /* Two-column card (narrow) */
+  .rating-card {
+    border-radius: 14px; padding: 12px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .rating-card.official { background: rgba(18,95,169,0.05); border: 1.5px solid rgba(18,95,169,0.15); }
+  .rating-card.community { background: rgba(217,119,6,0.05); border: 1.5px solid rgba(217,119,6,0.18); }
+
+  .rc-label {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .rc-label.official { color: var(--primary); }
+  .rc-label.community { color: var(--community); }
+  .rc-label .material-symbols-outlined { font-size: 12px; font-variation-settings: 'FILL' 1, 'wght' 400; }
+
+  /* Pickleball rating card colour variant */
+  .rating-card.pickle { background: rgba(13,148,136,0.05); border: 1.5px solid rgba(13,148,136,0.18); }
+  .rc-label.pickle { color: var(--pickle); }
+
+  /* ── Collapsed / expandable rating card ── */
+  .rating-card { cursor: pointer; }
+  .rc-header { display: flex; align-items: center; justify-content: space-between; }
+  .rc-chevron {
+    font-size: 18px; color: var(--outline); transition: transform 0.22s; flex-shrink: 0;
+    font-variation-settings: 'FILL' 0, 'wght' 300;
+  }
+  .rating-card.expanded .rc-chevron { transform: rotate(180deg); }
+
+  .rc-body { margin-top: 8px; }
+  .rc-rating-num { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: var(--on-surface); line-height: 1; }
+  .rc-rank-row { display: flex; align-items: center; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
+  .rc-medal { font-size: 14px !important; color: #d97706; font-variation-settings: 'FILL' 1, 'wght' 400 !important; }
+  .rc-rank-text { font-size: 11px; font-weight: 700; color: var(--on-surface); }
+  .rc-sep { font-size: 9px; color: var(--outline); }
+  .rc-pct { display: flex; align-items: center; gap: 2px; font-size: 10px; font-weight: 600; color: #0d9488; }
+  .rc-pct .material-symbols-outlined { font-size: 11px; color: #0d9488; font-variation-settings: 'FILL' 1, 'wght' 400 !important; }
+
+  /* Detail row (RD + Matches) — hidden until expanded */
+  .rc-detail { display: none; margin-top: 10px; }
+  .rating-card.expanded .rc-detail { display: block; }
+  .rc-stats { display: flex; border-radius: 10px; overflow: hidden; background: rgba(0,0,0,0.034); }
+  .rc-stat { flex: 1; padding: 9px 4px; text-align: center; }
+  .rc-stat + .rc-stat { border-left: 1px solid rgba(0,0,0,0.06); }
+  .rc-stat-val { font-size: 15px; font-weight: 800; color: var(--on-surface); letter-spacing: -0.02em; line-height: 1; }
+  .rc-stat-key { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+  .rating-card.official .rc-stat-key { color: var(--primary); }
+  .rating-card.community .rc-stat-key { color: var(--community); }
+  .rating-card.pickle .rc-stat-key { color: var(--pickle); }
+
+  /* One-column upscale */
+  .ratings-grid.one .rating-card { padding: 14px 16px; }
+  .ratings-grid.one .rc-body { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+  .ratings-grid.one .rc-rating-num { font-size: 28px; }
+  .ratings-grid.one .rc-rank-row { margin-top: 0; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .ratings-grid.one .rc-rank-text { font-size: 13px; }
+  .ratings-grid.one .rc-pct { font-size: 11px; }
+  .ratings-grid.one .rc-stat { padding: 11px 6px; }
+  .ratings-grid.one .rc-stat-val { font-size: 18px; }
+  .ratings-grid.one .rc-stat-key { font-size: 9px; }
+
+  /* Grey empty rating card (no matches for that type) */
+  .rating-card.empty { background: var(--surface-container); border: 1.5px solid var(--outline-variant); cursor: default; }
+  .rc-label.empty-lbl { color: var(--outline); }
+  .rc-label.empty-lbl .material-symbols-outlined { color: var(--outline); }
+  .rc-empty-body { padding: 12px 0 6px; text-align: center; }
+  .rc-empty-val { font-size: 13px; font-weight: 700; color: var(--outline); }
+  .rc-empty-sub { font-size: 9px; font-weight: 600; color: var(--outline); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.5; }
+
+  .ratings-sport-divider { height: 1px; background: var(--outline-variant); margin: 12px 0 10px; }
+
+  /* Ratings empty state */
+  .ratings-empty {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 20px 0 8px; text-align: center;
+  }
+  .ratings-empty .material-symbols-outlined { font-size: 38px; color: var(--outline-variant); display: block; }
+  .ratings-empty-title { font-size: 13px; font-weight: 700; color: var(--on-surface-variant); }
+  .ratings-empty-sub { font-size: 11px; font-weight: 500; color: var(--outline); line-height: 1.55; max-width: 230px; }
+
+  /* ===== TOURNAMENT SUMMARY STATS ===== */
+  .tourn-stats {
+    display: flex; background: var(--surface-container); border-radius: 14px; overflow: hidden; margin-bottom: 14px;
+  }
+  .tourn-stat {
+    flex: 1; padding: 12px 8px; text-align: center;
+  }
+  .tourn-stat + .tourn-stat { border-left: 1px solid var(--outline-variant); }
+  .tourn-stat-val { font-size: 18px; font-weight: 800; color: var(--on-surface); letter-spacing: -0.02em; line-height: 1; }
+  .tourn-stat-val.pts { color: var(--primary); }
+  .tourn-stat-key { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); margin-top: 4px; }
+
+  /* Tournament list rows */
+  .tourn-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+  .tourn-row + .tourn-row { border-top: 1px solid var(--outline-variant); }
+  .tourn-icon {
+    width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(18,95,169,0.06); color: var(--primary);
+  }
+  .tourn-icon .material-symbols-outlined { font-size: 19px; }
+  .tourn-info { flex: 1; min-width: 0; }
+  .tourn-name { font-size: 12px; font-weight: 700; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tourn-meta { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 2px; }
+  .tourn-pts { flex-shrink: 0; text-align: right; }
+  .tourn-pts-val { font-size: 16px; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; line-height: 1; }
+  .tourn-pts-key { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); margin-top: 1px; }
+
+  /* View-all CTA */
+  .view-all-btn {
+    width: 100%; margin-top: 12px; padding: 10px; border-radius: 12px;
+    background: rgba(18,95,169,0.05); border: none; cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--primary);
+    display: flex; align-items: center; justify-content: center; gap: 5px; transition: background 0.15s;
+    text-decoration: none;
+  }
+  .view-all-btn:active { background: rgba(18,95,169,0.10); }
+  .view-all-btn .material-symbols-outlined { font-size: 16px; }
+
+  /* ===== MATCH HISTORY ===== */
+
+  /* Sport tab for match history (only when player has pickleball) */
+  .match-sport-tabs {
+    display: flex; background: var(--surface-container); border-radius: 12px; padding: 3px; margin-bottom: 12px;
+  }
+  .match-tab {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+    padding: 7px 6px; border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 600;
+    color: var(--on-surface-variant); border: none; background: transparent; cursor: pointer; transition: all 0.18s;
+  }
+  .match-tab .material-symbols-outlined { font-size: 13px; }
+  .match-tab.active { background: var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .match-tab.active.padel { color: var(--primary); font-weight: 700; }
+  .match-tab.active.pickle { color: var(--pickle); font-weight: 700; }
+
+  /* Match row */
+  .match-row { display: flex; align-items: flex-start; gap: 8px; padding: 10px 0; }
+  .match-row + .match-row { border-top: 1px solid var(--outline-variant); }
+  .match-info { flex: 1; min-width: 0; }
+  .match-tourn { font-size: 12px; font-weight: 700; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .match-date { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 1px; }
+  .match-players { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .match-score-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; }
+  .match-score-pill {
+    padding: 5px 10px; border-radius: 9px; min-width: 64px;
+    font-size: 13px; font-weight: 800; color: white; text-align: center; white-space: nowrap;
+  }
+  .match-score-pill.win { background: #0d9488; }
+  .match-score-pill.loss { background: #1e293b; }
+  .match-result-label { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.10em; }
+  .match-result-label.win { color: #0d9488; }
+  .match-result-label.loss { color: var(--on-surface-variant); }
+
+  .match-delta-wrap { flex-shrink: 0; text-align: right; min-width: 48px; }
+  .match-delta { font-size: 16px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .match-delta.pos { color: #0d9488; }
+  .match-delta.neg { color: #dc2626; }
+  .match-delta.neu { color: var(--on-surface-variant); }
+  .match-range { font-size: 9px; font-weight: 600; color: var(--outline); white-space: nowrap; margin-top: 2px; }
+
+  /* Match empty state */
+  .match-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 16px 0 4px; text-align: center; }
+  .match-empty .material-symbols-outlined { font-size: 32px; color: var(--outline-variant); }
+  .match-empty-text { font-size: 12px; font-weight: 600; color: var(--on-surface-variant); }
+
+  /* ===== BOTTOM SHEET (scoped inside .phone-frame) ===== */
+  .sheet-overlay-inner {
+    position: absolute; inset: 0; z-index: 60;
+    background: rgba(0,0,0,0.45);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.28s;
+    border-radius: 44px;
+  }
+  .sheet-overlay-inner.open { opacity: 1; pointer-events: auto; }
+
+  .bottom-sheet-inner {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    max-height: 78%;
+    background: #fff; border-radius: 24px 24px 0 0;
+    z-index: 61; display: flex; flex-direction: column;
+    box-shadow: 0 -12px 48px rgba(0,0,0,0.20);
+    transform: translateY(100%);
+    transition: transform 0.36s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow: hidden;
+  }
+  .bottom-sheet-inner.open { transform: translateY(0); }
+
+  .sheet-handle { height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding-top: 10px; }
+  .sheet-handle-bar { width: 36px; height: 4px; border-radius: 2px; background: var(--outline-variant); }
+
+  .sheet-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 6px 18px 14px; flex-shrink: 0;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .sheet-title { font-size: 16px; font-weight: 800; color: var(--on-background); letter-spacing: -0.01em; }
+  .sheet-subtitle { font-size: 11px; font-weight: 500; color: var(--on-surface-variant); margin-top: 3px; }
+  .sheet-close {
+    width: 32px; height: 32px; border-radius: 50%; border: none; flex-shrink: 0; margin-top: -2px;
+    background: var(--surface-container); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--on-surface-variant);
+  }
+  .sheet-close .material-symbols-outlined { font-size: 18px; }
+
+  .sheet-body { overflow-y: auto; flex: 1; padding: 0 18px 36px; scrollbar-width: none; }
+  .sheet-body::-webkit-scrollbar { display: none; }
+
+  .sheet-stats {
+    display: flex; background: var(--surface-container); border-radius: 14px; overflow: hidden;
+    margin: 14px 0 6px;
+  }
+  .sheet-stat { flex: 1; padding: 11px 6px; text-align: center; }
+  .sheet-stat + .sheet-stat { border-left: 1px solid var(--outline-variant); }
+  .sheet-stat-val { font-size: 17px; font-weight: 800; color: var(--on-surface); letter-spacing: -0.02em; line-height: 1; }
+  .sheet-stat-val.pts { color: var(--primary); }
+  .sheet-stat-key { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--on-surface-variant); margin-top: 4px; }
+
+  .sheet-section-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.10em;
+    color: var(--outline); padding: 14px 0 6px;
+  }
+  .sheet-match-sport { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.10em; color: var(--outline); }
+  .sheet-match-sport .material-symbols-outlined { font-size: 11px; }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: sticky; bottom: 0; z-index: 50;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0; display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px 28px; box-shadow: 0 -1px 0 rgba(15,23,42,0.08), 0 -8px 32px rgba(0,0,0,0.06); flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    text-decoration: none; cursor: pointer; transition: all 0.2s; min-width: 48px;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-item .material-symbols-outlined { font-size: 24px; }
+  .nav-item-label { font-size: 9px; font-weight: 600; }
+  .nav-item.active .material-symbols-outlined { color: var(--primary); font-variation-settings: 'FILL' 1, 'wght' 200; }
+  .nav-item.active .nav-item-label { color: var(--primary); }
+  .nav-item:not(.active) .material-symbols-outlined { color: var(--on-surface-variant); }
+  .nav-item:not(.active) .nav-item-label { color: var(--on-surface-variant); }
+  .nav-create .material-symbols-outlined { font-size: 28px; }
+</style>
+</head>
+<body>
+
+
+<!-- ============================================================
+     SCREEN 1 — FULL: Official + Community Padel + Pickleball
+     ============================================================ -->
+<div class="phone-wrapper">
+  <div class="screen-label">All Ratings — Padel + Pickleball</div>
+  <div class="phone-frame">
+    <div class="screen">
+
+      <div class="profile-hero-card">
+        <div class="hero-top-row">
+          <button class="icon-btn-hero" onclick="history.back()"><span class="material-symbols-outlined">arrow_back</span></button>
+          <div style="flex:1"></div>
+          <button class="icon-btn-hero"><span class="material-symbols-outlined">share</span></button>
+        </div>
+        <div class="hero-main-row">
+          <div class="hero-avatar-ring">
+            <div class="hero-avatar-inner" style="background:#1a3d6e;">IP</div>
+          </div>
+          <div class="hero-text">
+            <div class="hero-name-dark">Ishan Perera</div>
+            <div class="hero-level-badge pro">
+              <span class="material-symbols-outlined hero-level-icon">workspace_premium</span>
+              <span class="hero-level-pct">Top 1%</span>
+            </div>
+            <div class="hero-since-dark">Member since March 2024</div>
+          </div>
+        </div>
+        <div class="hero-pills-dark">
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">male</span>Male</span>
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">front_hand</span>Right-handed</span>
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">swap_horiz</span>Deuce</span>
+        </div>
+        <div class="hero-actions-row">
+          <button class="hero-btn-contact add" id="c1" onclick="toggleContact('c1')">
+            <span class="material-symbols-outlined" id="c1-icon">person_add</span>
+            <span id="c1-label">Add to Contacts</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-content">
+
+        <!-- RATINGS -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">star_rate</span>Ratings</span>
+          </div>
+
+          <div class="sport-label padel"><span class="material-symbols-outlined">sports_tennis</span>Padel</div>
+          <div class="ratings-grid two">
+            <div class="rating-card official" onclick="toggleRatingCard(this)">
+              <div class="rc-header">
+                <div class="rc-label official"><span class="material-symbols-outlined">verified</span>Official</div>
+                <span class="material-symbols-outlined rc-chevron">expand_more</span>
+              </div>
+              <div class="rc-body">
+                <div class="rc-rating-num">1546</div>
+                <div class="rc-rank-row">
+                  <span class="material-symbols-outlined rc-medal">workspace_premium</span>
+                  <span class="rc-rank-text">#1 of 103</span>
+                  <span class="rc-sep">·</span>
+                  <span class="rc-pct"><span class="material-symbols-outlined">trending_up</span>Top 1%</span>
+                </div>
+              </div>
+              <div class="rc-detail">
+                <div class="rc-stats">
+                  <div class="rc-stat"><div class="rc-stat-val">±28</div><div class="rc-stat-key">RD</div></div>
+                  <div class="rc-stat"><div class="rc-stat-val">14</div><div class="rc-stat-key">Matches</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="rating-card community" onclick="toggleRatingCard(this)">
+              <div class="rc-header">
+                <div class="rc-label community"><span class="material-symbols-outlined">groups</span>Community</div>
+                <span class="material-symbols-outlined rc-chevron">expand_more</span>
+              </div>
+              <div class="rc-body">
+                <div class="rc-rating-num">1510</div>
+                <div class="rc-rank-row">
+                  <span class="material-symbols-outlined rc-medal">workspace_premium</span>
+                  <span class="rc-rank-text">#3 of 45</span>
+                  <span class="rc-sep">·</span>
+                  <span class="rc-pct"><span class="material-symbols-outlined">trending_up</span>Top 7%</span>
+                </div>
+              </div>
+              <div class="rc-detail">
+                <div class="rc-stats">
+                  <div class="rc-stat"><div class="rc-stat-val">±35</div><div class="rc-stat-key">RD</div></div>
+                  <div class="rc-stat"><div class="rc-stat-val">8</div><div class="rc-stat-key">Matches</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ratings-sport-divider"></div>
+
+          <div class="sport-label" style="color:#0d9488;">
+            <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="#0d9488" stroke-width="1.6" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="#0d9488" stroke="none"/><circle cx="12" cy="7" r="1" fill="#0d9488" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="#0d9488" stroke="none"/></svg>
+            Pickleball
+          </div>
+          <div class="ratings-grid one">
+            <div class="rating-card pickle" onclick="toggleRatingCard(this)">
+              <div class="rc-header">
+                <div class="rc-label pickle">
+                  <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="#0d9488" stroke-width="1.6" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="#0d9488" stroke="none"/><circle cx="12" cy="7" r="1" fill="#0d9488" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="#0d9488" stroke="none"/></svg>
+                  Official
+                </div>
+                <span class="material-symbols-outlined rc-chevron">expand_more</span>
+              </div>
+              <div class="rc-body">
+                <div class="rc-rating-num">1380</div>
+                <div class="rc-rank-row">
+                  <span class="material-symbols-outlined rc-medal">workspace_premium</span>
+                  <span class="rc-rank-text">#4 of 28</span>
+                  <span class="rc-sep">·</span>
+                  <span class="rc-pct"><span class="material-symbols-outlined">trending_up</span>Top 14%</span>
+                </div>
+              </div>
+              <div class="rc-detail">
+                <div class="rc-stats">
+                  <div class="rc-stat"><div class="rc-stat-val">±42</div><div class="rc-stat-key">RD</div></div>
+                  <div class="rc-stat"><div class="rc-stat-val">6</div><div class="rc-stat-key">Matches</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SHARED SPORT TAB (controls both Tournaments + Matches below) -->
+        <div class="match-sport-tabs" id="sport-tabs-1">
+          <button class="match-tab active padel" data-sport="padel">
+            <span class="material-symbols-outlined">sports_tennis</span>Padel
+          </button>
+          <button class="match-tab pickle" data-sport="pickle">
+            <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+            Pickleball
+          </button>
+        </div>
+
+        <!-- TOURNAMENTS -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">emoji_events</span>Tournaments</span>
+          </div>
+          <div id="tourn-padel-1">
+            <div class="tourn-stats">
+              <div class="tourn-stat"><div class="tourn-stat-val">14</div><div class="tourn-stat-key">Tourneys</div></div>
+              <div class="tourn-stat"><div class="tourn-stat-val">47</div><div class="tourn-stat-key">Matches</div></div>
+              <div class="tourn-stat"><div class="tourn-stat-val">31</div><div class="tourn-stat-key">Wins</div></div>
+              <div class="tourn-stat"><div class="tourn-stat-val pts">286</div><div class="tourn-stat-key">Points</div></div>
+            </div>
+            <div class="tourn-row">
+              <div class="tourn-icon"><span class="material-symbols-outlined">emoji_events</span></div>
+              <div class="tourn-info">
+                <div class="tourn-name">Slam25 1.2 at The Padel Club</div>
+                <div class="tourn-meta">Apr 28, 2026 · 5 matches · 4 wins</div>
+              </div>
+              <div class="tourn-pts"><div class="tourn-pts-val">56</div><div class="tourn-pts-key">pts</div></div>
+            </div>
+            <div class="tourn-row">
+              <div class="tourn-icon"><span class="material-symbols-outlined">emoji_events</span></div>
+              <div class="tourn-info">
+                <div class="tourn-name">Slam25 1.1 at Padel House CR</div>
+                <div class="tourn-meta">Apr 4, 2026 · 4 matches · 3 wins</div>
+              </div>
+              <div class="tourn-pts"><div class="tourn-pts-val">44</div><div class="tourn-pts-key">pts</div></div>
+            </div>
+            <div class="tourn-row">
+              <div class="tourn-icon" style="background:rgba(217,119,6,0.07);color:#d97706;"><span class="material-symbols-outlined">emoji_events</span></div>
+              <div class="tourn-info">
+                <div class="tourn-name">Colombo Open 2026</div>
+                <div class="tourn-meta">Mar 12, 2026 · 5 matches · 2 wins</div>
+              </div>
+              <div class="tourn-pts"><div class="tourn-pts-val">38</div><div class="tourn-pts-key">pts</div></div>
+            </div>
+            <a href="#" class="view-all-btn" onclick="openSheet('tourn-padel',this);return false;"><span>View all 14 tournaments</span><span class="material-symbols-outlined">arrow_forward</span></a>
+          </div>
+          <div id="tourn-pickle-1" style="display:none;">
+            <div class="tourn-stats">
+              <div class="tourn-stat"><div class="tourn-stat-val">2</div><div class="tourn-stat-key">Tourneys</div></div>
+              <div class="tourn-stat"><div class="tourn-stat-val">6</div><div class="tourn-stat-key">Matches</div></div>
+              <div class="tourn-stat"><div class="tourn-stat-val">3</div><div class="tourn-stat-key">Wins</div></div>
+              <div class="tourn-stat"><div class="tourn-stat-val pts">28</div><div class="tourn-stat-key">Points</div></div>
+            </div>
+            <div class="tourn-row">
+              <div class="tourn-icon" style="background:rgba(13,148,136,0.07);color:#0d9488;"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg></div>
+              <div class="tourn-info">
+                <div class="tourn-name">Colombo Pickle Open 2026</div>
+                <div class="tourn-meta">Apr 15, 2026 · 4 matches · 2 wins</div>
+              </div>
+              <div class="tourn-pts"><div class="tourn-pts-val">18</div><div class="tourn-pts-key">pts</div></div>
+            </div>
+            <div class="tourn-row">
+              <div class="tourn-icon" style="background:rgba(13,148,136,0.07);color:#0d9488;"><svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg></div>
+              <div class="tourn-info">
+                <div class="tourn-name">Sunday Pickle League #3</div>
+                <div class="tourn-meta">Mar 8, 2026 · 2 matches · 1 win</div>
+              </div>
+              <div class="tourn-pts"><div class="tourn-pts-val">10</div><div class="tourn-pts-key">pts</div></div>
+            </div>
+            <div style="text-align:center;padding:10px 0 2px;"><span style="font-size:10px;font-weight:600;color:var(--outline);">All 2 tournaments shown</span></div>
+          </div>
+        </div>
+
+        <!-- RECENT MATCHES -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">trending_up</span>Recent Matches</span>
+          </div>
+          <!-- Padel matches -->
+          <div id="match-padel-1">
+            <div class="match-row">
+              <div class="match-info"><div class="match-tourn">Slam25 1.2 at The Padel...</div><div class="match-date">Apr 28, 2026</div><div class="match-players">w/ Rishen vs Roland &amp; Adam</div></div>
+              <div class="match-score-wrap"><div class="match-score-pill win">11 - 5</div><span class="match-result-label win">WIN</span></div>
+              <div class="match-delta-wrap"><div class="match-delta pos">+6</div><div class="match-range">1610→1615</div></div>
+            </div>
+            <div class="match-row">
+              <div class="match-info"><div class="match-tourn">Slam25 1.2 at The Padel...</div><div class="match-date">Apr 28, 2026</div><div class="match-players">w/ Gary vs Roland &amp; Ranjiva</div></div>
+              <div class="match-score-wrap"><div class="match-score-pill win">14 - 2</div><span class="match-result-label win">WIN</span></div>
+              <div class="match-delta-wrap"><div class="match-delta pos">+6</div><div class="match-range">1615→1622</div></div>
+            </div>
+            <div class="match-row">
+              <div class="match-info"><div class="match-tourn">Slam25 1.2 at The Padel...</div><div class="match-date">Apr 28, 2026</div><div class="match-players">w/ Adam vs Thisura &amp; Ranjiva</div></div>
+              <div class="match-score-wrap"><div class="match-score-pill win">11 - 5</div><span class="match-result-label win">WIN</span></div>
+              <div class="match-delta-wrap"><div class="match-delta pos">+7</div><div class="match-range">1622→1629</div></div>
+            </div>
+            <div class="match-row">
+              <div class="match-info"><div class="match-tourn">Slam25 1.4 at Padel Hous...</div><div class="match-date">Apr 28, 2026</div><div class="match-players">w/ Chanuk vs Yoosuf &amp; Chinthake</div></div>
+              <div class="match-score-wrap"><div class="match-score-pill loss">8 - 8</div><span class="match-result-label loss">LOSS</span></div>
+              <div class="match-delta-wrap"><div class="match-delta neu">0</div><div class="match-range">1629→1629</div></div>
+            </div>
+            <div class="match-row">
+              <div class="match-info"><div class="match-tourn">Slam25 1.1 at The Padel...</div><div class="match-date">Apr 4, 2026</div><div class="match-players">w/ Roland vs Gary &amp; Pindi</div></div>
+              <div class="match-score-wrap"><div class="match-score-pill win">15 - 7</div><span class="match-result-label win">WIN</span></div>
+              <div class="match-delta-wrap"><div class="match-delta pos">+8</div><div class="match-range">1590→1598</div></div>
+            </div>
+            <a href="#" class="view-all-btn" onclick="openSheet('match-padel',this);return false;"><span>View all 47 padel matches</span><span class="material-symbols-outlined">arrow_forward</span></a>
+          </div>
+          <!-- Pickleball matches -->
+          <div id="match-pickle-1" style="display:none;">
+            <div class="match-row">
+              <div class="match-info"><div class="match-tourn">Colombo Pickle Open 2026</div><div class="match-date">Apr 15, 2026</div><div class="match-players">w/ Faris vs Asanka &amp; Dilshan</div></div>
+              <div class="match-score-wrap"><div class="match-score-pill win">11 - 7</div><span class="match-result-label win">WIN</span></div>
+              <div class="match-delta-wrap"><div class="match-delta pos">+18</div><div class="match-range">1340→1358</div></div>
+            </div>
+            <div class="match-row">
+              <div class="match-info"><div class="match-tourn">Colombo Pickle Open 2026</div><div class="match-date">Apr 15, 2026</div><div class="match-players">w/ Ranjiva vs Ishan &amp; Kamal</div></div>
+              <div class="match-score-wrap"><div class="match-score-pill loss">6 - 11</div><span class="match-result-label loss">LOSS</span></div>
+              <div class="match-delta-wrap"><div class="match-delta neg">−12</div><div class="match-range">1358→1346</div></div>
+            </div>
+            <div class="match-row">
+              <div class="match-info"><div class="match-tourn">Sunday Pickle League #3</div><div class="match-date">Mar 8, 2026</div><div class="match-players">w/ Chanuk vs Gary &amp; Adam</div></div>
+              <div class="match-score-wrap"><div class="match-score-pill win">11 - 9</div><span class="match-result-label win">WIN</span></div>
+              <div class="match-delta-wrap"><div class="match-delta pos">+14</div><div class="match-range">1310→1324</div></div>
+            </div>
+            <a href="#" class="view-all-btn" onclick="openSheet('match-pickle',this);return false;"><span>View all 6 pickleball matches</span><span class="material-symbols-outlined">arrow_forward</span></a>
+          </div>
+        </div>
+
+        <div style="height:8px;"></div>
+      </div>
+
+      <nav class="bottom-nav">
+        <a class="nav-item" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item active" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+    </div>
+    <div class="sheet-overlay-inner" onclick="closeSheet(this)"></div>
+    <div class="bottom-sheet-inner">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sheet-header">
+        <div><div class="sheet-title"></div><div class="sheet-subtitle"></div></div>
+        <button class="sheet-close" onclick="closeSheet(this)"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="sheet-body"></div>
+    </div>
+  </div>
+  <div class="screen-state-badge"><div class="dot"></div><span>Official + Community Padel · Pickleball</span></div>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 2 — Official Padel ONLY (no community, no pickleball)
+     ============================================================ -->
+<div class="phone-wrapper">
+  <div class="screen-label">Official Padel Only</div>
+  <div class="phone-frame">
+    <div class="screen">
+
+      <div class="profile-hero-card">
+        <div class="hero-top-row">
+          <button class="icon-btn-hero"><span class="material-symbols-outlined">arrow_back</span></button>
+          <div style="flex:1"></div>
+          <button class="icon-btn-hero"><span class="material-symbols-outlined">share</span></button>
+        </div>
+        <div class="hero-main-row">
+          <div class="hero-avatar-ring">
+            <div class="hero-avatar-inner" style="background:#0a3532;">DM</div>
+          </div>
+          <div class="hero-text">
+            <div class="hero-name-dark">Dilshan Mendis</div>
+            <div class="hero-level-badge pro">
+              <span class="material-symbols-outlined hero-level-icon">workspace_premium</span>
+              <span class="hero-level-text">Pro Level</span>
+              <span class="hero-level-sep">·</span>
+              <span class="hero-level-pct">Top 2%</span>
+            </div>
+            <div class="hero-since-dark">Member since November 2025</div>
+          </div>
+        </div>
+        <div class="hero-pills-dark">
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">male</span>Male</span>
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">front_hand</span>Right-handed</span>
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">swap_horiz</span>Ad side</span>
+        </div>
+        <div class="hero-actions-row">
+          <button class="hero-btn-contact add" id="c2" onclick="toggleContact('c2')">
+            <span class="material-symbols-outlined" id="c2-icon">person_add</span>
+            <span id="c2-label">Add to Contacts</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-content">
+
+        <!-- RATINGS — Official + grey Community -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">star_rate</span>Ratings</span>
+          </div>
+          <div class="sport-label padel"><span class="material-symbols-outlined">sports_tennis</span>Padel</div>
+          <div class="ratings-grid two">
+            <div class="rating-card official" onclick="toggleRatingCard(this)">
+              <div class="rc-header">
+                <div class="rc-label official"><span class="material-symbols-outlined">verified</span>Official</div>
+                <span class="material-symbols-outlined rc-chevron">expand_more</span>
+              </div>
+              <div class="rc-body">
+                <div class="rc-rating-num">1536</div>
+                <div class="rc-rank-row">
+                  <span class="material-symbols-outlined rc-medal">workspace_premium</span>
+                  <span class="rc-rank-text">#2 of 103</span>
+                  <span class="rc-sep">·</span>
+                  <span class="rc-pct"><span class="material-symbols-outlined">trending_up</span>Top 2%</span>
+                </div>
+              </div>
+              <div class="rc-detail">
+                <div class="rc-stats">
+                  <div class="rc-stat"><div class="rc-stat-val">±30</div><div class="rc-stat-key">RD</div></div>
+                  <div class="rc-stat"><div class="rc-stat-val">7</div><div class="rc-stat-key">Matches</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="rating-card empty">
+              <div class="rc-header">
+                <div class="rc-label empty-lbl"><span class="material-symbols-outlined">groups</span>Community</div>
+              </div>
+              <div class="rc-empty-body">
+                <div class="rc-empty-sub">No community<br>matches played</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TOURNAMENTS — padel only, no sport tab -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">emoji_events</span>Tournaments</span>
+          </div>
+          <div class="tourn-stats">
+            <div class="tourn-stat"><div class="tourn-stat-val">7</div><div class="tourn-stat-key">Tourneys</div></div>
+            <div class="tourn-stat"><div class="tourn-stat-val">21</div><div class="tourn-stat-key">Matches</div></div>
+            <div class="tourn-stat"><div class="tourn-stat-val">9</div><div class="tourn-stat-key">Wins</div></div>
+            <div class="tourn-stat"><div class="tourn-stat-val pts">104</div><div class="tourn-stat-key">Points</div></div>
+          </div>
+          <div class="tourn-row">
+            <div class="tourn-icon"><span class="material-symbols-outlined">emoji_events</span></div>
+            <div class="tourn-info"><div class="tourn-name">Slam25 1.2 at The Padel Club</div><div class="tourn-meta">Apr 28, 2026 · 4 matches · 2 wins</div></div>
+            <div class="tourn-pts"><div class="tourn-pts-val">28</div><div class="tourn-pts-key">pts</div></div>
+          </div>
+          <div class="tourn-row">
+            <div class="tourn-icon"><span class="material-symbols-outlined">emoji_events</span></div>
+            <div class="tourn-info"><div class="tourn-name">Slam25 1.1 at The Padel Club</div><div class="tourn-meta">Apr 4, 2026 · 3 matches · 1 win</div></div>
+            <div class="tourn-pts"><div class="tourn-pts-val">18</div><div class="tourn-pts-key">pts</div></div>
+          </div>
+          <div class="tourn-row">
+            <div class="tourn-icon" style="background:rgba(217,119,6,0.07);color:#d97706;"><span class="material-symbols-outlined">emoji_events</span></div>
+            <div class="tourn-info"><div class="tourn-name">Colombo Open 2026</div><div class="tourn-meta">Mar 12, 2026 · 3 matches · 1 win</div></div>
+            <div class="tourn-pts"><div class="tourn-pts-val">14</div><div class="tourn-pts-key">pts</div></div>
+          </div>
+          <a href="#" class="view-all-btn" onclick="openSheet('tourn-padel-s2',this);return false;"><span>View all 7 tournaments</span><span class="material-symbols-outlined">arrow_forward</span></a>
+        </div>
+
+        <!-- RECENT MATCHES — padel only, no sport tab -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">trending_up</span>Recent Matches</span>
+          </div>
+          <div class="match-row">
+            <div class="match-info"><div class="match-tourn">Slam25 1.2 at The Padel...</div><div class="match-date">Apr 28, 2026</div><div class="match-players">w/ Ranjiva vs Ishan &amp; Pindi</div></div>
+            <div class="match-score-wrap"><div class="match-score-pill win">13 - 9</div><span class="match-result-label win">WIN</span></div>
+            <div class="match-delta-wrap"><div class="match-delta pos">+4</div><div class="match-range">1530→1534</div></div>
+          </div>
+          <div class="match-row">
+            <div class="match-info"><div class="match-tourn">Slam25 1.2 at The Padel...</div><div class="match-date">Apr 28, 2026</div><div class="match-players">w/ Adam vs Rishen &amp; Gary</div></div>
+            <div class="match-score-wrap"><div class="match-score-pill loss">7 - 13</div><span class="match-result-label loss">LOSS</span></div>
+            <div class="match-delta-wrap"><div class="match-delta neg">−5</div><div class="match-range">1534→1529</div></div>
+          </div>
+          <div class="match-row">
+            <div class="match-info"><div class="match-tourn">Slam25 1.2 at The Padel...</div><div class="match-date">Apr 28, 2026</div><div class="match-players">w/ Chanuk vs Roland &amp; Thisura</div></div>
+            <div class="match-score-wrap"><div class="match-score-pill win">11 - 9</div><span class="match-result-label win">WIN</span></div>
+            <div class="match-delta-wrap"><div class="match-delta pos">+6</div><div class="match-range">1529→1535</div></div>
+          </div>
+          <a href="#" class="view-all-btn" onclick="openSheet('match-padel-s2',this);return false;"><span>View all 21 matches</span><span class="material-symbols-outlined">arrow_forward</span></a>
+        </div>
+
+        <div style="height:8px;"></div>
+      </div>
+
+      <nav class="bottom-nav">
+        <a class="nav-item" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item active" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+    </div>
+    <div class="sheet-overlay-inner" onclick="closeSheet(this)"></div>
+    <div class="bottom-sheet-inner">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sheet-header">
+        <div><div class="sheet-title"></div><div class="sheet-subtitle"></div></div>
+        <button class="sheet-close" onclick="closeSheet(this)"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="sheet-body"></div>
+    </div>
+  </div>
+  <div class="screen-state-badge"><div class="dot"></div><span>Official Padel only · No pickleball</span></div>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 3 — Community Padel ONLY (no official, no pickleball)
+     ============================================================ -->
+<div class="phone-wrapper">
+  <div class="screen-label">Community Padel Only</div>
+  <div class="phone-frame">
+    <div class="screen">
+
+      <div class="profile-hero-card">
+        <div class="hero-top-row">
+          <button class="icon-btn-hero"><span class="material-symbols-outlined">arrow_back</span></button>
+          <div style="flex:1"></div>
+          <button class="icon-btn-hero"><span class="material-symbols-outlined">share</span></button>
+        </div>
+        <div class="hero-main-row">
+          <div class="hero-avatar-ring">
+            <div class="hero-avatar-inner" style="background:#3a2208;">KP</div>
+          </div>
+          <div class="hero-text">
+            <div class="hero-name-dark">Kamal Peris</div>
+            <div class="hero-level-badge comm">
+              <span class="material-symbols-outlined hero-level-icon">groups</span>
+              <span class="hero-level-text">Community</span>
+              <span class="hero-level-sep">·</span>
+              <span class="hero-level-pct">Top 40%</span>
+            </div>
+            <div class="hero-since-dark">Member since December 2025</div>
+          </div>
+        </div>
+        <div class="hero-pills-dark">
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">male</span>Male</span>
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">front_hand</span>Left-handed</span>
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">swap_horiz</span>Ad side</span>
+        </div>
+        <div class="hero-actions-row">
+          <button class="hero-btn-contact added" id="c3" onclick="toggleContact('c3')">
+            <span class="material-symbols-outlined" id="c3-icon" style="font-variation-settings:'FILL' 1,'wght' 400;">person_check</span>
+            <span id="c3-label">In your contacts</span>
+          </button>
+          <button class="hero-btn-more"><span class="material-symbols-outlined">more_horiz</span></button>
+        </div>
+      </div>
+
+      <div class="profile-content">
+
+        <!-- RATINGS — grey Official + Community -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">star_rate</span>Ratings</span>
+          </div>
+          <div class="sport-label padel"><span class="material-symbols-outlined">sports_tennis</span>Padel</div>
+          <div class="ratings-grid two">
+            <div class="rating-card empty">
+              <div class="rc-header">
+                <div class="rc-label empty-lbl"><span class="material-symbols-outlined">verified</span>Official</div>
+              </div>
+              <div class="rc-empty-body">
+                <div class="rc-empty-sub">No official<br>tournament matches</div>
+              </div>
+            </div>
+            <div class="rating-card community" onclick="toggleRatingCard(this)">
+              <div class="rc-header">
+                <div class="rc-label community"><span class="material-symbols-outlined">groups</span>Community</div>
+                <span class="material-symbols-outlined rc-chevron">expand_more</span>
+              </div>
+              <div class="rc-body">
+                <div class="rc-rating-num">1340</div>
+                <div class="rc-rank-row">
+                  <span class="material-symbols-outlined rc-medal">workspace_premium</span>
+                  <span class="rc-rank-text">#18 of 45</span>
+                  <span class="rc-sep">·</span>
+                  <span class="rc-pct"><span class="material-symbols-outlined">trending_up</span>Top 40%</span>
+                </div>
+              </div>
+              <div class="rc-detail">
+                <div class="rc-stats">
+                  <div class="rc-stat"><div class="rc-stat-val">±48</div><div class="rc-stat-key">RD</div></div>
+                  <div class="rc-stat"><div class="rc-stat-val">5</div><div class="rc-stat-key">Matches</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TOURNAMENTS — padel only, no sport tab -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">emoji_events</span>Tournaments</span>
+          </div>
+          <div class="tourn-stats">
+            <div class="tourn-stat"><div class="tourn-stat-val">1</div><div class="tourn-stat-key">Tourneys</div></div>
+            <div class="tourn-stat"><div class="tourn-stat-val">5</div><div class="tourn-stat-key">Matches</div></div>
+            <div class="tourn-stat"><div class="tourn-stat-val">2</div><div class="tourn-stat-key">Wins</div></div>
+            <div class="tourn-stat"><div class="tourn-stat-val pts">22</div><div class="tourn-stat-key">Points</div></div>
+          </div>
+          <div class="tourn-row">
+            <div class="tourn-icon"><span class="material-symbols-outlined">emoji_events</span></div>
+            <div class="tourn-info"><div class="tourn-name">Slam25 1.2 at The Padel Club</div><div class="tourn-meta">Apr 28, 2026 · 5 matches · 2 wins</div></div>
+            <div class="tourn-pts"><div class="tourn-pts-val">22</div><div class="tourn-pts-key">pts</div></div>
+          </div>
+          <div style="text-align:center;padding:10px 0 2px;"><span style="font-size:10px;font-weight:600;color:var(--outline);">All 1 tournament shown</span></div>
+        </div>
+
+        <!-- RECENT MATCHES — padel only, no sport tab -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">trending_up</span>Recent Matches</span>
+          </div>
+          <div class="match-row">
+            <div class="match-info">
+              <div class="match-tourn">Slam25 1.2 at The Padel...</div>
+              <div class="match-date">Apr 28, 2026</div>
+              <div class="match-players">w/ Chanuk vs Rishen &amp; Gary</div>
+            </div>
+            <div class="match-score-wrap">
+              <div class="match-score-pill win">12 - 8</div>
+              <span class="match-result-label win">WIN</span>
+            </div>
+            <div class="match-delta-wrap">
+              <div class="match-delta pos">+14</div>
+              <div class="match-range">1320→1334</div>
+            </div>
+          </div>
+          <div class="match-row">
+            <div class="match-info">
+              <div class="match-tourn">Slam25 1.2 at The Padel...</div>
+              <div class="match-date">Apr 28, 2026</div>
+              <div class="match-players">w/ Adam vs Roland &amp; Pindi</div>
+            </div>
+            <div class="match-score-wrap">
+              <div class="match-score-pill loss">6 - 14</div>
+              <span class="match-result-label loss">LOSS</span>
+            </div>
+            <div class="match-delta-wrap">
+              <div class="match-delta neg">−8</div>
+              <div class="match-range">1334→1326</div>
+            </div>
+          </div>
+          <div class="match-row">
+            <div class="match-info">
+              <div class="match-tourn">Slam25 1.2 at The Padel...</div>
+              <div class="match-date">Apr 28, 2026</div>
+              <div class="match-players">w/ Niranjan vs Chanuk &amp; Jesse</div>
+            </div>
+            <div class="match-score-wrap">
+              <div class="match-score-pill win">11 - 9</div>
+              <span class="match-result-label win">WIN</span>
+            </div>
+            <div class="match-delta-wrap">
+              <div class="match-delta pos">+9</div>
+              <div class="match-range">1321→1330</div>
+            </div>
+          </div>
+          <!-- All 5 matches shown — no "View all" needed, but show disabled state -->
+          <div style="text-align:center;padding:10px 0 2px;">
+            <span style="font-size:10px;font-weight:600;color:var(--outline);">All 5 matches shown</span>
+          </div>
+        </div>
+
+        <div style="height:8px;"></div>
+      </div>
+
+      <nav class="bottom-nav">
+        <a class="nav-item" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item active" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+    </div>
+    <div class="sheet-overlay-inner" onclick="closeSheet(this)"></div>
+    <div class="bottom-sheet-inner">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sheet-header">
+        <div><div class="sheet-title"></div><div class="sheet-subtitle"></div></div>
+        <button class="sheet-close" onclick="closeSheet(this)"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="sheet-body"></div>
+    </div>
+  </div>
+  <div class="screen-state-badge"><div class="dot"></div><span>Community Padel only · No official</span></div>
+</div>
+
+
+<!-- ============================================================
+     SCREEN 4 — NO RATINGS (brand new player)
+     ============================================================ -->
+<div class="phone-wrapper">
+  <div class="screen-label">New Player — No Ratings</div>
+  <div class="phone-frame">
+    <div class="screen">
+
+      <div class="profile-hero-card">
+        <div class="hero-top-row">
+          <button class="icon-btn-hero"><span class="material-symbols-outlined">arrow_back</span></button>
+          <div style="flex:1"></div>
+          <button class="icon-btn-hero"><span class="material-symbols-outlined">share</span></button>
+        </div>
+        <div class="hero-main-row">
+          <div class="hero-avatar-ring">
+            <div class="hero-avatar-inner" style="background:#2a1254;">TW</div>
+          </div>
+          <div class="hero-text">
+            <div class="hero-name-dark">Tharaka Wijesinghe</div>
+            <div class="hero-level-badge new-p">
+              <span class="material-symbols-outlined hero-level-icon">person_add</span>
+              <span class="hero-level-text">New Player</span>
+            </div>
+            <div class="hero-since-dark">Member since April 2026</div>
+          </div>
+        </div>
+        <div class="hero-pills-dark">
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">male</span>Male</span>
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">front_hand</span>Right-handed</span>
+          <span class="hero-pill-dark"><span class="material-symbols-outlined">swap_horiz</span>Deuce</span>
+        </div>
+        <div class="hero-actions-row">
+          <button class="hero-btn-contact add" id="c4" onclick="toggleContact('c4')">
+            <span class="material-symbols-outlined" id="c4-icon">person_add</span>
+            <span id="c4-label">Add to Contacts</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-content">
+
+        <!-- RATINGS — Empty state -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">star_rate</span>Ratings</span>
+          </div>
+          <div class="ratings-empty">
+            <span class="material-symbols-outlined">query_stats</span>
+            <div class="ratings-empty-title">No ratings yet</div>
+            <div class="ratings-empty-sub">Ratings are calculated once Tharaka plays in their first rated match.</div>
+          </div>
+        </div>
+
+        <!-- TOURNAMENTS — Empty state -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">emoji_events</span>Tournaments</span>
+          </div>
+          <div class="match-empty">
+            <span class="material-symbols-outlined">emoji_events</span>
+            <div class="match-empty-text">No tournaments played yet</div>
+          </div>
+        </div>
+
+        <!-- MATCH HISTORY — Empty state -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title"><span class="material-symbols-outlined">trending_up</span>Recent Matches</span>
+          </div>
+          <div class="match-empty">
+            <span class="material-symbols-outlined">sports_tennis</span>
+            <div class="match-empty-text">No matches recorded yet</div>
+          </div>
+        </div>
+
+        <div style="height:8px;"></div>
+      </div>
+
+      <nav class="bottom-nav">
+        <a class="nav-item" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item active" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+    </div>
+    <div class="sheet-overlay-inner" onclick="closeSheet(this)"></div>
+    <div class="bottom-sheet-inner">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sheet-header">
+        <div><div class="sheet-title"></div><div class="sheet-subtitle"></div></div>
+        <button class="sheet-close" onclick="closeSheet(this)"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="sheet-body"></div>
+    </div>
+  </div>
+  <div class="screen-state-badge"><div class="dot"></div><span>New player · No matches played</span></div>
+</div>
+
+
+<script>
+/* ── Contact toggle ── */
+const contactState = { c1: false, c2: false, c3: true, c4: false };
+
+function toggleContact(id) {
+  contactState[id] = !contactState[id];
+  const btn   = document.getElementById(id);
+  const icon  = document.getElementById(`${id}-icon`);
+  const label = document.getElementById(`${id}-label`);
+
+  if (contactState[id]) {
+    btn.className = 'hero-btn-contact added';
+    icon.textContent = 'person_check';
+    icon.style.fontVariationSettings = "'FILL' 1,'wght' 400";
+    label.textContent = 'In your contacts';
+  } else {
+    btn.className = 'hero-btn-contact add';
+    icon.textContent = 'person_add';
+    icon.style.fontVariationSettings = "'FILL' 0,'wght' 300";
+    label.textContent = 'Add to Contacts';
+  }
+}
+
+/* ── Rating card expand/collapse ── */
+function toggleRatingCard(card) {
+  if (card.classList.contains('empty')) return;
+  card.classList.toggle('expanded');
+}
+
+/* ── Bottom sheet ── */
+const PICKLE_SVG = `<svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>`;
+
+const SHEETS = {
+  'tourn-padel': {
+    title: 'Padel Tournaments',
+    subtitle: '14 tournaments · 47 matches · 31 wins · 286 pts',
+    type: 'tournament',
+    sport: 'padel',
+    stats: [14, 47, 31, 286],
+    items: [
+      { name: 'Slam25 1.2 at The Padel Club',    meta: 'Apr 28, 2026 · 5 matches · 4 wins', pts: 56, gold: false },
+      { name: 'Slam25 1.1 at Padel House CR',     meta: 'Apr 4, 2026 · 4 matches · 3 wins',  pts: 44, gold: false },
+      { name: 'Colombo Open 2026',                meta: 'Mar 12, 2026 · 5 matches · 2 wins', pts: 38, gold: true  },
+      { name: 'Slam25 1.0 at The Padel Club',     meta: 'Feb 18, 2026 · 4 matches · 3 wins', pts: 40, gold: false },
+      { name: 'February Ladder #2',               meta: 'Feb 7, 2026 · 3 matches · 2 wins',  pts: 22, gold: false },
+      { name: 'February Ladder #1',               meta: 'Jan 25, 2026 · 3 matches · 1 win',  pts: 14, gold: false },
+      { name: 'January Open 2026',                meta: 'Jan 10, 2026 · 5 matches · 4 wins', pts: 52, gold: true  },
+      { name: 'Slam24 Finals',                    meta: 'Dec 14, 2025 · 6 matches · 5 wins', pts: 62, gold: true  },
+      { name: 'Slam24 1.4 at Padel House',        meta: 'Nov 30, 2025 · 4 matches · 3 wins', pts: 38, gold: false },
+      { name: 'Colombo Winter Classic',           meta: 'Nov 15, 2025 · 5 matches · 2 wins', pts: 28, gold: true  },
+      { name: 'Slam24 1.3 at The Padel Club',     meta: 'Oct 26, 2025 · 3 matches · 2 wins', pts: 20, gold: false },
+      { name: 'Slam24 1.2 at Padel Arena',        meta: 'Oct 5, 2025 · 4 matches · 1 win',   pts: 8,  gold: false },
+      { name: 'Slam24 1.1 at The Padel Club',     meta: 'Sep 14, 2025 · 3 matches · 2 wins', pts: 24, gold: false },
+      { name: 'Colombo Padel Open 2025',          meta: 'Aug 22, 2025 · 4 matches · 1 win',  pts: 10, gold: true  },
+    ]
+  },
+  'tourn-pickle': {
+    title: 'Pickleball Tournaments',
+    subtitle: '2 tournaments · 6 matches · 3 wins · 28 pts',
+    type: 'tournament',
+    sport: 'pickle',
+    stats: [2, 6, 3, 28],
+    items: [
+      { name: 'Colombo Pickle Open 2026', meta: 'Apr 15, 2026 · 4 matches · 2 wins', pts: 18, gold: true  },
+      { name: 'Sunday Pickle League #3',  meta: 'Mar 8, 2026 · 2 matches · 1 win',   pts: 10, gold: false },
+    ]
+  },
+  'tourn-padel-s2': {
+    title: 'Padel Tournaments',
+    subtitle: '7 tournaments · 21 matches · 9 wins · 104 pts',
+    type: 'tournament',
+    sport: 'padel',
+    stats: [7, 21, 9, 104],
+    items: [
+      { name: 'Slam25 1.2 at The Padel Club',  meta: 'Apr 28, 2026 · 4 matches · 2 wins', pts: 28, gold: false },
+      { name: 'Slam25 1.1 at The Padel Club',  meta: 'Apr 4, 2026 · 3 matches · 1 win',   pts: 18, gold: false },
+      { name: 'Colombo Open 2026',             meta: 'Mar 12, 2026 · 3 matches · 1 win',  pts: 14, gold: true  },
+      { name: 'February Ladder #1',            meta: 'Jan 25, 2026 · 3 matches · 2 wins', pts: 20, gold: false },
+      { name: 'January Open 2026',             meta: 'Jan 10, 2026 · 3 matches · 1 win',  pts: 12, gold: true  },
+      { name: 'Slam24 1.4 at Padel House',     meta: 'Nov 30, 2025 · 3 matches · 1 win',  pts: 8,  gold: false },
+      { name: 'Colombo Padel Open 2025',       meta: 'Aug 22, 2025 · 2 matches · 1 win',  pts: 4,  gold: true  },
+    ]
+  },
+  'match-padel': {
+    title: 'Padel Matches',
+    subtitle: '47 matches · 31 wins · 16 losses',
+    type: 'match',
+    sport: 'padel',
+    items: [
+      { tourn: 'Slam25 1.2 at The Padel Club', date: 'Apr 28, 2026', players: 'w/ Rishen vs Roland & Adam',       score: '11 - 5',  result: 'win',  delta: '+6',  range: '1610→1615' },
+      { tourn: 'Slam25 1.2 at The Padel Club', date: 'Apr 28, 2026', players: 'w/ Gary vs Roland & Ranjiva',      score: '14 - 2',  result: 'win',  delta: '+6',  range: '1615→1622' },
+      { tourn: 'Slam25 1.2 at The Padel Club', date: 'Apr 28, 2026', players: 'w/ Adam vs Thisura & Ranjiva',     score: '11 - 5',  result: 'win',  delta: '+7',  range: '1622→1629' },
+      { tourn: 'Slam25 1.4 at Padel House',    date: 'Apr 28, 2026', players: 'w/ Chanuk vs Yoosuf & Chinthake',  score: '8 - 8',   result: 'loss', delta: '0',   range: '1629→1629' },
+      { tourn: 'Slam25 1.1 at The Padel Club', date: 'Apr 4, 2026',  players: 'w/ Roland vs Gary & Pindi',        score: '15 - 7',  result: 'win',  delta: '+8',  range: '1590→1598' },
+      { tourn: 'Slam25 1.1 at The Padel Club', date: 'Apr 4, 2026',  players: 'w/ Ranjiva vs Thisura & Jesse',    score: '10 - 11', result: 'loss', delta: '−4',  range: '1598→1594' },
+      { tourn: 'Slam25 1.1 at The Padel Club', date: 'Apr 4, 2026',  players: 'w/ Chanuk vs Adam & Roland',       score: '11 - 8',  result: 'win',  delta: '+6',  range: '1594→1600' },
+      { tourn: 'Colombo Open 2026',            date: 'Mar 12, 2026', players: 'w/ Gary vs Ranjiva & Pindi',       score: '13 - 10', result: 'win',  delta: '+5',  range: '1578→1583' },
+      { tourn: 'Colombo Open 2026',            date: 'Mar 12, 2026', players: 'w/ Adam vs Rishen & Chanuk',       score: '8 - 11',  result: 'loss', delta: '−6',  range: '1583→1577' },
+      { tourn: 'Colombo Open 2026',            date: 'Mar 12, 2026', players: 'w/ Roland vs Yoosuf & Jesse',      score: '11 - 6',  result: 'win',  delta: '+7',  range: '1577→1584' },
+      { tourn: 'February Ladder #2',           date: 'Feb 7, 2026',  players: 'w/ Pindi vs Gary & Ranjiva',       score: '11 - 9',  result: 'win',  delta: '+5',  range: '1565→1570' },
+      { tourn: 'February Ladder #2',           date: 'Feb 7, 2026',  players: 'w/ Thisura vs Adam & Chanuk',      score: '9 - 11',  result: 'loss', delta: '−4',  range: '1570→1566' },
+      { tourn: 'February Ladder #1',           date: 'Jan 25, 2026', players: 'w/ Jesse vs Roland & Ranjiva',     score: '11 - 7',  result: 'win',  delta: '+6',  range: '1552→1558' },
+      { tourn: 'January Open 2026',            date: 'Jan 10, 2026', players: 'w/ Rishen vs Chanuk & Gary',       score: '11 - 4',  result: 'win',  delta: '+8',  range: '1532→1540' },
+      { tourn: 'January Open 2026',            date: 'Jan 10, 2026', players: 'w/ Adam vs Thisura & Pindi',       score: '11 - 9',  result: 'win',  delta: '+6',  range: '1540→1546' },
+    ]
+  },
+  'match-pickle': {
+    title: 'Pickleball Matches',
+    subtitle: '6 matches · 3 wins · 3 losses',
+    type: 'match',
+    sport: 'pickle',
+    items: [
+      { tourn: 'Colombo Pickle Open 2026', date: 'Apr 15, 2026', players: 'w/ Faris vs Asanka & Dilshan',   score: '11 - 7',  result: 'win',  delta: '+18', range: '1340→1358' },
+      { tourn: 'Colombo Pickle Open 2026', date: 'Apr 15, 2026', players: 'w/ Ranjiva vs Ishan & Kamal',   score: '6 - 11',  result: 'loss', delta: '−12', range: '1358→1346' },
+      { tourn: 'Colombo Pickle Open 2026', date: 'Apr 15, 2026', players: 'w/ Asanka vs Dilshan & Faris',  score: '9 - 11',  result: 'loss', delta: '−10', range: '1346→1336' },
+      { tourn: 'Colombo Pickle Open 2026', date: 'Apr 15, 2026', players: 'w/ Kamal vs Ranjiva & Jesse',   score: '11 - 5',  result: 'win',  delta: '+20', range: '1336→1356' },
+      { tourn: 'Sunday Pickle League #3',  date: 'Mar 8, 2026',  players: 'w/ Chanuk vs Gary & Adam',      score: '11 - 9',  result: 'win',  delta: '+14', range: '1310→1324' },
+      { tourn: 'Sunday Pickle League #3',  date: 'Mar 8, 2026',  players: 'w/ Dilshan vs Ishan & Faris',   score: '7 - 11',  result: 'loss', delta: '−10', range: '1324→1314' },
+    ]
+  },
+  'match-padel-s2': {
+    title: 'Padel Matches',
+    subtitle: '21 matches · 9 wins · 12 losses',
+    type: 'match',
+    sport: 'padel',
+    items: [
+      { tourn: 'Slam25 1.2 at The Padel Club', date: 'Apr 28, 2026', players: 'w/ Ranjiva vs Ishan & Pindi',    score: '13 - 9',  result: 'win',  delta: '+4',  range: '1530→1534' },
+      { tourn: 'Slam25 1.2 at The Padel Club', date: 'Apr 28, 2026', players: 'w/ Adam vs Rishen & Gary',       score: '7 - 13',  result: 'loss', delta: '−5',  range: '1534→1529' },
+      { tourn: 'Slam25 1.2 at The Padel Club', date: 'Apr 28, 2026', players: 'w/ Chanuk vs Roland & Thisura',  score: '11 - 9',  result: 'win',  delta: '+6',  range: '1529→1535' },
+      { tourn: 'Slam25 1.1 at The Padel Club', date: 'Apr 4, 2026',  players: 'w/ Gary vs Ishan & Adam',       score: '9 - 11',  result: 'loss', delta: '−4',  range: '1535→1531' },
+      { tourn: 'Slam25 1.1 at The Padel Club', date: 'Apr 4, 2026',  players: 'w/ Pindi vs Roland & Ranjiva',  score: '11 - 8',  result: 'win',  delta: '+5',  range: '1531→1536' },
+      { tourn: 'Colombo Open 2026',            date: 'Mar 12, 2026', players: 'w/ Rishen vs Chanuk & Gary',    score: '10 - 8',  result: 'win',  delta: '+4',  range: '1520→1524' },
+      { tourn: 'February Ladder #1',           date: 'Jan 25, 2026', players: 'w/ Adam vs Ishan & Roland',     score: '8 - 11',  result: 'loss', delta: '−5',  range: '1524→1519' },
+    ]
+  },
+};
+
+function tournRowHtml(item, sport) {
+  const isPickle = sport === 'pickle';
+  const iconBg = isPickle ? 'background:rgba(13,148,136,0.07);color:#0d9488'
+                          : item.gold ? 'background:rgba(217,119,6,0.07);color:#d97706'
+                                      : 'background:rgba(18,95,169,0.06);color:#125fa9';
+  const iconContent = isPickle
+    ? PICKLE_SVG.replace('width="13" height="13"', 'width="19" height="19"')
+    : `<span class="material-symbols-outlined">emoji_events</span>`;
+  return `<div class="tourn-row">
+    <div class="tourn-icon" style="${iconBg}">${iconContent}</div>
+    <div class="tourn-info">
+      <div class="tourn-name">${item.name}</div>
+      <div class="tourn-meta">${item.meta}</div>
+    </div>
+    <div class="tourn-pts"><div class="tourn-pts-val">${item.pts}</div><div class="tourn-pts-key">pts</div></div>
+  </div>`;
+}
+
+function matchRowHtml(item) {
+  const isWin = item.result === 'win';
+  const isNeu = item.delta === '0';
+  const deltaClass = isNeu ? 'neu' : isWin ? 'pos' : 'neg';
+  return `<div class="match-row">
+    <div class="match-info">
+      <div class="match-tourn">${item.tourn}</div>
+      <div class="match-date">${item.date}</div>
+      <div class="match-players">${item.players}</div>
+    </div>
+    <div class="match-score-wrap">
+      <div class="match-score-pill ${item.result}">${item.score}</div>
+      <span class="match-result-label ${item.result}">${item.result.toUpperCase()}</span>
+    </div>
+    <div class="match-delta-wrap">
+      <div class="match-delta ${deltaClass}">${item.delta}</div>
+      <div class="match-range">${item.range}</div>
+    </div>
+  </div>`;
+}
+
+function openSheet(key, trigger) {
+  const d = SHEETS[key];
+  if (!d) return;
+
+  const frame = trigger.closest('.phone-frame');
+  frame.querySelector('.sheet-title').textContent = d.title;
+  frame.querySelector('.sheet-subtitle').textContent = d.subtitle;
+
+  let html = '';
+  if (d.type === 'tournament') {
+    html += `<div class="sheet-stats">
+      <div class="sheet-stat"><div class="sheet-stat-val">${d.stats[0]}</div><div class="sheet-stat-key">Tourneys</div></div>
+      <div class="sheet-stat"><div class="sheet-stat-val">${d.stats[1]}</div><div class="sheet-stat-key">Matches</div></div>
+      <div class="sheet-stat"><div class="sheet-stat-val">${d.stats[2]}</div><div class="sheet-stat-key">Wins</div></div>
+      <div class="sheet-stat"><div class="sheet-stat-val pts">${d.stats[3]}</div><div class="sheet-stat-key">Points</div></div>
+    </div>`;
+    html += d.items.map(item => tournRowHtml(item, d.sport)).join('');
+  } else {
+    html += d.items.map(matchRowHtml).join('');
+  }
+
+  frame.querySelector('.sheet-body').innerHTML = html;
+  frame.querySelector('.sheet-overlay-inner').classList.add('open');
+  frame.querySelector('.bottom-sheet-inner').classList.add('open');
+}
+
+function closeSheet(trigger) {
+  const frame = trigger.closest('.phone-frame');
+  frame.querySelector('.sheet-overlay-inner').classList.remove('open');
+  frame.querySelector('.bottom-sheet-inner').classList.remove('open');
+}
+
+/* ── Screen 1 unified sport tab (controls Tournaments + Matches) ── */
+document.querySelectorAll('#sport-tabs-1 .match-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#sport-tabs-1 .match-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const sport = tab.dataset.sport;
+    document.getElementById('tourn-padel-1').style.display  = sport === 'padel'  ? '' : 'none';
+    document.getElementById('tourn-pickle-1').style.display = sport === 'pickle' ? '' : 'none';
+    document.getElementById('match-padel-1').style.display  = sport === 'padel'  ? '' : 'none';
+    document.getElementById('match-pickle-1').style.display = sport === 'pickle' ? '' : 'none';
+  });
+});
+</script>
+</body>
+</html>

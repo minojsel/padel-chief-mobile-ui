@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Padel Chief — Venues</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --surface: #FFFFFF;
+    --background: #F8FAFC;
+    --on-background: #0F172A;
+    --on-surface: #0F172A;
+    --on-surface-variant: #475569;
+    --primary: #125fa9;
+    --primary-container: #2268b2;
+    --secondary-fixed: #d8ef00;
+    --outline: #94A3B8;
+    --outline-variant: #E2E8F0;
+    --surface-container: #F1F5F9;
+    --surface-container-high: #E2E8F0;
+    --pickle: #0d9488;
+    --available: #10b981;
+    --star: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #0a0c10;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ── Phone Frame ── */
+  .phone-frame {
+    width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+    position: relative; background: var(--background); flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+                0 0 0 2px rgba(255,255,255,0.06),
+                0 40px 80px rgba(0,0,0,0.5);
+  }
+  .phone-frame::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 30px; background: #0F172A;
+    border-radius: 0 0 18px 18px; z-index: 100;
+  }
+  .screen {
+    width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: none; display: flex; flex-direction: column;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+  .phone-wrapper { display: flex; flex-direction: column; align-items: center; }
+  .screen-label {
+    color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+  }
+
+  /* ── Sticky Header ── */
+  .venue-header {
+    position: sticky; top: 0; z-index: 50; flex-shrink: 0;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(15,23,42,0.07);
+  }
+  .venue-header-inner { padding: 44px 18px 10px; }
+  .vh-title-row { display: flex; align-items: flex-start; justify-content: space-between; }
+  .venue-page-title { font-size: 24px; font-weight: 800; color: var(--on-background); letter-spacing: -0.02em; line-height: 1; }
+  .venue-page-sub { font-size: 11px; font-weight: 500; color: var(--on-surface-variant); margin-top: 4px; }
+  .vh-btn-row { display: flex; gap: 8px; padding-top: 2px; }
+  .vh-icon-btn {
+    width: 38px; height: 38px; border-radius: 12px; border: none; cursor: pointer;
+    background: var(--surface-container);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--on-surface-variant); transition: all 0.18s;
+  }
+  .vh-icon-btn:active { transform: scale(0.92); }
+  .vh-icon-btn .material-symbols-outlined { font-size: 20px; }
+  .vh-icon-btn.active { background: rgba(18,95,169,0.10); color: var(--primary); }
+
+  /* ── Search Bar ── */
+  .venue-search-section { padding: 8px 18px 0; display: none; }
+  .venue-header.search-active .venue-search-section { display: flex; align-items: center; gap: 8px; }
+  .venue-header.search-active .vh-title-row { display: none; }
+  .venue-header.search-active .venue-header-inner { padding-bottom: 0; }
+  .v-search-wrap {
+    flex: 1; display: flex; align-items: center; position: relative;
+    background: var(--surface-container); border-radius: 14px; overflow: hidden;
+  }
+  .v-search-icon { position: absolute; left: 12px; font-size: 18px; color: var(--outline); pointer-events: none; }
+  .v-search-input {
+    width: 100%; padding: 11px 34px 11px 38px; border: none; background: transparent;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 500;
+    color: var(--on-surface); outline: none;
+  }
+  .v-search-input::placeholder { color: var(--outline); }
+  .v-search-clear {
+    position: absolute; right: 8px; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--outline); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; color: white;
+  }
+  .v-search-clear .material-symbols-outlined { font-size: 12px; }
+  .v-cancel-btn {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--primary); border: none; background: none; cursor: pointer; white-space: nowrap;
+    padding: 0 2px 0 6px;
+  }
+
+  /* ── Controls ── */
+  .venue-controls { background: var(--surface); padding: 10px 0 0; flex-shrink: 0; }
+  .chips-sort-row { display: flex; align-items: center; }
+  .chips-scroll {
+    display: flex; gap: 6px; overflow-x: auto; padding: 0 18px 10px;
+    scrollbar-width: none; flex: 1;
+  }
+  .chips-scroll::-webkit-scrollbar { display: none; }
+  .v-chip {
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+    padding: 6px 13px; border-radius: 9999px; border: 1.5px solid var(--outline-variant);
+    background: var(--surface); font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px; font-weight: 600; color: var(--on-surface-variant);
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  }
+  .v-chip .material-symbols-outlined { font-size: 14px; }
+  .v-chip svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .v-chip.active { border-color: var(--primary); background: rgba(18,95,169,0.08); color: var(--primary); font-weight: 700; }
+  .v-chip.pickle.active { border-color: var(--pickle); background: rgba(13,148,136,0.08); color: var(--pickle); }
+  .sort-filter-group { display: flex; gap: 6px; padding: 0 18px 10px; flex-shrink: 0; }
+  .sf-btn {
+    display: flex; align-items: center; gap: 4px; padding: 6px 11px; border-radius: 9999px;
+    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 600;
+    color: var(--on-surface-variant); cursor: pointer; white-space: nowrap; transition: all 0.15s;
+  }
+  .sf-btn .material-symbols-outlined { font-size: 14px; }
+  .sf-btn.active { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
+  .controls-divider { height: 1px; background: var(--outline-variant); }
+
+  /* ── Results count ── */
+  .results-meta { display: flex; align-items: center; padding: 10px 18px 4px; }
+  .results-count { font-size: 11px; font-weight: 600; color: var(--on-surface-variant); }
+  .results-count strong { color: var(--on-surface); }
+
+  /* ── Venue List ── */
+  .venue-list { padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+  /* ── Venue Card ── */
+  .venue-card {
+    background: var(--surface); border-radius: 20px; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.04);
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .venue-card:active { transform: scale(0.984); box-shadow: 0 1px 2px rgba(15,23,42,0.06); }
+  .venue-card.unavail { opacity: 0.80; }
+  .venue-img { height: 132px; position: relative; overflow: hidden; }
+  .ci-padel { background: #0b2d52; }
+  .ci-padel::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 14%, #0f4b8a 14%, #1156a0 86%, transparent 86%),
+      linear-gradient(180deg, transparent 49%, rgba(255,255,255,0.50) 49%, rgba(255,255,255,0.50) 51%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.22) 50.5%, transparent 50.5%),
+      linear-gradient(90deg, transparent 26%, rgba(255,255,255,0.18) 26%, rgba(255,255,255,0.18) 27%, transparent 27%,
+                      transparent 72%, rgba(255,255,255,0.18) 72%, rgba(255,255,255,0.18) 73%, transparent 73%);
+  }
+  .ci-padel-warm { background: #180c34; }
+  .ci-padel-warm::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 14%, #2d1b69 14%, #3e2a87 86%, transparent 86%),
+      linear-gradient(180deg, transparent 49%, rgba(255,255,255,0.50) 49%, rgba(255,255,255,0.50) 51%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.22) 50.5%, transparent 50.5%);
+  }
+  .ci-clay { background: #3d0f06; }
+  .ci-clay::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 14%, #9a2a14 14%, #b33318 86%, transparent 86%),
+      linear-gradient(180deg, transparent 49%, rgba(255,255,255,0.50) 49%, rgba(255,255,255,0.50) 51%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.22) 50.5%, transparent 50.5%),
+      linear-gradient(90deg, transparent 26%, rgba(255,255,255,0.18) 26%, rgba(255,255,255,0.18) 27%, transparent 27%,
+                      transparent 72%, rgba(255,255,255,0.18) 72%, rgba(255,255,255,0.18) 73%, transparent 73%);
+  }
+  .ci-pickle { background: #0b2d1e; }
+  .ci-pickle::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 14%, #15603a 14%, #197a4a 86%, transparent 86%),
+      linear-gradient(180deg, transparent 29%, rgba(255,255,255,0.30) 29%, rgba(255,255,255,0.30) 30.5%, transparent 30.5%,
+                      transparent 69%, rgba(255,255,255,0.30) 69%, rgba(255,255,255,0.30) 70.5%, transparent 70.5%),
+      linear-gradient(180deg, transparent 49%, rgba(255,255,255,0.50) 49%, rgba(255,255,255,0.50) 51%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.22) 50.5%, transparent 50.5%);
+  }
+  .ci-multi { background: #101820; }
+  .ci-multi::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 10%, #1a3a5c 10%, #1a3a5c 48%, transparent 48%,
+                      transparent 52%, #1a3a5c 52%, #1a3a5c 89%, transparent 89%),
+      linear-gradient(90deg, transparent 48.5%, rgba(255,255,255,0.4) 48.5%, rgba(255,255,255,0.4) 51.5%, transparent 51.5%),
+      linear-gradient(180deg, transparent 48%, rgba(255,255,255,0.4) 48%, rgba(255,255,255,0.4) 52%, transparent 52%);
+  }
+  .venue-img::before {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.35) 100%);
+  }
+  .venue-card.unavail .venue-img::before {
+    background: linear-gradient(180deg, rgba(0,0,0,0.40) 0%, rgba(0,0,0,0.55) 100%);
+  }
+  .avail-badge {
+    position: absolute; top: 9px; right: 9px; z-index: 2;
+    display: flex; align-items: center; gap: 5px;
+    padding: 4px 9px; border-radius: 9999px;
+    font-size: 10px; font-weight: 700; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .avail-badge.open { background: rgba(16,185,129,0.88); color: white; }
+  .avail-badge.unavail { background: rgba(30,30,30,0.82); color: rgba(255,255,255,0.85); }
+  .avail-dot { width: 5px; height: 5px; border-radius: 50%; background: white; flex-shrink: 0; }
+  .sport-chips-img { position: absolute; bottom: 8px; left: 9px; z-index: 2; display: flex; gap: 4px; }
+  .sci {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 3px 8px; border-radius: 9999px; font-size: 9px; font-weight: 700;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .sci .material-symbols-outlined { font-size: 11px; }
+  .sci svg { width: 10px; height: 10px; flex-shrink: 0; }
+  .sci.padel { background: rgba(18,95,169,0.82); color: white; }
+  .sci.pickle { background: rgba(13,148,136,0.82); color: white; }
+  .featured-badge {
+    position: absolute; top: 9px; left: 9px; z-index: 2;
+    padding: 3px 8px; border-radius: 9999px;
+    background: var(--secondary-fixed); color: #1a2200;
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .venue-card-body { padding: 12px 14px 13px; }
+  .vcb-row1 { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .venue-name { font-size: 14px; font-weight: 700; color: var(--on-surface); line-height: 1.25; flex: 1; min-width: 0; }
+  .venue-rating { display: flex; align-items: center; gap: 3px; flex-shrink: 0; margin-top: 1px; }
+  .venue-rating .material-symbols-outlined { font-size: 14px; color: var(--star); font-variation-settings: 'FILL' 1, 'wght' 400; }
+  .rating-val { font-size: 12px; font-weight: 700; color: var(--on-surface); }
+  .rating-ct { font-size: 11px; font-weight: 500; color: var(--on-surface-variant); }
+  .no-rating { display: flex; align-items: center; gap: 3px; flex-shrink: 0; font-size: 11px; font-weight: 600; color: var(--outline); font-style: italic; }
+  .no-rating .material-symbols-outlined { font-size: 13px; color: var(--outline); }
+  .vcb-row2 { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+  .venue-dist { display: flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--on-surface-variant); }
+  .venue-dist .material-symbols-outlined { font-size: 13px; color: var(--primary); font-variation-settings: 'FILL' 0, 'wght' 400; }
+  .venue-price { font-size: 12px; font-weight: 700; color: var(--on-surface); }
+  .venue-price-cur { font-size: 10px; font-weight: 600; color: var(--on-surface-variant); }
+  .vcb-row3 { margin-top: 3px; }
+  .venue-unavail-msg { font-size: 10px; font-weight: 600; color: #ef4444; display: flex; align-items: center; gap: 4px; }
+  .venue-unavail-msg .material-symbols-outlined { font-size: 12px; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 24px; text-align: center; gap: 10px;
+  }
+  .empty-title { font-size: 16px; font-weight: 700; color: var(--on-surface); }
+  .empty-sub { font-size: 13px; font-weight: 500; color: var(--on-surface-variant); line-height: 1.6; max-width: 240px; }
+  .empty-action {
+    margin-top: 8px; padding: 12px 22px; border-radius: 14px; border: none; cursor: pointer;
+    background: var(--surface-container); color: var(--primary);
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .empty-action .material-symbols-outlined { font-size: 16px; }
+
+  /* ── Sort sheet ── */
+  .sheet-overlay {
+    position: absolute; inset: 0; z-index: 60;
+    background: rgba(0,0,0,0.45); opacity: 0; pointer-events: none;
+    transition: opacity 0.28s; border-radius: 44px;
+  }
+  .sheet-overlay.open { opacity: 1; pointer-events: auto; }
+  .sort-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 61;
+    background: var(--surface); border-radius: 28px 28px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.34s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    overflow: hidden; padding-bottom: 32px;
+    box-shadow: 0 -12px 40px rgba(0,0,0,0.18);
+  }
+  .sort-sheet.open { transform: translateY(0); }
+  .sheet-handle { padding: 12px 0 6px; display: flex; justify-content: center; }
+  .sheet-handle-bar { width: 36px; height: 4px; border-radius: 2px; background: var(--outline-variant); }
+  .sort-sheet-title { font-size: 14px; font-weight: 700; color: var(--on-surface); padding: 4px 20px 12px; border-bottom: 1px solid var(--outline-variant); }
+  .sort-option {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; cursor: pointer; transition: background 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sort-option:active { background: var(--surface-container); }
+  .sort-option-label { font-size: 14px; font-weight: 500; color: var(--on-surface); display: flex; align-items: center; gap: 10px; }
+  .sort-option-label .material-symbols-outlined { font-size: 18px; color: var(--on-surface-variant); }
+  .sort-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--outline-variant); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s; }
+  .sort-option.selected .sort-radio { border-color: var(--primary); }
+  .sort-radio-inner { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); opacity: 0; transition: opacity 0.15s; }
+  .sort-option.selected .sort-radio-inner { opacity: 1; }
+  .sort-option.selected .sort-option-label { color: var(--primary); font-weight: 700; }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    position: sticky; bottom: 0; z-index: 50;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0; display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px 28px; box-shadow: 0 -1px 0 rgba(15,23,42,0.08), 0 -8px 32px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    text-decoration: none; cursor: pointer; transition: all 0.2s; min-width: 48px;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-item .material-symbols-outlined { font-size: 24px; }
+  .nav-item-label { font-size: 9px; font-weight: 600; }
+  .nav-item.active .material-symbols-outlined { color: var(--primary); font-variation-settings: 'FILL' 1, 'wght' 200; }
+  .nav-item.active .nav-item-label { color: var(--primary); }
+  .nav-item:not(.active) .material-symbols-outlined { color: var(--on-surface-variant); }
+  .nav-item:not(.active) .nav-item-label { color: var(--on-surface-variant); }
+  .nav-create .material-symbols-outlined { font-size: 28px; }
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+  <div class="screen-label">Venues — Interactive</div>
+  <div class="phone-frame">
+    <div class="screen">
+
+      <header class="venue-header" id="vHeader">
+        <div class="venue-header-inner">
+          <div class="vh-title-row">
+            <div>
+              <div class="venue-page-title">Venues</div>
+              <div class="venue-page-sub" id="vSub">Colombo area · 5 venues found</div>
+            </div>
+            <div class="vh-btn-row">
+              <button class="vh-icon-btn" onclick="toggleSearch()">
+                <span class="material-symbols-outlined">search</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="venue-search-section">
+          <div class="v-search-wrap">
+            <span class="material-symbols-outlined v-search-icon">search</span>
+            <input class="v-search-input" id="vSearchInput" placeholder="Search venues…" oninput="onSearch(this.value)"/>
+            <button class="v-search-clear" onclick="clearSearch()"><span class="material-symbols-outlined">close</span></button>
+          </div>
+          <button class="v-cancel-btn" onclick="cancelSearch()">Cancel</button>
+        </div>
+        <div class="venue-controls">
+          <div class="chips-sort-row">
+            <div class="chips-scroll" id="filterChips">
+              <button class="v-chip active" onclick="setFilter('all')">All</button>
+              <button class="v-chip" onclick="setFilter('padel')">
+                <span class="material-symbols-outlined">sports_tennis</span>Padel
+              </button>
+              <button class="v-chip pickle" onclick="setFilter('pickle')">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+                Pickleball
+              </button>
+              <button class="v-chip" onclick="setFilter('available')">
+                <span class="material-symbols-outlined">bolt</span>Available now
+              </button>
+            </div>
+            <div class="sort-filter-group">
+              <button class="sf-btn" id="sortBtn" onclick="openSort()">
+                <span class="material-symbols-outlined">sort</span><span id="sortLabel">Sort</span>
+              </button>
+            </div>
+          </div>
+          <div class="controls-divider"></div>
+        </div>
+      </header>
+
+      <div class="results-meta">
+        <span class="results-count" id="resultsCount"><strong>5</strong> venues near you</span>
+      </div>
+
+      <div class="venue-list" id="venueList"></div>
+
+      <div class="empty-state" id="emptyState" style="display:none">
+        <span class="material-symbols-outlined" style="font-size:52px;color:var(--outline-variant);font-variation-settings:'FILL' 0,'wght' 200;display:block;margin-bottom:4px;">search_off</span>
+        <div class="empty-title">No venues found</div>
+        <div class="empty-sub" id="emptySub">Try a different search or adjust your filters.</div>
+        <button class="empty-action" onclick="clearAll()">
+          <span class="material-symbols-outlined">refresh</span>Clear filters
+        </button>
+      </div>
+
+      <nav class="bottom-nav">
+        <a class="nav-item active" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+
+    </div>
+
+    <div class="sheet-overlay" id="sortOverlay" onclick="closeSort()"></div>
+    <div class="sort-sheet" id="sortSheet">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sort-sheet-title">Sort venues</div>
+      <div class="sort-option selected" data-sort="nearest" onclick="setSort('nearest')">
+        <div class="sort-option-label"><span class="material-symbols-outlined">near_me</span>Nearest first</div>
+        <div class="sort-radio"><div class="sort-radio-inner"></div></div>
+      </div>
+      <div class="sort-option" data-sort="rated" onclick="setSort('rated')">
+        <div class="sort-option-label"><span class="material-symbols-outlined">star</span>Highest rated</div>
+        <div class="sort-radio"><div class="sort-radio-inner"></div></div>
+      </div>
+      <div class="sort-option" data-sort="price-asc" onclick="setSort('price-asc')">
+        <div class="sort-option-label"><span class="material-symbols-outlined">arrow_upward</span>Price: low to high</div>
+        <div class="sort-radio"><div class="sort-radio-inner"></div></div>
+      </div>
+      <div class="sort-option" data-sort="price-desc" onclick="setSort('price-desc')">
+        <div class="sort-option-label"><span class="material-symbols-outlined">arrow_downward</span>Price: high to low</div>
+        <div class="sort-radio"><div class="sort-radio-inner"></div></div>
+      </div>
+      <div class="sort-option" data-sort="reviewed" onclick="setSort('reviewed')">
+        <div class="sort-option-label"><span class="material-symbols-outlined">reviews</span>Most reviewed</div>
+        <div class="sort-radio"><div class="sort-radio-inner"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const P_SVG = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" width="10" height="10"><ellipse cx="10" cy="8.5" rx="6" ry="6"/><rect x="8.75" y="14.5" width="2.5" height="4" rx="1.25"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="10" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>`;
+
+const VENUES = [
+  { id:1, name:'Colombo Padel Academy', sports:['padel','pickle'], rating:4.8, cnt:127, dist:0.8, price:3500, avail:true,  featured:true,  img:'ci-padel',      unavailMsg:null,                        href:'padel-chief-venue-detail.html' },
+  { id:2, name:'The Padel Club',         sports:['padel'],         rating:4.6, cnt:89,  dist:1.4, price:2800, avail:true,  featured:false, img:'ci-padel-warm', unavailMsg:null,                        href:'#' },
+  { id:3, name:'Negombo Pickle Courts',  sports:['pickle'],        rating:4.3, cnt:44,  dist:3.2, price:1800, avail:true,  featured:false, img:'ci-pickle',     unavailMsg:null,                        href:'#' },
+  { id:4, name:'Royal Sports Complex',   sports:['padel','pickle'],rating:null,cnt:0,   dist:5.1, price:3200, avail:false, featured:false, img:'ci-clay',       unavailMsg:'All courts booked until 8:00 PM', href:'#' },
+  { id:5, name:'Court Elite Colombo',    sports:['padel'],         rating:4.1, cnt:22,  dist:7.8, price:4500, avail:true,  featured:false, img:'ci-multi',      unavailMsg:null,                        href:'#' }
+];
+
+const SORT_LABELS = { nearest:'Nearest', rated:'Top Rated', 'price-asc':'Price ↑', 'price-desc':'Price ↓', reviewed:'Most Reviewed' };
+
+const st = { filter:'all', sort:'nearest', searchOpen:false, query:'', sortOpen:false };
+
+function sportChip(s) {
+  return s === 'padel'
+    ? `<span class="sci padel"><span class="material-symbols-outlined">sports_tennis</span>Padel</span>`
+    : `<span class="sci pickle">${P_SVG}Pickle</span>`;
+}
+
+function venueCard(v) {
+  const featBadge = v.featured ? `<div class="featured-badge">Featured</div>` : '';
+  const availBadge = v.avail
+    ? `<div class="avail-badge open"><div class="avail-dot"></div>Available now</div>`
+    : `<div class="avail-badge unavail"><div class="avail-dot"></div>Unavailable</div>`;
+  const ratingHtml = v.rating !== null
+    ? `<div class="venue-rating"><span class="material-symbols-outlined">star</span><span class="rating-val">${v.rating}</span><span class="rating-ct">· ${v.cnt}</span></div>`
+    : `<div class="no-rating"><span class="material-symbols-outlined">star_border</span>No reviews yet</div>`;
+  const unavailRow = !v.avail && v.unavailMsg
+    ? `<div class="vcb-row3"><div class="venue-unavail-msg"><span class="material-symbols-outlined">schedule</span>${v.unavailMsg}</div></div>` : '';
+  const nav = v.href !== '#' ? `onclick="window.location='${v.href}'"` : '';
+  return `
+    <div class="venue-card${v.avail?'':' unavail'}" ${nav}>
+      <div class="venue-img ${v.img}">
+        ${featBadge}${availBadge}
+        <div class="sport-chips-img">${v.sports.map(sportChip).join('')}</div>
+      </div>
+      <div class="venue-card-body">
+        <div class="vcb-row1">
+          <div class="venue-name">${v.name}</div>
+          ${ratingHtml}
+        </div>
+        <div class="vcb-row2">
+          <span class="venue-dist"><span class="material-symbols-outlined">near_me</span>${v.dist} km away</span>
+          <span class="venue-price"><span class="venue-price-cur">From LKR </span>${v.price.toLocaleString()}<span class="venue-price-cur"> / hr</span></span>
+        </div>
+        ${unavailRow}
+      </div>
+    </div>`;
+}
+
+function getFiltered() {
+  let list = [...VENUES];
+  if (st.filter === 'padel')     list = list.filter(v => v.sports.includes('padel'));
+  else if (st.filter === 'pickle')    list = list.filter(v => v.sports.includes('pickle'));
+  else if (st.filter === 'available') list = list.filter(v => v.avail);
+  if (st.query) list = list.filter(v => v.name.toLowerCase().includes(st.query.toLowerCase()));
+  if      (st.sort === 'rated')      list.sort((a,b)=>(b.rating||0)-(a.rating||0));
+  else if (st.sort === 'price-asc')  list.sort((a,b)=>a.price-b.price);
+  else if (st.sort === 'price-desc') list.sort((a,b)=>b.price-a.price);
+  else if (st.sort === 'reviewed')   list.sort((a,b)=>(b.cnt||0)-(a.cnt||0));
+  else list.sort((a,b)=>a.dist-b.dist);
+  return list;
+}
+
+function render() {
+  const list = getFiltered();
+  const vl = document.getElementById('venueList');
+  const es = document.getElementById('emptyState');
+  const rc = document.getElementById('resultsCount');
+
+  if (list.length === 0) {
+    vl.style.display = 'none'; es.style.display = 'flex';
+    rc.innerHTML = '<strong>0</strong> venues found';
+    const sub = document.getElementById('emptySub');
+    if (st.query) sub.textContent = `No venues match "${st.query}". Try a different search.`;
+    else sub.textContent = 'No venues match your current filters.';
+  } else {
+    vl.style.display = 'flex'; es.style.display = 'none';
+    vl.innerHTML = list.map(venueCard).join('');
+    const noun = st.filter === 'padel' ? 'padel venues' : st.filter === 'pickle' ? 'pickleball venues' : st.filter === 'available' ? 'available now' : 'venues near you';
+    rc.innerHTML = `<strong>${list.length}</strong> ${noun}`;
+  }
+
+  /* filter chips */
+  const chips = document.querySelectorAll('#filterChips .v-chip');
+  const fi = { all:0, padel:1, pickle:2, available:3 };
+  chips.forEach((c,i) => c.classList.toggle('active', i === fi[st.filter]));
+
+  /* sort button */
+  const sb = document.getElementById('sortBtn');
+  sb.classList.toggle('active', st.sort !== 'nearest');
+  document.getElementById('sortLabel').textContent = SORT_LABELS[st.sort] || 'Sort';
+
+  /* sort options */
+  document.querySelectorAll('.sort-option').forEach(o => o.classList.toggle('selected', o.dataset.sort === st.sort));
+
+  /* sort sheet */
+  document.getElementById('sortOverlay').classList.toggle('open', st.sortOpen);
+  document.getElementById('sortSheet').classList.toggle('open', st.sortOpen);
+
+  /* search */
+  document.getElementById('vHeader').classList.toggle('search-active', st.searchOpen);
+
+  /* subtitle */
+  const sub = document.getElementById('vSub');
+  if (st.query) sub.textContent = `Results for "${st.query}"`;
+  else sub.textContent = `Colombo area · sorted by ${(SORT_LABELS[st.sort]||'nearest').toLowerCase()}`;
+}
+
+function setFilter(f) { st.filter = f; render(); }
+function openSort()   { st.sortOpen = true;  render(); }
+function closeSort()  { st.sortOpen = false; render(); }
+function setSort(s)   { st.sort = s; st.sortOpen = false; render(); }
+
+function toggleSearch() {
+  st.searchOpen = !st.searchOpen;
+  render();
+  if (st.searchOpen) setTimeout(() => document.getElementById('vSearchInput').focus(), 80);
+}
+function clearSearch() {
+  st.query = '';
+  document.getElementById('vSearchInput').value = '';
+  render();
+}
+function cancelSearch() {
+  st.searchOpen = false; st.query = '';
+  document.getElementById('vSearchInput').value = '';
+  render();
+}
+function onSearch(v) { st.query = v; render(); }
+function clearAll() {
+  st.filter = 'all'; st.sort = 'nearest'; st.query = '';
+  document.getElementById('vSearchInput').value = '';
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Padel Chief — Venue Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --surface: #FFFFFF;
+    --background: #F8FAFC;
+    --on-background: #0F172A;
+    --on-surface: #0F172A;
+    --on-surface-variant: #475569;
+    --primary: #125fa9;
+    --secondary-fixed: #d8ef00;
+    --outline: #94A3B8;
+    --outline-variant: #E2E8F0;
+    --surface-container: #F1F5F9;
+    --surface-container-high: #E2E8F0;
+    --pickle: #0d9488;
+    --available: #10b981;
+    --star: #f59e0b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #0a0c10;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ── Phone Frame ── */
+  .phone-wrapper { display: flex; flex-direction: column; align-items: center; }
+  .screen-label {
+    color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .phone-frame {
+    width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+    position: relative; background: var(--background); flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+                0 0 0 2px rgba(255,255,255,0.06),
+                0 40px 80px rgba(0,0,0,0.5);
+  }
+  .phone-frame::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 30px; background: #0F172A;
+    border-radius: 0 0 18px 18px; z-index: 100;
+  }
+
+  /* ── Screen (scrollable) ── */
+  .screen {
+    width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: none; display: flex; flex-direction: column;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* ── Floating App Bar ── */
+  .app-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 96px; z-index: 50; pointer-events: none;
+    display: flex; flex-direction: column;
+  }
+  .app-bar-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+    transition: opacity 0.25s;
+  }
+  .app-bar-status {
+    height: 44px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; position: relative; z-index: 1; flex-shrink: 0;
+  }
+  .status-time { font-size: 15px; font-weight: 700; color: white; }
+  .status-icons { display: flex; align-items: center; gap: 6px; }
+  .status-icons svg { fill: white; }
+  .app-bar-actions {
+    flex: 1; display: flex; align-items: center;
+    padding: 0 16px; gap: 8px; position: relative; z-index: 1;
+    pointer-events: auto;
+  }
+  .app-bar-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,0,0,0.32); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+  }
+  .app-bar-btn .material-symbols-outlined { font-size: 20px; color: white; font-variation-settings:'FILL' 0,'wght' 400; }
+  .app-bar-btn:active { background: rgba(0,0,0,0.5); }
+  .app-bar-spacer { flex: 1; }
+
+  /* Scrolled state (JS adds .scrolled) */
+  .app-bar.scrolled .app-bar-bg { opacity: 0; }
+  .app-bar.scrolled { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+  .app-bar.scrolled .status-time { color: var(--on-surface); }
+  .app-bar.scrolled .status-icons svg { fill: var(--on-surface); }
+  .app-bar.scrolled .app-bar-btn { background: var(--surface-container); }
+  .app-bar.scrolled .app-bar-btn .material-symbols-outlined { color: var(--on-surface); }
+
+  /* ── Carousel ── */
+  .carousel { position: relative; height: 300px; overflow: hidden; flex-shrink: 0; }
+  .carousel-track { display: flex; height: 100%; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+  .carousel-slide { flex-shrink: 0; width: 375px; height: 300px; position: relative; overflow: hidden; }
+
+  /* Court images — proper court-line patterns */
+  .ci-padel { background: #0b2d52; }
+  .ci-padel::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 14%, #0f4b8a 14%, #1156a0 86%, transparent 86%),
+      linear-gradient(180deg, transparent 49%, rgba(255,255,255,0.50) 49%, rgba(255,255,255,0.50) 51%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.22) 50.5%, transparent 50.5%),
+      linear-gradient(90deg, transparent 26%, rgba(255,255,255,0.18) 26%, rgba(255,255,255,0.18) 27%, transparent 27%,
+                      transparent 72%, rgba(255,255,255,0.18) 72%, rgba(255,255,255,0.18) 73%, transparent 73%);
+  }
+  .ci-padel-warm { background: #180c34; }
+  .ci-padel-warm::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 14%, #2d1b69 14%, #3e2a87 86%, transparent 86%),
+      linear-gradient(180deg, transparent 49%, rgba(255,255,255,0.50) 49%, rgba(255,255,255,0.50) 51%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.22) 50.5%, transparent 50.5%);
+  }
+  .ci-clay { background: #3d0f06; }
+  .ci-clay::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 14%, #9a2a14 14%, #b33318 86%, transparent 86%),
+      linear-gradient(180deg, transparent 49%, rgba(255,255,255,0.50) 49%, rgba(255,255,255,0.50) 51%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.22) 50.5%, transparent 50.5%),
+      linear-gradient(90deg, transparent 26%, rgba(255,255,255,0.18) 26%, rgba(255,255,255,0.18) 27%, transparent 27%,
+                      transparent 72%, rgba(255,255,255,0.18) 72%, rgba(255,255,255,0.18) 73%, transparent 73%);
+  }
+  .ci-pickle { background: #0b2d1e; }
+  .ci-pickle::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 14%, #15603a 14%, #197a4a 86%, transparent 86%),
+      linear-gradient(180deg, transparent 29%, rgba(255,255,255,0.30) 29%, rgba(255,255,255,0.30) 30.5%, transparent 30.5%,
+                      transparent 69%, rgba(255,255,255,0.30) 69%, rgba(255,255,255,0.30) 70.5%, transparent 70.5%),
+      linear-gradient(180deg, transparent 49%, rgba(255,255,255,0.50) 49%, rgba(255,255,255,0.50) 51%, transparent 51%),
+      linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.22) 49.5%, rgba(255,255,255,0.22) 50.5%, transparent 50.5%);
+  }
+  .ci-multi { background: #101820; }
+  .ci-multi::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 10%, #1a3a5c 10%, #1a3a5c 48%, transparent 48%,
+                      transparent 52%, #1a3a5c 52%, #1a3a5c 89%, transparent 89%),
+      linear-gradient(90deg, transparent 48.5%, rgba(255,255,255,0.4) 48.5%, rgba(255,255,255,0.4) 51.5%, transparent 51.5%),
+      linear-gradient(180deg, transparent 48%, rgba(255,255,255,0.4) 48%, rgba(255,255,255,0.4) 52%, transparent 52%);
+  }
+  /* Overlay gradient on every slide */
+  .carousel-slide::before {
+    content: ''; position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(180deg, rgba(0,0,0,0.28) 0%, transparent 35%, transparent 55%, rgba(0,0,0,0.65) 100%);
+  }
+  .carousel-slide-meta {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 10px 14px 12px; z-index: 3;
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+  .slide-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.80); letter-spacing: 0.05em; }
+
+  /* Carousel controls */
+  .carousel-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(0,0,0,0.38); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10; -webkit-tap-highlight-color: transparent;
+  }
+  .carousel-arrow .material-symbols-outlined { font-size: 18px; color: white; font-variation-settings:'FILL' 0,'wght' 500; }
+  .carousel-arrow-prev { left: 12px; }
+  .carousel-arrow-next { right: 12px; }
+  .carousel-arrow:disabled { opacity: 0.28; pointer-events: none; }
+  .carousel-dots {
+    position: absolute; bottom: 14px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 5px; z-index: 10;
+  }
+  .carousel-dot {
+    width: 6px; height: 6px; border-radius: 3px;
+    background: rgba(255,255,255,0.40); cursor: pointer;
+    transition: width 0.22s, background 0.22s;
+  }
+  .carousel-dot.active { width: 16px; background: white; }
+  .carousel-counter {
+    position: absolute; top: 100px; right: 12px; z-index: 10;
+    background: rgba(0,0,0,0.42); border-radius: 10px;
+    padding: 3px 8px; font-size: 11px; font-weight: 600; color: white;
+  }
+
+  /* ── Venue Info ── */
+  .venue-info { background: white; padding: 18px 18px 0; }
+  .venue-name { font-size: 22px; font-weight: 800; color: var(--on-surface); line-height: 1.2; letter-spacing: -0.02em; }
+  .venue-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .rating-pill {
+    display: flex; align-items: center; gap: 3px;
+    background: #fff8e1; border-radius: 20px; padding: 4px 10px;
+  }
+  .rating-pill .material-symbols-outlined { font-size: 13px; color: var(--star); font-variation-settings:'FILL' 1,'wght' 400; }
+  .rating-num { font-size: 12px; font-weight: 700; color: #92400e; }
+  .rating-cnt { font-size: 11px; color: #b45309; }
+  .sport-tag {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  }
+  .sport-tag.padel { background: rgba(18,95,169,0.10); color: var(--primary); }
+  .sport-tag.pickle { background: rgba(13,148,136,0.10); color: var(--pickle); }
+  .new-badge { display: inline-flex; align-items: center; gap: 3px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; background: rgba(16,185,129,0.12); color: #059669; }
+  .open-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: #16a34a; }
+  .open-dot { width: 5px; height: 5px; border-radius: 50%; background: #16a34a; flex-shrink: 0; }
+  .location-row { display: flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 12px; color: var(--on-surface-variant); }
+  .location-row .material-symbols-outlined { font-size: 15px; color: var(--outline); font-variation-settings:'FILL' 0,'wght' 300; }
+  .price-row { display: flex; align-items: baseline; gap: 3px; margin-top: 8px; }
+  .price-from { font-size: 11px; color: var(--outline); }
+  .price-amount { font-size: 20px; font-weight: 800; color: var(--on-surface); letter-spacing: -0.02em; }
+  .price-unit { font-size: 11px; color: var(--outline); }
+  .cta-row { display: flex; gap: 10px; margin-top: 14px; padding-bottom: 18px; }
+  .btn-book {
+    flex: 1; height: 48px; background: var(--primary);
+    border: none; border-radius: 24px; font-size: 14px; font-weight: 700;
+    color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-book .material-symbols-outlined { font-size: 18px; font-variation-settings:'FILL' 0,'wght' 400; }
+  .btn-book:active { filter: brightness(0.88); }
+  .btn-call {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--surface-container); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; text-decoration: none; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-call .material-symbols-outlined { font-size: 20px; color: var(--primary); font-variation-settings:'FILL' 1,'wght' 400; }
+  .btn-call:active { background: var(--surface-container-high); }
+
+  /* ── Divider / Section ── */
+  .section-divider { height: 8px; background: var(--surface-container); flex-shrink: 0; }
+  .section { background: white; padding: 18px; }
+  .section-title { font-size: 14px; font-weight: 700; color: var(--on-surface); margin-bottom: 13px; }
+
+  /* ── Hours ── */
+  .hours-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; }
+  .hours-row + .hours-row { border-top: 1px solid var(--outline-variant); }
+  .hours-day { font-size: 12px; font-weight: 500; color: var(--on-surface-variant); display: flex; align-items: center; gap: 6px; }
+  .hours-time { font-size: 12px; font-weight: 600; color: var(--on-surface); }
+  .hours-row.today .hours-day { color: var(--primary); font-weight: 700; }
+  .hours-row.today .hours-time { color: var(--primary); }
+  .today-badge { font-size: 8px; font-weight: 800; background: rgba(18,95,169,0.10); color: var(--primary); padding: 2px 6px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* ── Amenities ── */
+  .amenities-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .amenity-item { display: flex; align-items: center; gap: 9px; background: var(--surface-container); border-radius: 12px; padding: 10px 11px; }
+  .amenity-item .material-symbols-outlined { font-size: 18px; color: var(--primary); font-variation-settings:'FILL' 0,'wght' 300; flex-shrink: 0; }
+  .amenity-label { font-size: 11px; font-weight: 600; color: var(--on-surface); }
+
+  /* ── About ── */
+  .about-text { font-size: 13px; line-height: 1.65; color: var(--on-surface-variant); }
+
+  /* ── Reviews ── */
+  .rating-overview { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+  .rating-big { font-size: 46px; font-weight: 800; color: var(--on-surface); line-height: 1; letter-spacing: -0.03em; }
+  .rating-right { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .rating-stars-row { display: flex; gap: 2px; margin-bottom: 3px; }
+  .rating-stars-row .material-symbols-outlined { font-size: 14px; color: var(--star); font-variation-settings:'FILL' 1,'wght' 400; }
+  .rating-stars-row .star-empty { color: var(--outline-variant); font-variation-settings:'FILL' 0,'wght' 300; }
+  .rating-count { font-size: 11px; color: var(--outline); }
+  .bar-row { display: flex; align-items: center; gap: 5px; }
+  .bar-label { font-size: 10px; color: var(--outline); width: 8px; text-align: center; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 3px; background: var(--outline-variant); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--star); border-radius: 2px; }
+  .bar-pct { font-size: 9px; color: var(--outline); width: 26px; text-align: right; flex-shrink: 0; }
+
+  .review-card { padding: 13px 0; border-top: 1px solid var(--outline-variant); }
+  .review-header { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+  .review-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+  .review-author { flex: 1; }
+  .review-author-name { font-size: 12px; font-weight: 700; color: var(--on-surface); }
+  .review-date { font-size: 10px; color: var(--outline); margin-top: 1px; }
+  .review-stars { display: flex; gap: 2px; }
+  .review-stars .material-symbols-outlined { font-size: 12px; color: var(--star); font-variation-settings:'FILL' 1,'wght' 400; }
+  .review-text { font-size: 12px; line-height: 1.6; color: var(--on-surface-variant); }
+
+  .reviews-empty { padding: 20px 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .reviews-empty-icon { font-size: 48px; color: var(--outline-variant); font-variation-settings:'FILL' 0,'wght' 200; display: block; }
+  .reviews-empty-title { font-size: 15px; font-weight: 700; color: var(--on-surface); }
+  .reviews-empty-sub { font-size: 12px; color: var(--outline); line-height: 1.5; max-width: 220px; }
+
+  .write-review-btn {
+    width: 100%; height: 44px; border: 1.5px solid var(--primary); border-radius: 22px;
+    background: transparent; color: var(--primary); font-size: 13px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 14px; font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .write-review-btn .material-symbols-outlined { font-size: 16px; font-variation-settings:'FILL' 0,'wght' 400; }
+  .write-review-btn:active { background: rgba(18,95,169,0.05); }
+
+  /* ── Bottom Nav ── */
+  .bottom-nav {
+    position: sticky; bottom: 0; z-index: 50;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0; display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px 28px; box-shadow: 0 -1px 0 rgba(15,23,42,0.08), 0 -8px 32px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    text-decoration: none; cursor: pointer; transition: all 0.2s; min-width: 48px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-item .material-symbols-outlined { font-size: 24px; }
+  .nav-item-label { font-size: 9px; font-weight: 600; }
+  .nav-item.active .material-symbols-outlined { color: var(--primary); font-variation-settings: 'FILL' 1, 'wght' 400; }
+  .nav-item.active .nav-item-label { color: var(--primary); }
+  .nav-item:not(.active) .material-symbols-outlined { color: var(--on-surface-variant); }
+  .nav-item:not(.active) .nav-item-label { color: var(--on-surface-variant); }
+  .nav-create .material-symbols-outlined { font-size: 28px; }
+
+  /* ── Sheet Overlay ── */
+  .sheet-overlay {
+    position: absolute; inset: 0; z-index: 60;
+    background: rgba(0,0,0,0.45); opacity: 0; pointer-events: none;
+    transition: opacity 0.28s; border-radius: 44px;
+  }
+  .sheet-overlay.open { opacity: 1; pointer-events: auto; }
+
+  /* ── Review Sheet ── */
+  .review-sheet {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 61;
+    background: var(--surface); border-radius: 28px 28px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.34s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    padding-bottom: 32px;
+    box-shadow: 0 -12px 40px rgba(0,0,0,0.18);
+  }
+  .review-sheet.open { transform: translateY(0); }
+  .sheet-handle { padding: 12px 0 6px; display: flex; justify-content: center; }
+  .sheet-handle-bar { width: 36px; height: 4px; border-radius: 2px; background: var(--outline-variant); }
+  .sheet-header { display: flex; align-items: center; justify-content: space-between; padding: 4px 18px 12px; border-bottom: 1px solid var(--outline-variant); }
+  .sheet-title { font-size: 15px; font-weight: 800; color: var(--on-surface); }
+  .sheet-close {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--surface-container);
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sheet-close .material-symbols-outlined { font-size: 16px; color: var(--on-surface-variant); font-variation-settings:'FILL' 0,'wght' 400; }
+  .sheet-body { padding: 16px 18px 0; }
+  .sheet-venue-name { font-size: 12px; color: var(--outline); margin-bottom: 14px; }
+  .star-tapper { display: flex; justify-content: center; gap: 6px; margin-bottom: 8px; }
+  .star-tapper .star {
+    font-size: 34px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s; color: var(--outline-variant);
+    font-variation-settings: 'FILL' 0, 'wght' 300;
+  }
+  .star-tapper .star.lit { color: var(--star); font-variation-settings: 'FILL' 1, 'wght' 400; }
+  .star-tapper .star:active { transform: scale(1.22); }
+  .rating-hint { text-align: center; font-size: 12px; font-weight: 700; color: var(--primary); min-height: 18px; margin-bottom: 12px; }
+  .sheet-textarea {
+    width: 100%; min-height: 88px; border: 1.5px solid var(--outline-variant); border-radius: 14px;
+    padding: 11px 13px; font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--on-surface); resize: none; outline: none; line-height: 1.6;
+  }
+  .sheet-textarea::placeholder { color: var(--outline); }
+  .sheet-textarea:focus { border-color: var(--primary); }
+  .sheet-char-count { font-size: 10px; color: var(--outline); text-align: right; margin-top: 3px; }
+  .sheet-submit {
+    width: 100%; height: 50px; background: var(--primary);
+    border: none; border-radius: 25px; color: white; font-size: 14px; font-weight: 700;
+    cursor: pointer; margin-top: 12px; font-family: 'Plus Jakarta Sans', sans-serif;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sheet-submit .material-symbols-outlined { font-size: 16px; font-variation-settings:'FILL' 0,'wght' 400; }
+  .sheet-submit:active { filter: brightness(0.88); }
+  .sheet-submit:disabled { background: var(--surface-container-high); color: var(--outline); cursor: default; filter: none; }
+  .content-end { height: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     FRAME 1  ·  Colombo Padel Academy  ·  Padel + Pickle
+     ═══════════════════════════════════════════════════════ -->
+<div class="phone-wrapper">
+  <div class="screen-label">Venue Detail — Padel &amp; Pickle</div>
+  <div class="phone-frame">
+    <!-- App Bar (floating) -->
+    <div class="app-bar" id="ab1">
+      <div class="app-bar-bg"></div>
+      <div class="app-bar-status">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C5.2 2.5 2.7 3.7 1 5.7L0 4.5C2 2.1 4.8.7 8 .7s6 1.4 8 3.8L15 5.7C13.3 3.7 10.8 2.5 8 2.5zm0 4C6.2 6.5 4.6 7.3 3.5 8.5L2.4 7.3C3.8 5.8 5.8 4.7 8 4.7s4.2 1.1 5.6 2.6L12.5 8.5C11.4 7.3 9.8 6.5 8 6.5zm0 4c-.8 0-1.5.3-2 .8L8 12l2-.7c-.5-.5-1.2-.8-2-.8z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><rect x="23" y="4" width="2" height="4" rx="1" fill="white" opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="app-bar-actions">
+        <button class="app-bar-btn" onclick="window.location='padel-chief-venues.html'"><span class="material-symbols-outlined">arrow_back</span></button>
+        <div class="app-bar-spacer"></div>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">favorite</span></button>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">share</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="s1">
+      <!-- Carousel -->
+      <div class="carousel" id="c1">
+        <div class="carousel-track" id="ct1">
+          <div class="carousel-slide ci-padel"><div class="carousel-slide-meta"><span class="slide-label">Court A · Padel</span></div></div>
+          <div class="carousel-slide ci-padel-warm"><div class="carousel-slide-meta"><span class="slide-label">Court B · Padel</span></div></div>
+          <div class="carousel-slide ci-clay"><div class="carousel-slide-meta"><span class="slide-label">Court C · Clay</span></div></div>
+          <div class="carousel-slide ci-pickle"><div class="carousel-slide-meta"><span class="slide-label">Court D · Pickleball</span></div></div>
+        </div>
+        <button class="carousel-arrow carousel-arrow-prev" id="cp1" aria-label="Previous"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button class="carousel-arrow carousel-arrow-next" id="cn1" aria-label="Next"><span class="material-symbols-outlined">chevron_right</span></button>
+        <div class="carousel-dots" id="cd1"></div>
+        <div class="carousel-counter" id="cc1">1 / 4</div>
+      </div>
+
+      <!-- Info -->
+      <div class="venue-info">
+        <div class="venue-name">Colombo Padel Academy</div>
+        <div class="venue-meta-row">
+          <div class="rating-pill"><span class="material-symbols-outlined">star</span><span class="rating-num">4.8</span><span class="rating-cnt">(127)</span></div>
+          <span class="sport-tag padel">Padel</span>
+          <span class="sport-tag pickle">Pickleball</span>
+          <span class="open-badge"><span class="open-dot"></span>Open Now</span>
+        </div>
+        <div class="location-row"><span class="material-symbols-outlined">location_on</span>45 Galle Road, Colombo 3 &nbsp;·&nbsp; 0.8 km away</div>
+        <div class="price-row"><span class="price-from">From</span><span class="price-amount">LKR 3,500</span><span class="price-unit">/hr</span></div>
+        <div class="cta-row">
+          <button class="btn-book"><span class="material-symbols-outlined">calendar_month</span>Book a Court</button>
+          <a class="btn-call" href="tel:+94112345678"><span class="material-symbols-outlined">call</span></a>
+        </div>
+      </div>
+
+      <!-- Hours -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Opening Hours</div>
+        <div class="hours-row"><span class="hours-day">Monday</span><span class="hours-time">6:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Tuesday</span><span class="hours-time">6:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Wednesday</span><span class="hours-time">6:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Thursday</span><span class="hours-time">6:00 AM – 10:00 PM</span></div>
+        <div class="hours-row today"><span class="hours-day">Friday <span class="today-badge">Today</span></span><span class="hours-time">6:00 AM – 11:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">6:00 AM – 11:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Sunday</span><span class="hours-time">7:00 AM – 9:00 PM</span></div>
+      </div>
+
+      <!-- Amenities -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Amenities</div>
+        <div class="amenities-grid">
+          <div class="amenity-item"><span class="material-symbols-outlined">door_front</span><span class="amenity-label">Changing Rooms</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">shower</span><span class="amenity-label">Showers</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">local_cafe</span><span class="amenity-label">Café</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">local_parking</span><span class="amenity-label">Parking</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">sports_tennis</span><span class="amenity-label">Equipment Rental</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">storefront</span><span class="amenity-label">Pro Shop</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">accessible</span><span class="amenity-label">Accessible</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">wifi</span><span class="amenity-label">Wi-Fi</span></div>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">About</div>
+        <p class="about-text">Colombo Padel Academy is Sri Lanka's premier padel and pickleball facility, located in the heart of Colombo 3. With four world-class courts — including a dedicated clay surface — we cater to all levels, from beginners to seasoned competitors. Certified coaching staff offer group clinics and private lessons throughout the week.</p>
+      </div>
+
+      <!-- Reviews -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Reviews</div>
+        <div class="rating-overview">
+          <div class="rating-big">4.8</div>
+          <div class="rating-right">
+            <div class="rating-stars-row">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined star-empty">star_half</span>
+            </div>
+            <div class="rating-count">127 reviews</div>
+            <div style="margin-top:7px;display:flex;flex-direction:column;gap:3px;">
+              <div class="bar-row"><span class="bar-label">5</span><div class="bar-track"><div class="bar-fill" style="width:61%"></div></div><span class="bar-pct">61%</span></div>
+              <div class="bar-row"><span class="bar-label">4</span><div class="bar-track"><div class="bar-fill" style="width:25%"></div></div><span class="bar-pct">25%</span></div>
+              <div class="bar-row"><span class="bar-label">3</span><div class="bar-track"><div class="bar-fill" style="width:9%"></div></div><span class="bar-pct">9%</span></div>
+              <div class="bar-row"><span class="bar-label">2</span><div class="bar-track"><div class="bar-fill" style="width:3%"></div></div><span class="bar-pct">3%</span></div>
+              <div class="bar-row"><span class="bar-label">1</span><div class="bar-track"><div class="bar-fill" style="width:2%"></div></div><span class="bar-pct">2%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:#125fa9;">CP</div>
+            <div class="review-author"><div class="review-author-name">Chamara Perera</div><div class="review-date">2 days ago</div></div>
+            <div class="review-stars"><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span></div>
+          </div>
+          <div class="review-text">Best padel courts in Colombo by far. The clay court is incredibly well-maintained and the staff are always helpful. Booking was seamless through the app.</div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:#0d9488;">NS</div>
+            <div class="review-author"><div class="review-author-name">Nisha de Silva</div><div class="review-date">1 week ago</div></div>
+            <div class="review-stars"><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span></div>
+          </div>
+          <div class="review-text">Great venue with top facilities. The café has lovely smoothies post-match. Knocked off one star as parking can get tight on weekends.</div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:#7c3aed;">DM</div>
+            <div class="review-author"><div class="review-author-name">Dilshan Mendis</div><div class="review-date">3 weeks ago</div></div>
+            <div class="review-stars"><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span></div>
+          </div>
+          <div class="review-text">Played here for the first time last month and I'm hooked. The equipment rental is reasonably priced and the coaching sessions are genuinely excellent.</div>
+        </div>
+        <button class="write-review-btn" id="wb1"><span class="material-symbols-outlined">rate_review</span>Write a Review</button>
+      </div>
+
+      <div class="content-end"></div>
+      <nav class="bottom-nav">
+        <a class="nav-item active" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+    </div>
+
+    <div class="sheet-overlay" id="so1"></div>
+    <div class="review-sheet" id="rs1">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sheet-header"><div class="sheet-title">Write a Review</div><button class="sheet-close" id="sc1"><span class="material-symbols-outlined">close</span></button></div>
+      <div class="sheet-body">
+        <div class="sheet-venue-name">Colombo Padel Academy</div>
+        <div class="star-tapper" id="st1">
+          <span class="material-symbols-outlined star">star</span><span class="material-symbols-outlined star">star</span>
+          <span class="material-symbols-outlined star">star</span><span class="material-symbols-outlined star">star</span>
+          <span class="material-symbols-outlined star">star</span>
+        </div>
+        <div class="rating-hint" id="rh1"></div>
+        <textarea class="sheet-textarea" id="rt1" placeholder="Share your experience…" maxlength="300"></textarea>
+        <div class="sheet-char-count"><span id="rc1">0</span> / 300</div>
+        <button class="sheet-submit" id="ss1" disabled><span class="material-symbols-outlined">send</span>Submit Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     FRAME 2  ·  WTC Padel Hub  ·  No Reviews (New Venue)
+     ═══════════════════════════════════════════════════════ -->
+<div class="phone-wrapper">
+  <div class="screen-label">No Reviews — New Venue</div>
+  <div class="phone-frame">
+    <div class="app-bar" id="ab2">
+      <div class="app-bar-bg"></div>
+      <div class="app-bar-status">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C5.2 2.5 2.7 3.7 1 5.7L0 4.5C2 2.1 4.8.7 8 .7s6 1.4 8 3.8L15 5.7C13.3 3.7 10.8 2.5 8 2.5zm0 4C6.2 6.5 4.6 7.3 3.5 8.5L2.4 7.3C3.8 5.8 5.8 4.7 8 4.7s4.2 1.1 5.6 2.6L12.5 8.5C11.4 7.3 9.8 6.5 8 6.5zm0 4c-.8 0-1.5.3-2 .8L8 12l2-.7c-.5-.5-1.2-.8-2-.8z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><rect x="23" y="4" width="2" height="4" rx="1" fill="white" opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="app-bar-actions">
+        <button class="app-bar-btn" onclick="window.location='padel-chief-venues.html'"><span class="material-symbols-outlined">arrow_back</span></button>
+        <div class="app-bar-spacer"></div>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">favorite</span></button>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">share</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="s2">
+      <div class="carousel" id="c2">
+        <div class="carousel-track" id="ct2">
+          <div class="carousel-slide ci-padel"><div class="carousel-slide-meta"><span class="slide-label">Court A · Padel</span></div></div>
+          <div class="carousel-slide ci-multi"><div class="carousel-slide-meta"><span class="slide-label">Court B · Padel &amp; Pickle</span></div></div>
+        </div>
+        <button class="carousel-arrow carousel-arrow-prev" id="cp2" aria-label="Previous"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button class="carousel-arrow carousel-arrow-next" id="cn2" aria-label="Next"><span class="material-symbols-outlined">chevron_right</span></button>
+        <div class="carousel-dots" id="cd2"></div>
+        <div class="carousel-counter" id="cc2">1 / 2</div>
+      </div>
+
+      <div class="venue-info">
+        <div class="venue-name">WTC Padel Hub</div>
+        <div class="venue-meta-row">
+          <span class="new-badge">New Venue</span>
+          <span class="sport-tag padel">Padel</span>
+          <span class="sport-tag pickle">Pickleball</span>
+          <span class="open-badge"><span class="open-dot"></span>Open Now</span>
+        </div>
+        <div class="location-row"><span class="material-symbols-outlined">location_on</span>World Trade Centre, Colombo 1 &nbsp;·&nbsp; 2.3 km away</div>
+        <div class="price-row"><span class="price-from">From</span><span class="price-amount">LKR 4,000</span><span class="price-unit">/hr</span></div>
+        <div class="cta-row">
+          <button class="btn-book"><span class="material-symbols-outlined">calendar_month</span>Book a Court</button>
+          <a class="btn-call" href="tel:+94112345678"><span class="material-symbols-outlined">call</span></a>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Opening Hours</div>
+        <div class="hours-row"><span class="hours-day">Monday</span><span class="hours-time">7:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Tuesday</span><span class="hours-time">7:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Wednesday</span><span class="hours-time">7:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Thursday</span><span class="hours-time">7:00 AM – 10:00 PM</span></div>
+        <div class="hours-row today"><span class="hours-day">Friday <span class="today-badge">Today</span></span><span class="hours-time">7:00 AM – 11:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">7:00 AM – 11:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Sunday</span><span class="hours-time">8:00 AM – 9:00 PM</span></div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Amenities</div>
+        <div class="amenities-grid">
+          <div class="amenity-item"><span class="material-symbols-outlined">door_front</span><span class="amenity-label">Changing Rooms</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">shower</span><span class="amenity-label">Showers</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">local_cafe</span><span class="amenity-label">Café</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">local_parking</span><span class="amenity-label">Parking</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">sports_tennis</span><span class="amenity-label">Equipment Rental</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">accessible</span><span class="amenity-label">Accessible</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">elevator</span><span class="amenity-label">Elevator Access</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">wifi</span><span class="amenity-label">Wi-Fi</span></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">About</div>
+        <p class="about-text">WTC Padel Hub is Colombo's newest premium sports facility, located on the upper floors of the World Trade Centre. Featuring two state-of-the-art courts — one padel and one multi-use — with panoramic city views. Opened in early 2026.</p>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Reviews</div>
+        <div class="reviews-empty">
+          <span class="material-symbols-outlined reviews-empty-icon">star_outline</span>
+          <div class="reviews-empty-title">No Reviews Yet</div>
+          <div class="reviews-empty-sub">Be the first to share your experience at this venue</div>
+        </div>
+        <button class="write-review-btn" id="wb2"><span class="material-symbols-outlined">rate_review</span>Be the First to Review</button>
+      </div>
+
+      <div class="content-end"></div>
+      <nav class="bottom-nav">
+        <a class="nav-item active" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+    </div>
+
+    <div class="sheet-overlay" id="so2"></div>
+    <div class="review-sheet" id="rs2">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sheet-header"><div class="sheet-title">Write a Review</div><button class="sheet-close" id="sc2"><span class="material-symbols-outlined">close</span></button></div>
+      <div class="sheet-body">
+        <div class="sheet-venue-name">WTC Padel Hub</div>
+        <div class="star-tapper" id="st2">
+          <span class="material-symbols-outlined star">star</span><span class="material-symbols-outlined star">star</span>
+          <span class="material-symbols-outlined star">star</span><span class="material-symbols-outlined star">star</span>
+          <span class="material-symbols-outlined star">star</span>
+        </div>
+        <div class="rating-hint" id="rh2"></div>
+        <textarea class="sheet-textarea" id="rt2" placeholder="Share your experience…" maxlength="300"></textarea>
+        <div class="sheet-char-count"><span id="rc2">0</span> / 300</div>
+        <button class="sheet-submit" id="ss2" disabled><span class="material-symbols-outlined">send</span>Submit Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     FRAME 3  ·  The Padel Club  ·  Padel Only
+     ═══════════════════════════════════════════════════════ -->
+<div class="phone-wrapper">
+  <div class="screen-label">Padel Only</div>
+  <div class="phone-frame">
+    <div class="app-bar" id="ab3">
+      <div class="app-bar-bg"></div>
+      <div class="app-bar-status">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C5.2 2.5 2.7 3.7 1 5.7L0 4.5C2 2.1 4.8.7 8 .7s6 1.4 8 3.8L15 5.7C13.3 3.7 10.8 2.5 8 2.5zm0 4C6.2 6.5 4.6 7.3 3.5 8.5L2.4 7.3C3.8 5.8 5.8 4.7 8 4.7s4.2 1.1 5.6 2.6L12.5 8.5C11.4 7.3 9.8 6.5 8 6.5zm0 4c-.8 0-1.5.3-2 .8L8 12l2-.7c-.5-.5-1.2-.8-2-.8z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><rect x="23" y="4" width="2" height="4" rx="1" fill="white" opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="app-bar-actions">
+        <button class="app-bar-btn" onclick="window.location='padel-chief-venues.html'"><span class="material-symbols-outlined">arrow_back</span></button>
+        <div class="app-bar-spacer"></div>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">favorite</span></button>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">share</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="s3">
+      <div class="carousel" id="c3">
+        <div class="carousel-track" id="ct3">
+          <div class="carousel-slide ci-padel"><div class="carousel-slide-meta"><span class="slide-label">Court A · Padel</span></div></div>
+          <div class="carousel-slide ci-padel-warm"><div class="carousel-slide-meta"><span class="slide-label">Court B · Padel</span></div></div>
+          <div class="carousel-slide ci-clay"><div class="carousel-slide-meta"><span class="slide-label">Court C · Clay</span></div></div>
+        </div>
+        <button class="carousel-arrow carousel-arrow-prev" id="cp3" aria-label="Previous"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button class="carousel-arrow carousel-arrow-next" id="cn3" aria-label="Next"><span class="material-symbols-outlined">chevron_right</span></button>
+        <div class="carousel-dots" id="cd3"></div>
+        <div class="carousel-counter" id="cc3">1 / 3</div>
+      </div>
+
+      <div class="venue-info">
+        <div class="venue-name">The Padel Club</div>
+        <div class="venue-meta-row">
+          <div class="rating-pill"><span class="material-symbols-outlined">star</span><span class="rating-num">4.6</span><span class="rating-cnt">(89)</span></div>
+          <span class="sport-tag padel">Padel</span>
+          <span class="open-badge"><span class="open-dot"></span>Open Now</span>
+        </div>
+        <div class="location-row"><span class="material-symbols-outlined">location_on</span>28 Havelock Road, Colombo 5 &nbsp;·&nbsp; 1.4 km away</div>
+        <div class="price-row"><span class="price-from">From</span><span class="price-amount">LKR 2,800</span><span class="price-unit">/hr</span></div>
+        <div class="cta-row">
+          <button class="btn-book"><span class="material-symbols-outlined">calendar_month</span>Book a Court</button>
+          <a class="btn-call" href="tel:+94112345678"><span class="material-symbols-outlined">call</span></a>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Opening Hours</div>
+        <div class="hours-row"><span class="hours-day">Monday</span><span class="hours-time">6:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Tuesday</span><span class="hours-time">6:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Wednesday</span><span class="hours-time">6:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Thursday</span><span class="hours-time">6:00 AM – 10:00 PM</span></div>
+        <div class="hours-row today"><span class="hours-day">Friday <span class="today-badge">Today</span></span><span class="hours-time">6:00 AM – 11:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">6:00 AM – 11:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Sunday</span><span class="hours-time">7:00 AM – 9:00 PM</span></div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Amenities</div>
+        <div class="amenities-grid">
+          <div class="amenity-item"><span class="material-symbols-outlined">door_front</span><span class="amenity-label">Changing Rooms</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">shower</span><span class="amenity-label">Showers</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">sports_tennis</span><span class="amenity-label">Racket Rental</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">local_parking</span><span class="amenity-label">Parking</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">storefront</span><span class="amenity-label">Pro Shop</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">fitness_center</span><span class="amenity-label">Coaching</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">accessible</span><span class="amenity-label">Accessible</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">wifi</span><span class="amenity-label">Wi-Fi</span></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">About</div>
+        <p class="about-text">The Padel Club is a dedicated padel-only facility with three world-class courts in Colombo 5. A favourite among serious players for its immaculate surface quality and professional coaching programme. All three courts are fully enclosed glass-walled — including one clay court.</p>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Reviews</div>
+        <div class="rating-overview">
+          <div class="rating-big">4.6</div>
+          <div class="rating-right">
+            <div class="rating-stars-row">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined star-empty">star_half</span>
+            </div>
+            <div class="rating-count">89 reviews</div>
+            <div style="margin-top:7px;display:flex;flex-direction:column;gap:3px;">
+              <div class="bar-row"><span class="bar-label">5</span><div class="bar-track"><div class="bar-fill" style="width:52%"></div></div><span class="bar-pct">52%</span></div>
+              <div class="bar-row"><span class="bar-label">4</span><div class="bar-track"><div class="bar-fill" style="width:30%"></div></div><span class="bar-pct">30%</span></div>
+              <div class="bar-row"><span class="bar-label">3</span><div class="bar-track"><div class="bar-fill" style="width:11%"></div></div><span class="bar-pct">11%</span></div>
+              <div class="bar-row"><span class="bar-label">2</span><div class="bar-track"><div class="bar-fill" style="width:4%"></div></div><span class="bar-pct">4%</span></div>
+              <div class="bar-row"><span class="bar-label">1</span><div class="bar-track"><div class="bar-fill" style="width:3%"></div></div><span class="bar-pct">3%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:#0f766e;">AJ</div>
+            <div class="review-author"><div class="review-author-name">Amali Jayawardena</div><div class="review-date">4 days ago</div></div>
+            <div class="review-stars"><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span></div>
+          </div>
+          <div class="review-text">Absolutely love this club. The padel courts are kept in pristine condition and the coaching team is second to none. My game has improved so much since joining.</div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:#c2410c;">RN</div>
+            <div class="review-author"><div class="review-author-name">Rajan Nair</div><div class="review-date">2 weeks ago</div></div>
+            <div class="review-stars"><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span></div>
+          </div>
+          <div class="review-text">Very well-maintained courts and great pro shop. Would be 5 stars but the booking slots fill up really quickly — wish there were more courts.</div>
+        </div>
+        <button class="write-review-btn" id="wb3"><span class="material-symbols-outlined">rate_review</span>Write a Review</button>
+      </div>
+
+      <div class="content-end"></div>
+      <nav class="bottom-nav">
+        <a class="nav-item active" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+    </div>
+
+    <div class="sheet-overlay" id="so3"></div>
+    <div class="review-sheet" id="rs3">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sheet-header"><div class="sheet-title">Write a Review</div><button class="sheet-close" id="sc3"><span class="material-symbols-outlined">close</span></button></div>
+      <div class="sheet-body">
+        <div class="sheet-venue-name">The Padel Club</div>
+        <div class="star-tapper" id="st3">
+          <span class="material-symbols-outlined star">star</span><span class="material-symbols-outlined star">star</span>
+          <span class="material-symbols-outlined star">star</span><span class="material-symbols-outlined star">star</span>
+          <span class="material-symbols-outlined star">star</span>
+        </div>
+        <div class="rating-hint" id="rh3"></div>
+        <textarea class="sheet-textarea" id="rt3" placeholder="Share your experience…" maxlength="300"></textarea>
+        <div class="sheet-char-count"><span id="rc3">0</span> / 300</div>
+        <button class="sheet-submit" id="ss3" disabled><span class="material-symbols-outlined">send</span>Submit Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     FRAME 4  ·  Negombo Pickle Courts  ·  Pickleball Only
+     ═══════════════════════════════════════════════════════ -->
+<div class="phone-wrapper">
+  <div class="screen-label">Pickleball Only</div>
+  <div class="phone-frame">
+    <div class="app-bar" id="ab4">
+      <div class="app-bar-bg"></div>
+      <div class="app-bar-status">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C5.2 2.5 2.7 3.7 1 5.7L0 4.5C2 2.1 4.8.7 8 .7s6 1.4 8 3.8L15 5.7C13.3 3.7 10.8 2.5 8 2.5zm0 4C6.2 6.5 4.6 7.3 3.5 8.5L2.4 7.3C3.8 5.8 5.8 4.7 8 4.7s4.2 1.1 5.6 2.6L12.5 8.5C11.4 7.3 9.8 6.5 8 6.5zm0 4c-.8 0-1.5.3-2 .8L8 12l2-.7c-.5-.5-1.2-.8-2-.8z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><rect x="23" y="4" width="2" height="4" rx="1" fill="white" opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="app-bar-actions">
+        <button class="app-bar-btn" onclick="window.location='padel-chief-venues.html'"><span class="material-symbols-outlined">arrow_back</span></button>
+        <div class="app-bar-spacer"></div>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">favorite</span></button>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">share</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="s4">
+      <div class="carousel" id="c4">
+        <div class="carousel-track" id="ct4">
+          <div class="carousel-slide ci-pickle"><div class="carousel-slide-meta"><span class="slide-label">Court 1 · Pickleball</span></div></div>
+          <div class="carousel-slide ci-multi"><div class="carousel-slide-meta"><span class="slide-label">Court 2 · Pickleball</span></div></div>
+        </div>
+        <button class="carousel-arrow carousel-arrow-prev" id="cp4" aria-label="Previous"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button class="carousel-arrow carousel-arrow-next" id="cn4" aria-label="Next"><span class="material-symbols-outlined">chevron_right</span></button>
+        <div class="carousel-dots" id="cd4"></div>
+        <div class="carousel-counter" id="cc4">1 / 2</div>
+      </div>
+
+      <div class="venue-info">
+        <div class="venue-name">Negombo Pickle Courts</div>
+        <div class="venue-meta-row">
+          <div class="rating-pill"><span class="material-symbols-outlined">star</span><span class="rating-num">4.3</span><span class="rating-cnt">(44)</span></div>
+          <span class="sport-tag pickle">Pickleball</span>
+          <span class="open-badge"><span class="open-dot"></span>Open Now</span>
+        </div>
+        <div class="location-row"><span class="material-symbols-outlined">location_on</span>5 Lewis Place, Negombo &nbsp;·&nbsp; 3.2 km away</div>
+        <div class="price-row"><span class="price-from">From</span><span class="price-amount">LKR 1,800</span><span class="price-unit">/hr</span></div>
+        <div class="cta-row">
+          <button class="btn-book" style="background:var(--pickle);"><span class="material-symbols-outlined">calendar_month</span>Book a Court</button>
+          <a class="btn-call" href="tel:+94312345678"><span class="material-symbols-outlined">call</span></a>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Opening Hours</div>
+        <div class="hours-row"><span class="hours-day">Monday</span><span class="hours-time">7:00 AM – 9:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Tuesday</span><span class="hours-time">7:00 AM – 9:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Wednesday</span><span class="hours-time">7:00 AM – 9:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Thursday</span><span class="hours-time">7:00 AM – 9:00 PM</span></div>
+        <div class="hours-row today"><span class="hours-day">Friday <span class="today-badge">Today</span></span><span class="hours-time">7:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Saturday</span><span class="hours-time">7:00 AM – 10:00 PM</span></div>
+        <div class="hours-row"><span class="hours-day">Sunday</span><span class="hours-time">8:00 AM – 8:00 PM</span></div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Amenities</div>
+        <div class="amenities-grid">
+          <div class="amenity-item"><span class="material-symbols-outlined">door_front</span><span class="amenity-label">Changing Rooms</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">shower</span><span class="amenity-label">Showers</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">sports_tennis</span><span class="amenity-label">Paddle Rental</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">local_parking</span><span class="amenity-label">Parking</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">local_cafe</span><span class="amenity-label">Snack Bar</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">fitness_center</span><span class="amenity-label">Coaching</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">outdoor_garden</span><span class="amenity-label">Outdoor Courts</span></div>
+          <div class="amenity-item"><span class="material-symbols-outlined">wifi</span><span class="amenity-label">Wi-Fi</span></div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">About</div>
+        <p class="about-text">Negombo Pickle Courts is the Western Province's dedicated pickleball destination with two outdoor courts. The venue hosts weekly social games and competitive leagues, attracting a growing community of players from across the region. Beginner-friendly clinics run every Saturday morning.</p>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Reviews</div>
+        <div class="rating-overview">
+          <div class="rating-big">4.3</div>
+          <div class="rating-right">
+            <div class="rating-stars-row">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined star-empty">star</span>
+            </div>
+            <div class="rating-count">44 reviews</div>
+            <div style="margin-top:7px;display:flex;flex-direction:column;gap:3px;">
+              <div class="bar-row"><span class="bar-label">5</span><div class="bar-track"><div class="bar-fill" style="width:41%"></div></div><span class="bar-pct">41%</span></div>
+              <div class="bar-row"><span class="bar-label">4</span><div class="bar-track"><div class="bar-fill" style="width:32%"></div></div><span class="bar-pct">32%</span></div>
+              <div class="bar-row"><span class="bar-label">3</span><div class="bar-track"><div class="bar-fill" style="width:16%"></div></div><span class="bar-pct">16%</span></div>
+              <div class="bar-row"><span class="bar-label">2</span><div class="bar-track"><div class="bar-fill" style="width:7%"></div></div><span class="bar-pct">7%</span></div>
+              <div class="bar-row"><span class="bar-label">1</span><div class="bar-track"><div class="bar-fill" style="width:4%"></div></div><span class="bar-pct">4%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:#0d9488;">PF</div>
+            <div class="review-author"><div class="review-author-name">Priya Fernando</div><div class="review-date">5 days ago</div></div>
+            <div class="review-stars"><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span></div>
+          </div>
+          <div class="review-text">Such a great community here! The Saturday morning clinics are brilliant for beginners. Paddle rental quality is good and the staff make you feel very welcome.</div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:#065f46;">KW</div>
+            <div class="review-author"><div class="review-author-name">Kasun Weerasinghe</div><div class="review-date">1 month ago</div></div>
+            <div class="review-stars"><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span></div>
+          </div>
+          <div class="review-text">Nice outdoor courts but the surface gets slippery when wet. Worth calling ahead on rainy days. Great atmosphere for the weekend leagues though.</div>
+        </div>
+        <button class="write-review-btn" id="wb4" style="border-color:var(--pickle);color:var(--pickle);"><span class="material-symbols-outlined">rate_review</span>Write a Review</button>
+      </div>
+
+      <div class="content-end"></div>
+      <nav class="bottom-nav">
+        <a class="nav-item active" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+    </div>
+
+    <div class="sheet-overlay" id="so4"></div>
+    <div class="review-sheet" id="rs4">
+      <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+      <div class="sheet-header"><div class="sheet-title">Write a Review</div><button class="sheet-close" id="sc4"><span class="material-symbols-outlined">close</span></button></div>
+      <div class="sheet-body">
+        <div class="sheet-venue-name">Negombo Pickle Courts</div>
+        <div class="star-tapper" id="st4">
+          <span class="material-symbols-outlined star">star</span><span class="material-symbols-outlined star">star</span>
+          <span class="material-symbols-outlined star">star</span><span class="material-symbols-outlined star">star</span>
+          <span class="material-symbols-outlined star">star</span>
+        </div>
+        <div class="rating-hint" id="rh4"></div>
+        <textarea class="sheet-textarea" id="rt4" placeholder="Share your experience…" maxlength="300"></textarea>
+        <div class="sheet-char-count"><span id="rc4">0</span> / 300</div>
+        <button class="sheet-submit" id="ss4" disabled><span class="material-symbols-outlined">send</span>Submit Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const HINTS = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+function initFrame(n, slideCount) {
+  // ── Carousel ──
+  let cur = 0;
+  const track  = document.getElementById('ct' + n);
+  const dotsEl = document.getElementById('cd' + n);
+  const ctr    = document.getElementById('cc' + n);
+  const prev   = document.getElementById('cp' + n);
+  const next   = document.getElementById('cn' + n);
+
+  for (let i = 0; i < slideCount; i++) {
+    const d = document.createElement('div');
+    d.className = 'carousel-dot';
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(idx) {
+    cur = idx;
+    track.style.transform = 'translateX(-' + (cur * 375) + 'px)';
+    ctr.textContent = (cur + 1) + ' / ' + slideCount;
+    dotsEl.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+    prev.disabled = cur === 0;
+    next.disabled = cur === slideCount - 1;
+  }
+
+  prev.onclick = () => { if (cur > 0) goTo(cur - 1); };
+  next.onclick = () => { if (cur < slideCount - 1) goTo(cur + 1); };
+
+  const carEl = document.getElementById('c' + n);
+  let tx = 0;
+  carEl.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  carEl.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) dx < 0 ? (cur < slideCount - 1 && goTo(cur + 1)) : (cur > 0 && goTo(cur - 1));
+  });
+
+  goTo(0);
+
+  // ── App bar scroll behaviour ──
+  const screen = document.getElementById('s' + n);
+  const appBar = document.getElementById('ab' + n);
+  screen.addEventListener('scroll', () => {
+    appBar.classList.toggle('scrolled', screen.scrollTop > 220);
+  }, { passive: true });
+
+  // ── Review sheet ──
+  const overlay   = document.getElementById('so' + n);
+  const sheet     = document.getElementById('rs' + n);
+  const closeBtn  = document.getElementById('sc' + n);
+  const writeBtns = document.querySelectorAll('#wb' + n);
+  const starWrap  = document.getElementById('st' + n);
+  const hint      = document.getElementById('rh' + n);
+  const textarea  = document.getElementById('rt' + n);
+  const chars     = document.getElementById('rc' + n);
+  const submit    = document.getElementById('ss' + n);
+  let rating = 0;
+
+  function openSheet() {
+    overlay.classList.add('open'); sheet.classList.add('open');
+    screen.style.overflow = 'hidden';
+  }
+  function closeSheet() {
+    overlay.classList.remove('open'); sheet.classList.remove('open');
+    screen.style.overflow = '';
+  }
+  function setRating(v) {
+    rating = v;
+    starWrap.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('lit', i < v));
+    hint.textContent = HINTS[v];
+    checkSubmit();
+  }
+  function checkSubmit() {
+    submit.disabled = !(rating > 0 && textarea.value.trim().length >= 10);
+  }
+
+  overlay.onclick = closeSheet;
+  closeBtn.onclick = closeSheet;
+  writeBtns.forEach(b => b.onclick = openSheet);
+  starWrap.querySelectorAll('.star').forEach((s, i) => { s.onclick = () => setRating(i + 1); });
+  textarea.oninput = () => { chars.textContent = textarea.value.length; checkSubmit(); };
+  submit.onclick = () => {
+    closeSheet();
+    rating = 0;
+    starWrap.querySelectorAll('.star').forEach(s => s.classList.remove('lit'));
+    hint.textContent = ''; textarea.value = ''; chars.textContent = '0'; submit.disabled = true;
+  };
+}
+
+initFrame(1, 4);
+initFrame(2, 2);
+initFrame(3, 3);
+initFrame(4, 2);
+</script>
+</body>
+</html>

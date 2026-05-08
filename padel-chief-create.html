@@ -43,7 +43,7 @@
   /* ===== PHONE FRAME ===== */
   .phone-frame {
     width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
-    position: relative; background: var(--background); flex-shrink: 0;
+    position: relative; background: var(--surface); flex-shrink: 0;
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
                 0 0 0 2px rgba(255,255,255,0.06),
                 0 40px 80px rgba(0,0,0,0.5);
@@ -75,28 +75,19 @@
   /* ===== STICKY HEADER ===== */
   .create-header {
     position: sticky; top: 0; z-index: 50; flex-shrink: 0;
-    background: rgba(248,250,252,0.92);
+    background: rgba(255,255,255,0.94);
     backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--outline-variant);
+    border-bottom: 1px solid rgba(15,23,42,0.07);
   }
   .create-header-inner {
-    display: flex; align-items: center; gap: 10px;
-    padding: 44px 16px 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 44px 18px 14px;
   }
-  .header-close-btn {
-    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--surface-container); border: none; cursor: pointer;
-    text-decoration: none; color: var(--on-surface-variant);
-    transition: background 0.15s; -webkit-tap-highlight-color: transparent;
-  }
-  .header-close-btn:active { background: var(--surface-container-high); }
-  .header-close-btn .material-symbols-outlined { font-size: 18px; }
   .create-header-title {
-    flex: 1; font-size: 17px; font-weight: 700; color: var(--on-background);
-    letter-spacing: -0.01em; text-align: center;
+    font-size: 22px; font-weight: 800; color: var(--on-background);
+    letter-spacing: -0.02em; line-height: 1;
   }
-  .step-dots { display: flex; gap: 6px; align-items: center; flex-shrink: 0; width: 36px; justify-content: flex-end; }
+  .step-dots { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .step-dot {
     width: 8px; height: 8px; border-radius: 50%;
     background: var(--outline-variant); transition: all 0.25s cubic-bezier(0.4,0,0.2,1); flex-shrink: 0;
@@ -105,7 +96,7 @@
   .step-dot.done { background: var(--primary); opacity: 0.35; }
 
   /* ===== WIZARD BODY ===== */
-  .wizard-body { flex: 1; padding: 20px 16px 40px; }
+  .wizard-body { flex: 1; padding: 20px 16px 24px; }
   .wizard-step { display: none; }
   .wizard-step.active { display: block; animation: stepIn 0.22s cubic-bezier(0.4,0,0.2,1) both; }
   .wizard-step.active.back-dir { animation: stepInBack 0.22s cubic-bezier(0.4,0,0.2,1) both; }
@@ -122,7 +113,8 @@
 
   /* ===== SPORT SELECTOR (segmented control) ===== */
   .sport-seg {
-    display: flex; background: var(--surface-container); border-radius: 14px; padding: 4px; gap: 2px;
+    display: flex; background: var(--surface-container-high); border-radius: 14px; padding: 4px; gap: 2px;
+    box-shadow: inset 0 1px 2px rgba(15,23,42,0.06);
   }
   .sport-btn {
     flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
@@ -140,12 +132,12 @@
   /* ===== TEXT INPUT / TEXTAREA ===== */
   .form-input {
     width: 100%; padding: 13px 14px; border-radius: 12px;
-    border: 1.5px solid var(--outline-variant);
-    background: var(--surface); font-size: 15px; font-weight: 500;
+    border: 1.5px solid rgba(15,23,42,0.12);
+    background: var(--surface-container); font-size: 15px; font-weight: 500;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    color: var(--on-surface); outline: none; transition: border-color 0.15s;
+    color: var(--on-surface); outline: none; transition: border-color 0.15s, background 0.15s;
   }
-  .form-input:focus { border-color: var(--primary); }
+  .form-input:focus { border-color: var(--primary); background: var(--surface); }
   .form-input::placeholder { color: var(--outline); font-weight: 400; }
   textarea.form-input { resize: none; line-height: 1.6; font-size: 14px; }
   input[type=date].form-input, input[type=time].form-input { font-size: 14px; }
@@ -157,7 +149,8 @@
     border: 1.5px solid var(--outline-variant); border-radius: 14px;
     padding: 12px 10px 10px; background: var(--surface); cursor: pointer;
     display: flex; flex-direction: column; gap: 3px;
-    transition: border-color 0.15s, background 0.15s, transform 0.12s;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+    transition: border-color 0.15s, background 0.15s, transform 0.12s, box-shadow 0.15s;
     position: relative; -webkit-tap-highlight-color: transparent; user-select: none;
   }
   .type-card:active { transform: scale(0.97); }
@@ -199,9 +192,10 @@
   .seg-row { display: flex; gap: 6px; }
   .seg-pill {
     flex: 1; padding: 11px 0; text-align: center; border-radius: 11px;
-    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    border: 1.5px solid rgba(15,23,42,0.10); background: var(--surface-container);
     font-size: 13px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--on-surface-variant); cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04);
     -webkit-tap-highlight-color: transparent;
   }
   .seg-pill.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
@@ -217,13 +211,13 @@
   .select-wrap { position: relative; }
   .form-select {
     width: 100%; padding: 13px 38px 13px 14px; border-radius: 12px;
-    border: 1.5px solid var(--outline-variant);
-    background: var(--surface); font-size: 14px; font-weight: 600;
+    border: 1.5px solid rgba(15,23,42,0.12);
+    background: var(--surface-container); font-size: 14px; font-weight: 600;
     font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--on-surface); outline: none; appearance: none; cursor: pointer;
-    transition: border-color 0.15s;
+    transition: border-color 0.15s, background 0.15s;
   }
-  .form-select:focus { border-color: var(--primary); }
+  .form-select:focus { border-color: var(--primary); background: var(--surface); }
   .select-arrow {
     position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
     pointer-events: none; font-size: 18px; color: var(--outline);
@@ -232,12 +226,12 @@
   /* ===== ESTIMATE BOX ===== */
   .estimate-box {
     display: flex; align-items: flex-start; gap: 8px;
-    padding: 10px 12px; border-radius: 12px;
-    background: var(--surface-container); border: 1px solid var(--outline-variant);
+    padding: 11px 13px; border-radius: 12px;
+    background: rgba(18,95,169,0.05); border: 1px solid rgba(18,95,169,0.12);
   }
   .estimate-box .material-symbols-outlined {
-    font-size: 16px; color: var(--on-surface-variant); margin-top: 1px; flex-shrink: 0;
-    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    font-size: 16px; color: var(--primary); margin-top: 1px; flex-shrink: 0;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
   }
   .estimate-main { font-size: 12px; font-weight: 600; color: var(--on-surface); line-height: 1.5; }
   .estimate-sub { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 2px; }
@@ -255,6 +249,7 @@
     display: flex; align-items: center;
     border: 1.5px solid var(--outline-variant); border-radius: 12px;
     overflow: hidden; background: var(--surface);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 1px 2px rgba(15,23,42,0.04);
   }
   .stepper-btn {
     width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
@@ -274,6 +269,7 @@
     display: flex; align-items: center; gap: 12px;
     padding: 12px 14px; border-radius: 12px;
     border: 1.5px solid var(--outline-variant); background: var(--surface);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 1px 2px rgba(15,23,42,0.04);
     cursor: pointer; transition: border-color 0.15s; -webkit-tap-highlight-color: transparent;
   }
   .date-pill:active { border-color: var(--primary); }
@@ -288,6 +284,7 @@
   .preset-card {
     border: 1.5px solid var(--outline-variant); border-radius: 12px;
     padding: 11px 10px; text-align: left; cursor: pointer; background: var(--surface);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 1px 2px rgba(15,23,42,0.04);
     transition: all 0.15s; -webkit-tap-highlight-color: transparent;
   }
   .preset-card:active { transform: scale(0.97); }
@@ -303,6 +300,7 @@
   .structure-card {
     border: 1.5px solid var(--outline-variant); border-radius: 12px;
     padding: 11px 10px; cursor: pointer; background: var(--surface);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.05), 0 1px 2px rgba(15,23,42,0.04);
     transition: all 0.15s; -webkit-tap-highlight-color: transparent;
   }
   .structure-card:active { transform: scale(0.97); }
@@ -315,6 +313,7 @@
   .toggle-section {
     border: 1.5px solid var(--outline-variant); border-radius: 14px;
     background: var(--surface); overflow: hidden;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
   }
   .toggle-item {
     display: flex; align-items: center; justify-content: space-between;
@@ -344,6 +343,7 @@
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     padding: 13px 14px; border-radius: 14px;
     border: 1.5px solid var(--outline-variant); background: var(--surface);
+    box-shadow: 0 1px 4px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
     transition: border-color 0.15s, background 0.15s;
   }
   .toggle-card.on { border-color: rgba(18,95,169,0.25); background: rgba(18,95,169,0.04); }
@@ -388,34 +388,37 @@
   .score-mode-row { display: flex; gap: 6px; }
   .score-mode-btn {
     flex: 1; padding: 11px 8px; border-radius: 11px; text-align: center;
-    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    border: 1.5px solid rgba(15,23,42,0.10); background: var(--surface-container);
     font-size: 12px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--on-surface-variant); cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04);
     -webkit-tap-highlight-color: transparent;
   }
-  .score-mode-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
+  .score-mode-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); box-shadow: none; }
 
   /* ===== CHAMPIONSHIP ROUNDS ===== */
   .champ-count-row { display: flex; gap: 6px; margin-top: 10px; }
   .champ-count-btn {
     flex: 1; padding: 10px 0; border-radius: 10px; text-align: center;
-    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    border: 1.5px solid rgba(15,23,42,0.10); background: var(--surface-container);
     font-size: 13px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--on-surface-variant); cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04);
     -webkit-tap-highlight-color: transparent;
   }
-  .champ-count-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
+  .champ-count-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); box-shadow: none; }
 
   /* ===== RANKING BUTTONS ===== */
   .rank-row { display: flex; gap: 6px; }
   .rank-btn {
     flex: 1; padding: 10px 0; border-radius: 10px; text-align: center;
-    border: 1.5px solid var(--outline-variant); background: var(--surface);
+    border: 1.5px solid rgba(15,23,42,0.10); background: var(--surface-container);
     font-size: 12px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
     color: var(--on-surface-variant); cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04);
     -webkit-tap-highlight-color: transparent;
   }
-  .rank-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); }
+  .rank-btn.selected { border-color: var(--primary); background: rgba(18,95,169,0.07); color: var(--primary); box-shadow: none; }
 
   /* ===== SECTION DIVIDER ===== */
   .section-divider {
@@ -440,20 +443,27 @@
   .btn-primary:active { opacity: 0.82; }
   .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
   .btn-ghost {
-    padding: 14px 18px; border-radius: 14px; border: 1.5px solid var(--outline-variant);
-    background: var(--surface); color: var(--on-surface-variant);
+    padding: 14px 18px; border-radius: 14px; border: 1.5px solid rgba(15,23,42,0.12);
+    background: var(--surface-container); color: var(--on-surface-variant);
     font-size: 14px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;
     cursor: pointer; white-space: nowrap; line-height: 1;
     transition: background 0.12s; -webkit-tap-highlight-color: transparent;
   }
-  .btn-ghost:active { background: var(--surface-container); }
+  .btn-ghost:active { background: var(--surface-container-high); }
   .btn-outline {
     flex: 1; padding: 14px; border-radius: 14px;
-    border: 1.5px solid var(--primary); background: transparent; color: var(--primary);
+    border: 1.5px solid var(--primary); background: rgba(18,95,169,0.05); color: var(--primary);
     font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
     cursor: pointer; line-height: 1; transition: background 0.12s; -webkit-tap-highlight-color: transparent;
   }
-  .btn-outline:active { background: rgba(18,95,169,0.06); }
+  .btn-outline:active { background: rgba(18,95,169,0.10); }
+  .btn-advanced {
+    flex: 1; padding: 14px; border-radius: 14px;
+    border: none; background: var(--secondary-fixed); color: #1a2200;
+    font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; line-height: 1; transition: opacity 0.12s; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-advanced:active { opacity: 0.82; }
   .step-actions { display: flex; gap: 8px; margin-top: 24px; }
   .step-actions-stack { margin-top: 10px; }
 
@@ -505,6 +515,29 @@
   /* ===== SPACING UTILS ===== */
   .mt-10 { margin-top: 10px; }
   .mt-14 { margin-top: 14px; }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: sticky; bottom: 0; z-index: 50;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0; display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px 28px; box-shadow: 0 -1px 0 rgba(15,23,42,0.08), 0 -8px 32px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    text-decoration: none; cursor: pointer; transition: all 0.2s; min-width: 48px;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-item .material-symbols-outlined {
+    font-size: 24px; font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  }
+  .nav-item-label { font-size: 9px; font-weight: 600; }
+  .nav-item.active .material-symbols-outlined { color: var(--primary); font-variation-settings: 'FILL' 1, 'wght' 200; }
+  .nav-item.active .nav-item-label { color: var(--primary); }
+  .nav-item:not(.active) .material-symbols-outlined { color: var(--on-surface-variant); }
+  .nav-item:not(.active) .nav-item-label { color: var(--on-surface-variant); }
+  .nav-create .material-symbols-outlined { font-size: 28px; }
 </style>
 </head>
 <body>
@@ -517,9 +550,6 @@
       <!-- ══ STICKY HEADER ══ -->
       <header class="create-header">
         <div class="create-header-inner">
-          <a class="header-close-btn" href="padel-chief-dashboard.html">
-            <span class="material-symbols-outlined">close</span>
-          </a>
           <span class="create-header-title">Create Tournament</span>
           <div class="step-dots">
             <div class="step-dot active" id="dot-1"></div>
@@ -552,6 +582,32 @@
           <input class="form-input" id="name-input" type="text"
                  placeholder="e.g. Summer Americano League"
                  autocomplete="off" spellcheck="false"/>
+
+          <span class="form-label">Date &amp; Time</span>
+          <div class="date-pill" id="date-pill-btn">
+            <span class="material-symbols-outlined">calendar_month</span>
+            <div class="date-pill-body">
+              <div class="date-pill-main" id="date-display">Sat, 2 May 2026</div>
+              <div class="date-pill-sub" id="time-display">2:00 PM</div>
+            </div>
+            <span class="material-symbols-outlined date-pill-chev">chevron_right</span>
+          </div>
+          <input type="datetime-local" id="datetime-native"
+                 style="display:none;position:absolute;opacity:0;pointer-events:none"
+                 value="2026-05-02T14:00"/>
+
+          <span class="form-label">Visibility</span>
+          <div class="toggle-card on" id="public-card">
+            <span class="material-symbols-outlined toggle-card-icon">public</span>
+            <div class="toggle-card-text">
+              <div class="toggle-card-label">Public Event</div>
+              <div class="toggle-card-sub" id="public-sub">Anyone can find and join this tournament</div>
+            </div>
+            <label class="toggle-sw">
+              <input type="checkbox" id="public-chk" checked onchange="togglePublic()"/>
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
 
           <span class="form-label">Format</span>
 
@@ -605,14 +661,14 @@
             </div>
           </div>
 
-          <div class="step-actions" style="margin-top:28px">
+          <div class="step-actions" style="margin-top:24px">
             <button class="btn-primary" id="step1-next" disabled onclick="goToStep(2)">Next →</button>
           </div>
 
         </div><!-- /step-1 -->
 
         <!-- ─────────────────────────────────────── -->
-        <!--  STEP 2 · Format settings + Date        -->
+        <!--  STEP 2 · Format settings              -->
         <!-- ─────────────────────────────────────── -->
         <div class="wizard-step" id="step-2">
 
@@ -633,6 +689,13 @@
                 <!-- populated by JS -->
               </select>
               <span class="material-symbols-outlined select-arrow">expand_more</span>
+            </div>
+
+            <span class="form-label" id="points-label">Points / Match</span>
+            <div class="stepper">
+              <button class="stepper-btn" id="points-dec">−</button>
+              <div class="stepper-val" id="points-val">32</div>
+              <button class="stepper-btn" id="points-inc">+</button>
             </div>
 
           </div><!-- /americano-path -->
@@ -708,7 +771,27 @@
 
           </div><!-- /traditional-path -->
 
-          <!-- ── Estimate box (both paths) ── -->
+          <!-- ── Courts + Players (both paths) ── -->
+          <div class="two-col" style="margin-top:14px">
+            <div>
+              <span class="two-col-label">Courts</span>
+              <div class="stepper">
+                <button class="stepper-btn" id="courts-dec">−</button>
+                <div class="stepper-val" id="courts-val">2</div>
+                <button class="stepper-btn" id="courts-inc">+</button>
+              </div>
+            </div>
+            <div>
+              <span class="two-col-label" id="players-label">Max Players</span>
+              <div class="stepper">
+                <button class="stepper-btn" id="players-dec">−</button>
+                <div class="stepper-val" id="players-val">8</div>
+                <button class="stepper-btn" id="players-inc">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Estimate box ── -->
           <div class="estimate-box mt-14" id="estimate-box">
             <span class="material-symbols-outlined">schedule</span>
             <div>
@@ -717,63 +800,10 @@
             </div>
           </div>
 
-          <!-- ── Courts + Points (Americano) / Courts only (Traditional) ── -->
-          <div id="courts-points-americano">
-            <div class="two-col">
-              <div>
-                <span class="two-col-label">Courts</span>
-                <div class="stepper">
-                  <button class="stepper-btn" id="courts-dec">−</button>
-                  <div class="stepper-val" id="courts-val">2</div>
-                  <button class="stepper-btn" id="courts-inc">+</button>
-                </div>
-              </div>
-              <div>
-                <span class="two-col-label" id="points-label">Points / Match</span>
-                <div class="stepper">
-                  <button class="stepper-btn" id="points-dec">−</button>
-                  <div class="stepper-val" id="points-val">32</div>
-                  <button class="stepper-btn" id="points-inc">+</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="courts-only-traditional" style="display:none">
-            <span class="form-label">Courts</span>
-            <div class="stepper">
-              <button class="stepper-btn" id="courts-trad-dec">−</button>
-              <div class="stepper-val" id="courts-trad-val">2</div>
-              <button class="stepper-btn" id="courts-trad-inc">+</button>
-            </div>
-          </div>
-
-          <!-- ── Max Players ── -->
-          <span class="form-label" id="players-label">Max Players</span>
-          <div class="stepper">
-            <button class="stepper-btn" id="players-dec">−</button>
-            <div class="stepper-val" id="players-val">8</div>
-            <button class="stepper-btn" id="players-inc">+</button>
-          </div>
-
-          <!-- ── Date & Time ── -->
-          <span class="form-label">Date &amp; time</span>
-          <div class="date-pill" id="date-pill-btn">
-            <span class="material-symbols-outlined">calendar_month</span>
-            <div class="date-pill-body">
-              <div class="date-pill-main" id="date-display">Sat, 2 May 2026</div>
-              <div class="date-pill-sub" id="time-display">2:00 PM</div>
-            </div>
-            <span class="material-symbols-outlined date-pill-chev">chevron_right</span>
-          </div>
-          <input type="datetime-local" id="datetime-native"
-                 style="display:none;position:absolute;opacity:0;pointer-events:none"
-                 value="2026-05-02T14:00"/>
-
           <!-- ── Actions ── -->
           <div class="step-actions">
             <button class="btn-ghost" onclick="goToStep(1)">← Back</button>
-            <button class="btn-outline" onclick="goToStep(3)">Advanced →</button>
+            <button class="btn-advanced" onclick="goToStep(3)">Advanced →</button>
           </div>
           <div class="step-actions-stack">
             <button class="btn-primary" onclick="createTournament()">Create Tournament</button>
@@ -795,15 +825,8 @@
             <span class="info-box-text">All settings below can be changed after the tournament is created.</span>
           </div>
 
-          <!-- Date + Start Time -->
-          <span class="form-label" style="margin-top:16px">Date &amp; start time</span>
-          <div class="two-col">
-            <input class="form-input" type="date" value="2026-05-02" style="font-size:13px;padding:11px 10px"/>
-            <input class="form-input" type="time" value="14:00" style="font-size:13px;padding:11px 10px"/>
-          </div>
-
           <!-- Max Players + Rest -->
-          <span class="form-label">Max players &amp; rest time</span>
+          <span class="form-label" style="margin-top:0">Max players &amp; rest time</span>
           <div class="two-col">
             <div class="stepper">
               <button class="stepper-btn">−</button>
@@ -817,13 +840,13 @@
             </div>
           </div>
 
-          <!-- Location -->
-          <span class="form-label">Location</span>
-          <input class="form-input" type="text" placeholder="e.g. Central Padel Club"/>
-
           <!-- Registration Deadline -->
           <span class="form-label">Registration deadline</span>
           <input class="form-input" type="date" style="font-size:13px;padding:11px 14px"/>
+
+          <!-- Location -->
+          <span class="form-label">Location <span class="optional-chip">Optional</span></span>
+          <input class="form-input" type="text" placeholder="Venue name or address…" autocomplete="off"/>
 
           <!-- Description -->
           <span class="form-label">Description</span>
@@ -831,20 +854,6 @@
           <p style="font-size:10px;color:var(--on-surface-variant);margin-top:4px">
             Supports **bold**, *italic*, ~underline~, and line breaks.
           </p>
-
-          <!-- Public Event toggle -->
-          <span class="form-label">Visibility</span>
-          <div class="toggle-card on" id="public-card">
-            <span class="material-symbols-outlined toggle-card-icon">public</span>
-            <div class="toggle-card-text">
-              <div class="toggle-card-label">Public Event</div>
-              <div class="toggle-card-sub" id="public-sub">Anyone can find and join</div>
-            </div>
-            <label class="toggle-sw">
-              <input type="checkbox" id="public-chk" checked onchange="togglePublic()"/>
-              <span class="toggle-track"><span class="toggle-thumb"></span></span>
-            </label>
-          </div>
 
           <!-- Score input mode -->
           <span class="form-label">Who can enter scores?</span>
@@ -992,6 +1001,14 @@
 
       </div><!-- /wizard-body -->
 
+      <nav class="bottom-nav">
+        <a class="nav-item" href="padel-chief-dashboard.html"><span class="material-symbols-outlined">home</span><span class="nav-item-label">Home</span></a>
+        <a class="nav-item" href="padel-chief-browse.html"><span class="material-symbols-outlined">search</span><span class="nav-item-label">Browse</span></a>
+        <a class="nav-item nav-create active" href="padel-chief-create.html"><span class="material-symbols-outlined">add_circle</span><span class="nav-item-label">Create</span></a>
+        <a class="nav-item" href="padel-chief-rankings.html"><span class="material-symbols-outlined">trophy</span><span class="nav-item-label">Rankings</span></a>
+        <a class="nav-item" href="padel-chief-profile.html"><span class="material-symbols-outlined">person</span><span class="nav-item-label">Profile</span></a>
+      </nav>
+
     </div><!-- /screen -->
 
     <!-- Toast (outside .screen so it's not clipped by scroll) -->
@@ -1016,9 +1033,9 @@
     <div class="flow-step current" id="flow-1">
       <div class="flow-step-header">
         <div class="flow-step-num">1</div>
-        <div class="flow-step-title">Sport + Name + Format</div>
+        <div class="flow-step-title">Sport · Name · Format · Date · Visibility</div>
       </div>
-      <div class="flow-step-body">Select Padel or Pickleball first — Traditional disappears for Pickleball. Enter a name and tap a format card. Next enables only when both name and type are filled.</div>
+      <div class="flow-step-body">Select sport, enter a name, set date &amp; time, choose public or private, then pick a format. Next enables only when name and format are filled.</div>
     </div>
 
     <div class="flow-connector"></div>
@@ -1026,9 +1043,9 @@
     <div class="flow-step" id="flow-2">
       <div class="flow-step-header">
         <div class="flow-step-num">2</div>
-        <div class="flow-step-title">Format Settings + Date</div>
+        <div class="flow-step-title">Format Settings</div>
       </div>
-      <div class="flow-step-body">Americano path: Rotation (Single/Double/Triple) → Rounds (auto or manual) → Courts + Points → Players → Date. Traditional path: Format Preset + Structure + Grand Final toggle → Courts → Players → Date. Live estimate updates as inputs change.</div>
+      <div class="flow-step-body">Americano: Rotation → Rounds → Points. Traditional: Format Preset + Structure + Grand Final. Both paths share a Courts | Players row, then a live time estimate below.</div>
     </div>
 
     <div class="flow-connector"></div>
@@ -1038,7 +1055,7 @@
         <div class="flow-step-num">3</div>
         <div class="flow-step-title">Advanced (optional)</div>
       </div>
-      <div class="flow-step-body">Location, registration deadline, description, visibility, score input permissions. Americano: Championship Rounds + Tiebreaker. Traditional: Consolation format, Winners Final override, max games cap.</div>
+      <div class="flow-step-body">Registration deadline, location, description, score input permissions, rest time. Americano: Championship Rounds + Tiebreaker rules. Traditional: Consolation format, Winners Final override, max games cap.</div>
     </div>
 
   </div>
@@ -1203,8 +1220,6 @@ function updateConditional() {
   const isTrad = state.type === 'traditional';
   document.getElementById('americano-path').style.display  = isTrad ? 'none' : '';
   document.getElementById('traditional-path').style.display = isTrad ? '' : 'none';
-  document.getElementById('courts-points-americano').style.display = isTrad ? 'none' : '';
-  document.getElementById('courts-only-traditional').style.display = isTrad ? '' : 'none';
   document.getElementById('americano-advanced').style.display   = isTrad ? 'none' : '';
   document.getElementById('traditional-advanced').style.display = isTrad ? '' : 'none';
 
@@ -1337,25 +1352,7 @@ function bindStepper(decId, incId, valId, stateKey, min, max, step, onChange) {
   });
 }
 
-// Keep courts-trad in sync with main courts value
-function syncTradCourts() {
-  document.getElementById('courts-trad-val').textContent = state.courts;
-  buildRoundsSelect(); updateEstimate();
-}
-
-bindStepper('courts-dec', 'courts-inc', 'courts-val', 'courts', 1, 12, 1, () => { syncTradCourts(); });
-document.getElementById('courts-trad-dec').addEventListener('click', () => {
-  state.courts = Math.max(1, state.courts - 1);
-  document.getElementById('courts-trad-val').textContent = state.courts;
-  document.getElementById('courts-val').textContent = state.courts;
-  buildRoundsSelect(); updateEstimate();
-});
-document.getElementById('courts-trad-inc').addEventListener('click', () => {
-  state.courts = Math.min(12, state.courts + 1);
-  document.getElementById('courts-trad-val').textContent = state.courts;
-  document.getElementById('courts-val').textContent = state.courts;
-  buildRoundsSelect(); updateEstimate();
-});
+bindStepper('courts-dec', 'courts-inc', 'courts-val', 'courts', 1, 12, 1, () => { buildRoundsSelect(); updateEstimate(); });
 
 /* Points stepper */
 bindStepper('points-dec', 'points-inc', 'points-val', 'points', 4, 64, 1, updateEstimate);
