@@ -51,7 +51,7 @@ body {
   border-radius: 0 0 18px 18px; z-index: 100;
 }
 
-/* ── App bar (solid white) ── */
+/* ── App bar ── */
 .app-bar {
   position: absolute; top: 0; left: 0; right: 0; height: 96px; z-index: 60;
   background: rgba(255,255,255,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -76,32 +76,23 @@ body {
 }
 .ab-back .material-symbols-outlined { font-size: 20px; color: var(--on-surface); font-variation-settings:'FILL' 0,'wght' 400; }
 .ab-back:active { background: var(--surface-container-high); }
-.ab-title {
-  flex: 1; text-align: center;
-  font-size: 15px; font-weight: 800; color: var(--on-surface);
-}
+.ab-title { flex: 1; text-align: center; font-size: 15px; font-weight: 800; color: var(--on-surface); }
 .step-pips { display: flex; align-items: center; gap: 5px; min-width: 36px; justify-content: flex-end; }
-.step-pip {
-  height: 6px; border-radius: 3px;
-  transition: width 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s;
-}
+.step-pip { height: 6px; border-radius: 3px; transition: width 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s; }
 .step-pip.active   { width: 18px; background: var(--primary); }
 .step-pip.done     { width: 6px;  background: rgba(18,95,169,0.35); }
 .step-pip.inactive { width: 6px;  background: var(--outline-variant); }
 
-/* ── Scrollable screen ── */
+/* ── Screen ── */
 .screen {
   position: absolute; inset: 96px 0 0 0;
   overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
 }
 .screen::-webkit-scrollbar { display: none; }
 
-/* ─────────────────────────── STEP 1 ─────────────────────────── */
-
-/* Venue mini header */
+/* ── Venue mini header ── */
 .venue-mini {
-  padding: 14px 18px 12px;
-  border-bottom: 1px solid var(--outline-variant);
+  padding: 14px 18px 12px; border-bottom: 1px solid var(--outline-variant);
   display: flex; align-items: center; gap: 12px;
 }
 .vm-icon {
@@ -118,28 +109,24 @@ body {
 .vm-info { flex: 1; min-width: 0; }
 .vm-name { font-size: 13px; font-weight: 700; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .vm-sub  { font-size: 11px; color: var(--outline); margin-top: 1px; }
-.vm-price { text-align: right; flex-shrink: 0; }
+.vm-right { text-align: right; flex-shrink: 0; }
 .vm-rate  { font-size: 15px; font-weight: 800; color: var(--on-surface); }
 .vm-unit  { font-size: 10px; color: var(--outline); }
 
-/* Date strip (sticky) */
+/* ── Date strip (sticky) ── */
 .date-section {
   position: sticky; top: 0; z-index: 30;
-  background: var(--background);
-  border-bottom: 1px solid var(--outline-variant);
+  background: var(--background); border-bottom: 1px solid var(--outline-variant);
   padding: 12px 0;
 }
-.date-strip {
-  display: flex; gap: 7px; padding: 0 18px;
-  overflow-x: auto; scrollbar-width: none;
-}
+.date-strip { display: flex; gap: 7px; padding: 0 18px; overflow-x: auto; scrollbar-width: none; }
 .date-strip::-webkit-scrollbar { display: none; }
 .date-chip {
   display: flex; flex-direction: column; align-items: center;
   min-width: 52px; padding: 8px 4px 7px; border-radius: 14px;
   border: 1.5px solid var(--outline-variant); background: white;
   cursor: pointer; flex-shrink: 0; transition: all 0.15s;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent; position: relative;
 }
 .date-chip:active { transform: scale(0.94); }
 .date-chip.today-chip:not(.selected) { border-color: var(--primary); }
@@ -151,57 +138,70 @@ body {
 .date-chip.selected .dc-day,
 .date-chip.selected .dc-num,
 .date-chip.selected .dc-mon { color: white; }
-
-/* Duration picker */
-.duration-section { padding: 14px 18px 0; }
-.sec-label { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
-.dur-pills { display: flex; gap: 8px; margin-bottom: 16px; }
-.dur-pill {
-  flex: 1; height: 36px; border-radius: 10px;
-  border: 1.5px solid var(--outline-variant); background: white;
-  cursor: pointer; font-family: inherit;
-  font-size: 12px; font-weight: 700; color: var(--on-surface-variant);
-  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+/* Selection badge on date chip */
+.dc-badge {
+  position: absolute; top: -6px; right: -6px;
+  width: 18px; height: 18px; border-radius: 9px;
+  background: var(--primary); border: 2px solid var(--background);
+  font-size: 9px; font-weight: 800; color: white;
+  display: flex; align-items: center; justify-content: center;
 }
-.dur-pill.active { background: rgba(18,95,169,0.08); border-color: var(--primary); color: var(--primary); }
-.dur-pill:not(.active):active { background: var(--surface-container); }
+.date-chip.selected .dc-badge { background: white; color: var(--primary); border-color: var(--primary); }
 
-/* Slot list */
+/* ── Slot list ── */
 .slots-section { padding: 0 18px 120px; }
+.slot-note {
+  font-size: 11px; color: var(--outline); font-weight: 500;
+  padding: 10px 0 4px;
+  display: flex; align-items: center; gap: 5px;
+}
+.slot-note .material-symbols-outlined { font-size: 14px; font-variation-settings:'FILL' 0,'wght' 300; }
 .slot-group-label {
   font-size: 10px; font-weight: 700; color: var(--outline);
-  text-transform: uppercase; letter-spacing: 0.12em;
-  padding: 12px 0 6px;
+  text-transform: uppercase; letter-spacing: 0.12em; padding: 12px 0 8px;
 }
 .slot-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 0; border-bottom: 1px solid var(--outline-variant);
+  padding: 11px 0; border-bottom: 1px solid var(--outline-variant);
 }
 .slot-row:last-child { border-bottom: none; }
 .slot-time {
-  font-size: 13px; font-weight: 700; color: var(--on-surface);
-  min-width: 74px; flex-shrink: 0;
+  font-size: 13px; font-weight: 700; color: var(--on-surface); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
 }
-.slot-courts { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-.slot-full-label { font-size: 12px; font-weight: 600; color: var(--outline-variant); font-style: italic; }
-.slot-past .slot-time { color: var(--outline-variant); }
+.slot-time-end { font-size: 12px; font-weight: 500; color: var(--outline); }
+.slot-full-label { font-size: 11px; font-weight: 600; color: var(--outline-variant); font-style: italic; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+.slot-full-label .material-symbols-outlined { font-size: 13px; }
+.slot-courts { display: flex; gap: 7px; }
 
-/* Court chips */
+/* ── Court chips (redesigned) ── */
 .court-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 7px 11px; border-radius: 9px;
-  font-size: 12px; font-weight: 700;
-  background: white; color: var(--on-surface);
-  border: 1.5px solid var(--outline-variant);
+  flex: 1; display: flex; flex-direction: column; align-items: flex-start;
+  padding: 8px 10px 7px; border-radius: 10px;
+  background: white; border: 1.5px solid var(--outline-variant);
   cursor: pointer; font-family: inherit;
-  transition: all 0.15s; flex-shrink: 0;
-  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+  gap: 2px; min-width: 0;
 }
-.court-chip .chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.court-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
-.court-chip.selected .chip-dot { background: rgba(255,255,255,0.55) !important; }
-.court-chip.unavail { opacity: 0.28; pointer-events: none; text-decoration: line-through; }
 .court-chip:not(.unavail):not(.selected):active { background: var(--surface-container); }
+.chip-top { display: flex; align-items: center; gap: 5px; }
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.chip-name { font-size: 12px; font-weight: 700; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip-surface { font-size: 10px; font-weight: 600; color: var(--on-surface-variant); padding-left: 12px; }
+
+/* Selected state */
+.court-chip.selected { background: var(--primary); border-color: var(--primary); }
+.court-chip.selected .chip-dot { background: rgba(255,255,255,0.6) !important; }
+.court-chip.selected .chip-name { color: white; }
+.court-chip.selected .chip-surface { color: rgba(255,255,255,0.75); }
+
+/* Booked (unavailable) state */
+.court-chip.unavail {
+  background: var(--surface-container); border-color: var(--outline-variant);
+  pointer-events: none; cursor: default;
+}
+.court-chip.unavail .chip-dot { background: var(--outline-variant) !important; }
+.court-chip.unavail .chip-name { color: var(--outline); }
+.court-chip.unavail .chip-surface { color: var(--outline-variant); }
 
 .slots-hint {
   text-align: center; padding: 40px 0;
@@ -210,9 +210,8 @@ body {
 .slots-hint .material-symbols-outlined { font-size: 40px; color: var(--outline-variant); font-variation-settings:'FILL' 0,'wght' 200; }
 .slots-hint-text { font-size: 13px; color: var(--outline); font-weight: 500; }
 
-/* ─────────────────────────── STEP 2 ─────────────────────────── */
+/* ── Step 2 ── */
 .step2 { padding: 20px 18px 120px; }
-
 .s2-section-label { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
 
 /* Summary card */
@@ -226,25 +225,42 @@ body {
 }
 .sum-row:last-child { border-bottom: none; }
 .sum-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: rgba(18,95,169,0.10);
+  width: 36px; height: 36px; border-radius: 10px; background: rgba(18,95,169,0.10);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .sum-icon .material-symbols-outlined { font-size: 18px; color: var(--primary); font-variation-settings:'FILL' 0,'wght' 400; }
 .sum-texts { flex: 1; }
 .sum-lbl { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.08em; }
 .sum-val { font-size: 14px; font-weight: 700; color: var(--on-surface); margin-top: 1px; }
-.sum-tag {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 8px; border-radius: 20px;
-  font-size: 10px; font-weight: 700; margin-top: 3px;
-}
-.sum-tag.padel  { background: rgba(18,95,169,0.12);  color: var(--primary); }
-.sum-tag.clay   { background: rgba(179,51,24,0.12);  color: #b33318; }
-.sum-tag.pickle { background: rgba(25,122,74,0.12);  color: #197a4a; }
-.sum-tag.padel2 { background: rgba(62,42,135,0.12);  color: #3e2a87; }
+.sum-val-sub { font-size: 12px; font-weight: 500; color: var(--on-surface-variant); margin-top: 2px; }
 
-/* Players counter */
+/* Date group in summary */
+.sum-date-group { margin-bottom: 14px; }
+.sum-date-header {
+  font-size: 11px; font-weight: 700; color: var(--on-surface-variant);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
+}
+.sum-slot-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: white; border-radius: 12px; padding: 10px 12px; margin-bottom: 6px;
+  border: 1.5px solid var(--outline-variant);
+}
+.sum-slot-left { display: flex; align-items: center; gap: 10px; }
+.sum-slot-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sum-slot-info { }
+.sum-slot-time { font-size: 13px; font-weight: 700; color: var(--on-surface); }
+.sum-slot-court { font-size: 11px; color: var(--on-surface-variant); margin-top: 1px; }
+.sum-slot-price { font-size: 13px; font-weight: 700; color: var(--on-surface); }
+.sum-slot-remove {
+  width: 24px; height: 24px; border-radius: 12px; border: none; cursor: pointer;
+  background: var(--surface-container); color: var(--outline);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent; transition: all 0.12s; margin-left: 6px;
+}
+.sum-slot-remove .material-symbols-outlined { font-size: 14px; font-variation-settings:'FILL' 0,'wght' 400; }
+.sum-slot-remove:active { background: var(--outline-variant); }
+
+/* Players card */
 .players-card {
   background: var(--surface-container); border-radius: 16px;
   padding: 14px 15px; margin-bottom: 20px;
@@ -258,17 +274,15 @@ body {
   border: 1.5px solid var(--outline-variant); background: white;
   cursor: pointer; font-size: 18px; font-weight: 700; color: var(--on-surface);
   display: flex; align-items: center; justify-content: center;
-  -webkit-tap-highlight-color: transparent; font-family: inherit;
-  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent; font-family: inherit; transition: all 0.15s;
 }
 .p-btn:active { background: var(--surface-container); }
 .p-btn:disabled { opacity: 0.3; pointer-events: none; }
 .p-count { font-size: 18px; font-weight: 800; color: var(--on-surface); min-width: 22px; text-align: center; }
 
-/* Price breakdown */
+/* Price card */
 .price-card {
-  background: white; border-radius: 16px;
-  border: 1.5px solid var(--outline-variant);
+  background: white; border-radius: 16px; border: 1.5px solid var(--outline-variant);
   overflow: hidden; margin-bottom: 8px;
 }
 .price-line {
@@ -286,7 +300,7 @@ body {
 }
 .pay-note .material-symbols-outlined { font-size: 13px; font-variation-settings:'FILL' 0,'wght' 300; }
 
-/* ─────────────────────────── STEP 3 (Success) ─────────────────────────── */
+/* ── Step 3 (Success) ── */
 .step3 {
   display: flex; flex-direction: column; align-items: center;
   padding: 44px 24px 120px; text-align: center;
@@ -305,7 +319,6 @@ body {
 }
 .ref-lbl  { font-size: 9px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; }
 .ref-num  { font-size: 21px; font-weight: 800; color: var(--on-surface); letter-spacing: 0.06em; margin-top: 3px; }
-
 .s3-card {
   width: 100%; background: white; border-radius: 16px;
   border: 1.5px solid var(--outline-variant);
@@ -338,8 +351,8 @@ body {
 }
 .cta-content { display: flex; align-items: center; gap: 10px; }
 .cta-sel-info { flex: 0; min-width: 0; overflow: hidden; }
-.cta-sel-time  { font-size: 12px; font-weight: 700; color: var(--on-surface); white-space: nowrap; }
-.cta-sel-court { font-size: 10px; color: var(--outline); margin-top: 1px; white-space: nowrap; }
+.cta-sel-count { font-size: 13px; font-weight: 800; color: var(--on-surface); white-space: nowrap; }
+.cta-sel-sub   { font-size: 10px; color: var(--outline); margin-top: 1px; white-space: nowrap; }
 .cta-btn {
   flex: 1; height: 50px; border-radius: 25px;
   border: none; background: var(--primary);
@@ -351,8 +364,8 @@ body {
 .cta-btn .material-symbols-outlined { font-size: 17px; font-variation-settings:'FILL' 0,'wght' 400; }
 .cta-btn:disabled { background: var(--surface-container-high); color: var(--outline); }
 .cta-btn:not(:disabled):active { filter: brightness(0.88); }
-.cta-btn.green  { background: var(--success); }
-.cta-btn.dark   { background: var(--on-surface); }
+.cta-btn.green { background: var(--success); }
+.cta-btn.dark  { background: var(--on-surface); }
 </style>
 </head>
 <body>
@@ -362,7 +375,7 @@ body {
   <div class="phone-frame">
 
     <!-- App Bar -->
-    <div class="app-bar" id="appBar">
+    <div class="app-bar">
       <div class="ab-status">
         <span class="ab-time">9:41</span>
         <div class="ab-icons">
@@ -383,6 +396,7 @@ body {
 
       <!-- ═══ STEP 1 ═══ -->
       <div id="step1">
+
         <!-- Venue mini -->
         <div class="venue-mini">
           <div class="vm-icon"></div>
@@ -390,8 +404,8 @@ body {
             <div class="vm-name">Colombo Padel Academy</div>
             <div class="vm-sub">45 Galle Road, Colombo 3</div>
           </div>
-          <div class="vm-price">
-            <div class="vm-rate" id="vmRate">LKR 3,500</div>
+          <div class="vm-right">
+            <div class="vm-rate">LKR 3,500</div>
             <div class="vm-unit">per hour</div>
           </div>
         </div>
@@ -401,23 +415,21 @@ body {
           <div class="date-strip" id="dateStrip"></div>
         </div>
 
-        <!-- Duration -->
-        <div class="duration-section">
-          <div class="sec-label">Duration</div>
-          <div class="dur-pills" id="durPills"></div>
-        </div>
-
         <!-- Slots -->
         <div class="slots-section">
-          <div class="sec-label">Available Slots</div>
+          <div class="slot-note">
+            <span class="material-symbols-outlined">info</span>
+            Each slot is 1 hour · Tap any available court to select
+          </div>
           <div id="slotList"></div>
         </div>
-      </div>
+
+      </div><!-- /step1 -->
 
       <!-- ═══ STEP 2 ═══ -->
       <div id="step2" style="display:none" class="step2">
         <div class="s2-section-label" style="margin-bottom:14px;">Booking Summary</div>
-        <div class="summary-card" id="summaryCard"></div>
+        <div id="summaryCard"></div>
 
         <div class="s2-section-label">Players</div>
         <div class="players-card">
@@ -428,7 +440,7 @@ body {
           <div class="players-ctrl">
             <button class="p-btn" id="pMinus" onclick="adjustPlayers(-1)">−</button>
             <span class="p-count" id="pCount">2</span>
-            <button class="p-btn" id="pPlus"  onclick="adjustPlayers(+1)">+</button>
+            <button class="p-btn" id="pPlus" onclick="adjustPlayers(+1)">+</button>
           </div>
         </div>
 
@@ -440,13 +452,13 @@ body {
         </div>
       </div>
 
-      <!-- ═══ STEP 3 (Success) ═══ -->
+      <!-- ═══ STEP 3 ═══ -->
       <div id="step3" style="display:none" class="step3">
         <div class="success-ring">
           <span class="material-symbols-outlined">check_circle</span>
         </div>
         <div class="s3-title">Booking Confirmed!</div>
-        <div class="s3-sub">Your court has been reserved. See you on the court!</div>
+        <div class="s3-sub">Your courts have been reserved. See you on the court!</div>
         <div class="ref-box">
           <div class="ref-lbl">Booking Reference</div>
           <div class="ref-num" id="refNum">BK-2026-00000</div>
@@ -476,32 +488,24 @@ body {
 // ══════════════════════════════════════════════════════════════
 // DATA
 // ══════════════════════════════════════════════════════════════
-
 const COURTS = [
-  { id:'A', name:'Court A', surface:'Padel',      color:'#0f4b8a', tag:'padel'  },
-  { id:'B', name:'Court B', surface:'Padel',      color:'#3e2a87', tag:'padel2' },
-  { id:'C', name:'Court C', surface:'Clay',       color:'#b33318', tag:'clay'   },
-  { id:'D', name:'Court D', surface:'Pickleball', color:'#197a4a', tag:'pickle' },
+  { id:'A', name:'Court A', surface:'Padel',      color:'#0f4b8a' },
+  { id:'B', name:'Court B', surface:'Padel',      color:'#3e2a87' },
+  { id:'C', name:'Court C', surface:'Clay',       color:'#b33318' },
+  { id:'D', name:'Court D', surface:'Pickleball', color:'#197a4a' },
 ];
 
-const DURATIONS = [
-  { val:1,   label:'1 hr',   priceLabel:'1 hour' },
-  { val:1.5, label:'1.5 hr', priceLabel:'1.5 hours' },
-  { val:2,   label:'2 hr',   priceLabel:'2 hours'  },
-];
-
-const PRICE_PER_HOUR = 3500;
+const PRICE_PER_SLOT = 3500;
 
 const DAYS_SHORT   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const DAYS_FULL    = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MONTHS_FULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-// Opening/closing by day-of-week (0=Sun)
-const OPEN_H  = [7, 6, 6, 6, 6, 6, 6];
+const OPEN_H  = [7, 6, 6, 6, 6, 6, 6];  // by day-of-week (0=Sun)
 const CLOSE_H = [21,22,22,22,22,23,23];
 
-// ── Seeded deterministic random ──────────────────────────────
+// Seeded deterministic random
 function srnd(seed) {
   let s = seed >>> 0;
   s ^= s << 13; s = (s >>> 0);
@@ -510,8 +514,8 @@ function srnd(seed) {
   return s / 0xFFFFFFFF;
 }
 
-// ── Date helpers ─────────────────────────────────────────────
-const ORIGIN = new Date(2026, 4, 8); // May 8 2026
+// Today
+const TODAY = new Date(2026, 4, 14); // May 14, 2026
 
 function fmtDate(d) {
   return d.getFullYear() + '-' +
@@ -519,26 +523,21 @@ function fmtDate(d) {
     String(d.getDate()).padStart(2,'0');
 }
 function dateFromKey(k) {
-  const [y,m,d] = k.split('-').map(Number);
-  return new Date(y, m-1, d);
+  const [y,m,d] = k.split('-').map(Number); return new Date(y, m-1, d);
 }
 function fmtHour(h) {
   const ampm = h < 12 ? 'AM' : 'PM';
   const h12  = h === 0 ? 12 : h > 12 ? h - 12 : h;
   return h12 + ':00 ' + ampm;
 }
-function fmtHourShort(h) {
-  const ampm = h < 12 ? 'AM' : 'PM';
-  const h12  = h === 0 ? 12 : h > 12 ? h - 12 : h;
-  return h12 + ampm;
-}
+function todayKey() { return fmtDate(TODAY); }
 
-// ── Generate 14 days of availability ────────────────────────
+// Generate 14-day availability (per slot, per court, boolean)
 function genAvailability() {
   const av = {};
   for (let day = 0; day < 14; day++) {
-    const d = new Date(ORIGIN);
-    d.setDate(ORIGIN.getDate() + day);
+    const d   = new Date(TODAY);
+    d.setDate(TODAY.getDate() + day);
     const dk  = fmtDate(d);
     const dow = d.getDay();
     av[dk] = {};
@@ -555,7 +554,7 @@ function genAvailability() {
         av[dk][sk][ct.id] = r < prob;
       }
     }
-    // Today: hand-crafted patterns to show variety
+    // Today (day 0): hand-crafted to show variety
     if (day === 0) {
       Object.assign(av[dk], {
         '06:00':{A:true, B:true, C:true, D:true },
@@ -574,63 +573,56 @@ function genAvailability() {
         '19:00':{A:true, B:false,C:true, D:false},
         '20:00':{A:true, B:true, C:true, D:true },
         '21:00':{A:true, B:true, C:true, D:true },
-        '22:00':{A:true, B:true, C:true, D:true },
       });
     }
   }
   return av;
 }
-
 const AV = genAvailability();
 
-function isCourtAvail(dateKey, startH, courtId, durVal) {
-  const slotsNeeded = Math.ceil(durVal);
-  for (let i = 0; i < slotsNeeded; i++) {
-    const h  = startH + i;
-    const sk = String(h).padStart(2,'0') + ':00';
-    const dd = AV[dateKey];
-    if (!dd || !dd[sk] || dd[sk][courtId] !== true) return false;
-  }
-  return true;
+function isAvail(dateKey, h, courtId) {
+  const sk = String(h).padStart(2,'0') + ':00';
+  return !!(AV[dateKey] && AV[dateKey][sk] && AV[dateKey][sk][courtId] === true);
 }
 
 // ══════════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════════
 const state = {
-  dateKey:   fmtDate(ORIGIN),
-  duration:  1,
-  selection: null,   // { hour, courtId }
-  players:   2,
-  step:      1,
+  dateKey:    todayKey(),
+  selections: [],   // [{ dateKey, hour, courtId }, ...]
+  players:    2,
+  step:       1,
 };
+
+function selKey(dk, h, cid) { return `${dk}|${h}|${cid}`; }
+function isSelected(dk, h, cid) {
+  return state.selections.some(s => s.dateKey === dk && s.hour === h && s.courtId === cid);
+}
+function countOnDate(dk) {
+  return state.selections.filter(s => s.dateKey === dk).length;
+}
 
 // ══════════════════════════════════════════════════════════════
 // RENDER
 // ══════════════════════════════════════════════════════════════
-
 function render() {
   renderAppBar();
   renderDateStrip();
-  renderDurationPills();
   renderSlots();
   renderCta();
-  // Show/hide steps
   document.getElementById('step1').style.display = state.step === 1 ? '' : 'none';
   document.getElementById('step2').style.display = state.step === 2 ? '' : 'none';
   document.getElementById('step3').style.display = state.step === 3 ? '' : 'none';
   if (state.step === 2) renderStep2();
   if (state.step === 3) renderStep3();
-  // Scroll to top on step change
   document.getElementById('screen').scrollTop = 0;
 }
 
 // ── App bar ──────────────────────────────────────────────────
 function renderAppBar() {
   const titles = { 1:'Book a Court', 2:'Booking Summary', 3:'Confirmed!' };
-  document.getElementById('abTitle').textContent = titles[state.step] || 'Book a Court';
-
-  // Step pips (only for steps 1+2)
+  document.getElementById('abTitle').textContent = titles[state.step];
   const pipsEl = document.getElementById('stepPips');
   if (state.step === 3) { pipsEl.innerHTML = ''; return; }
   let html = '';
@@ -645,14 +637,18 @@ function renderAppBar() {
 function renderDateStrip() {
   if (state.step !== 1) return;
   let html = '';
+  const tk = todayKey();
   for (let i = 0; i < 14; i++) {
-    const d   = new Date(ORIGIN);
-    d.setDate(ORIGIN.getDate() + i);
+    const d  = new Date(TODAY);
+    d.setDate(TODAY.getDate() + i);
     const dk  = fmtDate(d);
     const sel = dk === state.dateKey ? 'selected' : '';
     const tod = i === 0 ? 'today-chip' : '';
     const day = i === 0 ? 'Today' : DAYS_SHORT[d.getDay()];
+    const cnt = countOnDate(dk);
+    const badge = cnt > 0 ? `<span class="dc-badge">${cnt}</span>` : '';
     html += `<div class="date-chip ${sel} ${tod}" onclick="selectDate('${dk}')">
+      ${badge}
       <div class="dc-day">${day}</div>
       <div class="dc-num">${d.getDate()}</div>
       <div class="dc-mon">${MONTHS_SHORT[d.getMonth()]}</div>
@@ -661,40 +657,30 @@ function renderDateStrip() {
   document.getElementById('dateStrip').innerHTML = html;
 }
 
-// ── Duration pills ───────────────────────────────────────────
-function renderDurationPills() {
-  if (state.step !== 1) return;
-  let html = '';
-  for (const dur of DURATIONS) {
-    const act = dur.val === state.duration ? 'active' : '';
-    html += `<button class="dur-pill ${act}" onclick="setDuration(${dur.val})">${dur.label}</button>`;
-  }
-  document.getElementById('durPills').innerHTML = html;
-}
-
 // ── Slot list ────────────────────────────────────────────────
 function renderSlots() {
   if (state.step !== 1) return;
-  const listEl = document.getElementById('slotList');
-  const dk     = state.dateKey;
+  const listEl  = document.getElementById('slotList');
+  const dk      = state.dateKey;
   const dayData = AV[dk];
-  if (!dayData) { listEl.innerHTML = '<div class="slots-hint"><span class="material-symbols-outlined">event_busy</span><span class="slots-hint-text">No slots available</span></div>'; return; }
+  if (!dayData) {
+    listEl.innerHTML = '<div class="slots-hint"><span class="material-symbols-outlined">event_busy</span><span class="slots-hint-text">No slots available</span></div>';
+    return;
+  }
 
   const now     = new Date();
-  const isToday = dk === fmtDate(ORIGIN);
+  const isToday = dk === todayKey();
   const curHour = isToday ? now.getHours() : -1;
 
-  // Group slots
   const groups = [
-    { label: 'Morning',   range: [6,12],  rows: [] },
-    { label: 'Afternoon', range: [12,17], rows: [] },
-    { label: 'Evening',   range: [17,24], rows: [] },
+    { label:'Morning',   range:[6,12],  rows:[] },
+    { label:'Afternoon', range:[12,17], rows:[] },
+    { label:'Evening',   range:[17,24], rows:[] },
   ];
 
-  const slots = Object.keys(dayData).sort();
-  for (const sk of slots) {
+  for (const sk of Object.keys(dayData).sort()) {
     const h = parseInt(sk);
-    if (h <= curHour) continue; // skip past
+    if (h <= curHour) continue;
     const g = groups.find(g => h >= g.range[0] && h < g.range[1]);
     if (g) g.rows.push(h);
   }
@@ -704,28 +690,35 @@ function renderSlots() {
     if (!grp.rows.length) continue;
     html += `<div class="slot-group-label">${grp.label}</div>`;
     for (const h of grp.rows) {
-      const sk = String(h).padStart(2,'0') + ':00';
-      const availCourts = COURTS.filter(ct => isCourtAvail(dk, h, ct.id, state.duration));
-      const isFull  = availCourts.length === 0;
-      const selHour = state.selection?.hour === h;
+      const availCourts = COURTS.filter(ct => isAvail(dk, h, ct.id));
+      const allBooked   = availCourts.length === 0;
+      const endH        = h + 1;
+      const timeLabel   = `${fmtHour(h)}<span class="slot-time-end">– ${fmtHour(endH)}</span>`;
 
-      if (isFull) {
+      if (allBooked) {
         html += `<div class="slot-row">
-          <span class="slot-time">${fmtHour(h)}</span>
-          <span class="slot-full-label">Fully Booked</span>
+          <div class="slot-time">${fmtHour(h)}<span class="slot-time-end">– ${fmtHour(endH)}</span></div>
+          <div class="slot-full-label"><span class="material-symbols-outlined">block</span>Fully Booked</div>
         </div>`;
       } else {
         let chips = '';
         for (const ct of COURTS) {
-          const avail = isCourtAvail(dk, h, ct.id, state.duration);
-          const isSel = selHour && state.selection?.courtId === ct.id;
-          const cls   = [avail ? '' : 'unavail', isSel ? 'selected' : ''].join(' ').trim();
-          chips += `<button class="court-chip ${cls}" onclick="selectSlot(${h},'${ct.id}')">
-            <span class="chip-dot" style="background:${avail ? ct.color : '#94a3b8'}"></span>${ct.id}
+          const avail = isAvail(dk, h, ct.id);
+          const sel   = isSelected(dk, h, ct.id);
+          const cls   = sel ? 'selected' : avail ? '' : 'unavail';
+          const dot   = sel
+            ? `<span class="chip-dot" style="background:rgba(255,255,255,0.6)"></span>`
+            : avail
+              ? `<span class="chip-dot" style="background:${ct.color}"></span>`
+              : `<span class="chip-dot" style="background:var(--outline-variant)"></span>`;
+          const surface = avail ? ct.surface : 'Booked';
+          chips += `<button class="court-chip ${cls}" onclick="toggleSlot('${dk}',${h},'${ct.id}')">
+            <div class="chip-top">${dot}<span class="chip-name">${ct.name}</span></div>
+            <div class="chip-surface">${surface}</div>
           </button>`;
         }
         html += `<div class="slot-row">
-          <span class="slot-time">${fmtHour(h)}</span>
+          <div class="slot-time">${fmtHour(h)}<span class="slot-time-end">– ${fmtHour(endH)}</span></div>
           <div class="slot-courts">${chips}</div>
         </div>`;
       }
@@ -741,108 +734,95 @@ function renderSlots() {
   listEl.innerHTML = html;
 }
 
-// ── CTA bar ──────────────────────────────────────────────────
+// ── CTA ───────────────────────────────────────────────────────
 function renderCta() {
-  const btn   = document.getElementById('ctaBtn');
-  const lbl   = document.getElementById('ctaLabel');
-  const ico   = document.getElementById('ctaIcon');
   const content = document.getElementById('ctaContent');
-
-  btn.className = 'cta-btn';
+  const n = state.selections.length;
 
   if (state.step === 1) {
-    ico.textContent  = 'arrow_forward';
-    lbl.textContent  = 'Review Booking';
-    btn.disabled     = !state.selection;
-    content.innerHTML = '';
-    content.appendChild(btn);
-
-    // Show selection info beside button when something is selected
-    if (state.selection) {
-      const ct = COURTS.find(c => c.id === state.selection.courtId);
-      const info = document.createElement('div');
-      info.className = 'cta-sel-info';
-      info.innerHTML = `<div class="cta-sel-time">${fmtHour(state.selection.hour)}</div>
-        <div class="cta-sel-court">${ct.name} · ${ct.surface}</div>`;
-      content.insertBefore(info, btn);
+    if (n === 0) {
+      content.innerHTML = `
+        <button class="cta-btn" id="ctaBtn" onclick="handleCta()" disabled>
+          <span class="material-symbols-outlined">arrow_forward</span>
+          Review Booking
+        </button>`;
+    } else {
+      const days = new Set(state.selections.map(s => s.dateKey)).size;
+      content.innerHTML = `
+        <div class="cta-sel-info">
+          <div class="cta-sel-count">${n} slot${n>1?'s':''} selected</div>
+          <div class="cta-sel-sub">${days} day${days>1?'s':''} · LKR ${(n*PRICE_PER_SLOT).toLocaleString()}</div>
+        </div>
+        <button class="cta-btn" id="ctaBtn" onclick="handleCta()">
+          <span class="material-symbols-outlined">arrow_forward</span>
+          Review Booking
+        </button>`;
     }
   } else if (state.step === 2) {
-    ico.textContent = 'check';
-    lbl.textContent = 'Confirm Booking';
-    btn.disabled    = false;
-    btn.classList.add('green');
-    content.innerHTML = '';
-    content.appendChild(btn);
+    content.innerHTML = `
+      <button class="cta-btn green" id="ctaBtn" onclick="handleCta()">
+        <span class="material-symbols-outlined">check</span>
+        Confirm Booking
+      </button>`;
   } else {
-    ico.textContent = 'home';
-    lbl.textContent = 'Done';
-    btn.disabled    = false;
-    btn.classList.add('dark');
-    content.innerHTML = '';
-    content.appendChild(btn);
+    content.innerHTML = `
+      <button class="cta-btn dark" id="ctaBtn" onclick="handleCta()">
+        <span class="material-symbols-outlined">home</span>
+        Done
+      </button>`;
   }
 }
 
-// ── Step 2: summary + price ──────────────────────────────────
+// ── Step 2: summary + price ───────────────────────────────────
 function renderStep2() {
-  if (!state.selection) return;
-  const { hour, courtId } = state.selection;
-  const ct   = COURTS.find(c => c.id === courtId);
-  const d    = dateFromKey(state.dateKey);
-  const dur  = DURATIONS.find(x => x.val === state.duration);
+  // Group by date
+  const byDate = {};
+  for (const sel of state.selections) {
+    if (!byDate[sel.dateKey]) byDate[sel.dateKey] = [];
+    byDate[sel.dateKey].push(sel);
+  }
 
-  // End time
-  const endH = hour + state.duration;
-  const endHFloor = Math.floor(endH);
-  const endMin    = endH % 1 ? '30' : '00';
-  const endAmpm   = endHFloor < 12 ? 'AM' : 'PM';
-  const endH12    = endHFloor > 12 ? endHFloor-12 : endHFloor;
-  const endLabel  = `${endH12}:${endMin} ${endAmpm}`;
+  let html = '';
+  for (const dk of Object.keys(byDate).sort()) {
+    const d = dateFromKey(dk);
+    const dateLabel = `${DAYS_FULL[d.getDay()]}, ${d.getDate()} ${MONTHS_FULL[d.getMonth()]}`;
+    html += `<div class="sum-date-group">
+      <div class="sum-date-header">${dateLabel}</div>`;
 
-  const dateLabel = `${DAYS_FULL[d.getDay()]}, ${d.getDate()} ${MONTHS_FULL[d.getMonth()]} 2026`;
-  const timeLabel = `${fmtHour(hour)} – ${endLabel}`;
+    for (const sel of byDate[dk].sort((a,b) => a.hour - b.hour)) {
+      const ct = COURTS.find(c => c.id === sel.courtId);
+      html += `
+        <div class="sum-slot-row">
+          <div class="sum-slot-left">
+            <span class="sum-slot-dot" style="background:${ct.color}"></span>
+            <div class="sum-slot-info">
+              <div class="sum-slot-time">${fmtHour(sel.hour)} – ${fmtHour(sel.hour+1)}</div>
+              <div class="sum-slot-court">${ct.name} · ${ct.surface}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="sum-slot-price">LKR ${PRICE_PER_SLOT.toLocaleString()}</span>
+            <button class="sum-slot-remove" onclick="removeSlot('${dk}',${sel.hour},'${sel.courtId}')">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>`;
+    }
+    html += `</div>`;
+  }
+  document.getElementById('summaryCard').innerHTML = html;
 
-  document.getElementById('summaryCard').innerHTML = `
-    <div class="sum-row">
-      <div class="sum-icon"><span class="material-symbols-outlined">calendar_month</span></div>
-      <div class="sum-texts">
-        <div class="sum-lbl">Date</div>
-        <div class="sum-val">${dateLabel}</div>
-      </div>
-    </div>
-    <div class="sum-row">
-      <div class="sum-icon"><span class="material-symbols-outlined">schedule</span></div>
-      <div class="sum-texts">
-        <div class="sum-lbl">Time</div>
-        <div class="sum-val">${timeLabel}</div>
-      </div>
-    </div>
-    <div class="sum-row">
-      <div class="sum-icon"><span class="material-symbols-outlined">sports_tennis</span></div>
-      <div class="sum-texts">
-        <div class="sum-lbl">Court</div>
-        <div class="sum-val">${ct.name}</div>
-        <div class="sum-tag ${ct.tag}">${ct.surface}</div>
-      </div>
-    </div>
-    <div class="sum-row">
-      <div class="sum-icon"><span class="material-symbols-outlined">timer</span></div>
-      <div class="sum-texts">
-        <div class="sum-lbl">Duration</div>
-        <div class="sum-val">${dur.priceLabel}</div>
-      </div>
-    </div>`;
+  // Players
+  document.getElementById('pCount').textContent = state.players;
+  document.getElementById('pMinus').disabled = state.players <= 1;
+  document.getElementById('pPlus').disabled  = state.players >= 4;
 
-  // Players display
-  document.getElementById('pCount').textContent  = state.players;
-  document.getElementById('pMinus').disabled      = state.players <= 1;
-  document.getElementById('pPlus').disabled       = state.players >= 4;
-
-  // Price breakdown
-  const total = Math.round(PRICE_PER_HOUR * state.duration);
+  // Price
+  const n = state.selections.length;
+  const total = n * PRICE_PER_SLOT;
   document.getElementById('priceCard').innerHTML = `
     <div class="price-line">
-      <span class="pl-label">LKR ${PRICE_PER_HOUR.toLocaleString()} × ${dur.priceLabel}</span>
+      <span class="pl-label">${n} slot${n>1?'s':''} × LKR ${PRICE_PER_SLOT.toLocaleString()}</span>
       <span class="pl-val">LKR ${total.toLocaleString()}</span>
     </div>
     <div class="price-line">
@@ -855,23 +835,14 @@ function renderStep2() {
     </div>`;
 }
 
-// ── Step 3: success ──────────────────────────────────────────
+// ── Step 3: success ───────────────────────────────────────────
 function renderStep3() {
-  const ref = 'BK-2026-' + String(Math.floor(10000 + srnd(Date.now() % 99999) * 89999)).slice(0,5);
+  const ref = 'BK-2026-' + String(Math.floor(10000 + Math.random() * 89999));
   document.getElementById('refNum').textContent = ref;
 
-  if (!state.selection) return;
-  const { hour, courtId } = state.selection;
-  const ct   = COURTS.find(c => c.id === courtId);
-  const d    = dateFromKey(state.dateKey);
-  const dur  = DURATIONS.find(x => x.val === state.duration);
-
-  const endH      = hour + state.duration;
-  const endHFloor = Math.floor(endH);
-  const endMin    = endH % 1 ? '30' : '00';
-  const endAmpm   = endHFloor < 12 ? 'AM' : 'PM';
-  const endH12    = endHFloor > 12 ? endHFloor-12 : endHFloor;
-  const endLabel  = `${endH12}:${endMin} ${endAmpm}`;
+  const n    = state.selections.length;
+  const days = new Set(state.selections.map(s => s.dateKey)).size;
+  const total = n * PRICE_PER_SLOT;
 
   document.getElementById('s3Card').innerHTML = `
     <div class="s3-row">
@@ -880,62 +851,61 @@ function renderStep3() {
     </div>
     <div class="s3-row">
       <span class="material-symbols-outlined">calendar_month</span>
-      <span class="s3-row-text">${DAYS_FULL[d.getDay()]}, ${d.getDate()} ${MONTHS_FULL[d.getMonth()]} 2026</span>
-    </div>
-    <div class="s3-row">
-      <span class="material-symbols-outlined">schedule</span>
-      <span class="s3-row-text">${fmtHour(hour)} – ${endLabel} &nbsp;·&nbsp; ${dur.priceLabel}</span>
-    </div>
-    <div class="s3-row">
-      <span class="material-symbols-outlined">sports_tennis</span>
-      <span class="s3-row-text">${ct.name} &nbsp;·&nbsp; ${ct.surface}</span>
+      <span class="s3-row-text">${n} slot${n>1?'s':''} across ${days} day${days>1?'s':''}</span>
     </div>
     <div class="s3-row">
       <span class="material-symbols-outlined">group</span>
-      <span class="s3-row-text">${state.players} player${state.players > 1 ? 's' : ''}</span>
+      <span class="s3-row-text">${state.players} player${state.players>1?'s':''}</span>
+    </div>
+    <div class="s3-row">
+      <span class="material-symbols-outlined">payments</span>
+      <span class="s3-row-text">LKR ${total.toLocaleString()} — pay at venue</span>
     </div>`;
 }
 
 // ══════════════════════════════════════════════════════════════
 // INTERACTIONS
 // ══════════════════════════════════════════════════════════════
-
 function selectDate(dk) {
-  state.dateKey   = dk;
-  state.selection = null; // reset selection on date change
-  render();
+  state.dateKey = dk;
+  renderDateStrip();
+  renderSlots();
 }
 
-function setDuration(val) {
-  state.duration = val;
-  // If current selection is invalid with new duration, clear it
-  if (state.selection) {
-    const { hour, courtId } = state.selection;
-    if (!isCourtAvail(state.dateKey, hour, courtId, val)) state.selection = null;
-  }
-  render();
-}
-
-function selectSlot(hour, courtId) {
-  // Toggle off if already selected
-  if (state.selection?.hour === hour && state.selection?.courtId === courtId) {
-    state.selection = null;
+function toggleSlot(dk, h, cid) {
+  const idx = state.selections.findIndex(s => s.dateKey === dk && s.hour === h && s.courtId === cid);
+  if (idx >= 0) {
+    state.selections.splice(idx, 1);
   } else {
-    state.selection = { hour, courtId };
+    state.selections.push({ dateKey: dk, hour: h, courtId: cid });
   }
+  renderDateStrip();
   renderSlots();
   renderCta();
+}
+
+function removeSlot(dk, h, cid) {
+  const idx = state.selections.findIndex(s => s.dateKey === dk && s.hour === h && s.courtId === cid);
+  if (idx >= 0) state.selections.splice(idx, 1);
+  if (state.selections.length === 0) {
+    // No more selections — go back to step 1
+    state.step = 1;
+    render();
+  } else {
+    renderStep2();
+    renderCta();
+  }
 }
 
 function adjustPlayers(delta) {
   state.players = Math.max(1, Math.min(4, state.players + delta));
   document.getElementById('pCount').textContent = state.players;
-  document.getElementById('pMinus').disabled    = state.players <= 1;
-  document.getElementById('pPlus').disabled     = state.players >= 4;
+  document.getElementById('pMinus').disabled = state.players <= 1;
+  document.getElementById('pPlus').disabled  = state.players >= 4;
 }
 
 function handleCta() {
-  if (state.step === 1 && state.selection) {
+  if (state.step === 1 && state.selections.length > 0) {
     state.step = 2; render();
   } else if (state.step === 2) {
     state.step = 3; render();
@@ -944,26 +914,19 @@ function handleCta() {
   }
 }
 
-// Back button
 document.getElementById('abBack').onclick = () => {
-  if (state.step > 1) {
-    state.step--;
-    render();
-  } else {
-    window.location = 'padel-chief-venue-detail.html';
-  }
+  if (state.step > 1) { state.step--; render(); }
+  else window.location = 'padel-chief-venue-detail.html';
 };
 
 // ══════════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════════
 render();
-
-// Auto-scroll date strip to today
 setTimeout(() => {
   const strip = document.getElementById('dateStrip');
   const today = strip.querySelector('.today-chip');
-  if (today) today.scrollIntoView({ inline: 'start', behavior: 'smooth' });
+  if (today) today.scrollIntoView({ inline:'start', behavior:'smooth' });
 }, 80);
 </script>
 </body>
