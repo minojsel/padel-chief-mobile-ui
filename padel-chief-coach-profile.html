@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Padel Chief — Coach Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --surface: #FFFFFF;
+    --background: #F8FAFC;
+    --on-background: #0F172A;
+    --on-surface: #0F172A;
+    --on-surface-variant: #475569;
+    --primary: #125fa9;
+    --secondary-fixed: #d8ef00;
+    --outline: #94A3B8;
+    --outline-variant: #E2E8F0;
+    --surface-container: #F1F5F9;
+    --surface-container-high: #E2E8F0;
+    --pickle: #0d9488;
+    --star: #f59e0b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #0a0c10;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ── Phone Frame ── */
+  .phone-wrapper { display: flex; flex-direction: column; align-items: center; }
+  .screen-label {
+    color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .phone-frame {
+    width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+    position: relative; background: var(--background); flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+                0 0 0 2px rgba(255,255,255,0.06),
+                0 40px 80px rgba(0,0,0,0.5);
+  }
+  .phone-frame::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 30px; background: #0F172A;
+    border-radius: 0 0 18px 18px; z-index: 100;
+  }
+
+  /* ── Screen (full scroll, same as venue-detail) ── */
+  .screen {
+    width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: none; display: flex; flex-direction: column;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* ── Floating App Bar (mirrors venue-detail exactly) ── */
+  .app-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 96px; z-index: 50; pointer-events: none;
+    display: flex; flex-direction: column;
+  }
+  .app-bar-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+    transition: opacity 0.25s;
+  }
+  .app-bar-status {
+    height: 44px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 28px; position: relative; z-index: 1; flex-shrink: 0;
+  }
+  .status-time { font-size: 15px; font-weight: 700; color: white; }
+  .status-icons { display: flex; align-items: center; gap: 6px; }
+  .status-icons svg { fill: white; }
+  .app-bar-actions {
+    flex: 1; display: flex; align-items: center;
+    padding: 0 16px; gap: 8px; position: relative; z-index: 1;
+    pointer-events: auto;
+  }
+  .app-bar-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,0,0,0.32); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+  }
+  .app-bar-btn .material-symbols-outlined { font-size: 20px; color: white; font-variation-settings:'FILL' 0,'wght' 400; }
+  .app-bar-btn:active { background: rgba(0,0,0,0.5); }
+  .app-bar-spacer { flex: 1; }
+
+  /* Scrolled state */
+  .app-bar.scrolled .app-bar-bg { opacity: 0; }
+  .app-bar.scrolled { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+  .app-bar.scrolled .status-time { color: var(--on-surface); }
+  .app-bar.scrolled .status-icons svg { fill: var(--on-surface); }
+  .app-bar.scrolled .app-bar-btn { background: var(--surface-container); }
+  .app-bar.scrolled .app-bar-btn .material-symbols-outlined { color: var(--on-surface); }
+
+  /* ── Hero (single gradient panel, no carousel) ── */
+  .coach-hero { position: relative; height: 290px; overflow: hidden; flex-shrink: 0; }
+  .coach-hero-bg { position: absolute; inset: 0; }
+  .coach-hero::before {
+    content: ''; position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(180deg, rgba(0,0,0,0.22) 0%, transparent 40%, transparent 50%, rgba(0,0,0,0.60) 100%);
+  }
+  .coach-hero-content {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 14px 18px 18px; z-index: 3;
+  }
+  .coach-avatar-hero {
+    width: 72px; height: 72px; border-radius: 36px;
+    background: rgba(255,255,255,0.18); border: 3px solid rgba(255,255,255,0.35);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800; color: white;
+    margin-bottom: 10px;
+  }
+  .coach-hero-name { font-size: 22px; font-weight: 800; color: white; letter-spacing: -0.02em; line-height: 1.2; }
+  .coach-hero-sub { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.70); margin-top: 3px; }
+  .coach-hero-tags { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 4px 10px; border-radius: 9999px; font-size: 10px; font-weight: 700;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .hero-tag.padel { background: rgba(18,95,169,0.82); color: white; }
+  .hero-tag.pickle { background: rgba(13,148,136,0.82); color: white; }
+  .hero-tag.featured { background: var(--secondary-fixed); color: #1a2200; }
+  .hero-tag.certified { background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.25); }
+
+  /* ── Coach Info (mirrors venue-info) ── */
+  .coach-info { background: white; padding: 18px 18px 0; }
+  .coach-info-name { font-size: 22px; font-weight: 800; color: var(--on-surface); line-height: 1.2; letter-spacing: -0.02em; }
+  .coach-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .rating-pill {
+    display: flex; align-items: center; gap: 3px;
+    background: #fff8e1; border-radius: 20px; padding: 4px 10px;
+  }
+  .rating-pill .material-symbols-outlined { font-size: 13px; color: var(--star); font-variation-settings:'FILL' 1,'wght' 400; }
+  .rating-num { font-size: 12px; font-weight: 700; color: #92400e; }
+  .rating-cnt { font-size: 11px; color: #b45309; }
+  .sport-tag {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+  }
+  .sport-tag.padel { background: rgba(18,95,169,0.10); color: var(--primary); }
+  .sport-tag.pickle { background: rgba(13,148,136,0.10); color: var(--pickle); }
+  .featured-pill {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800;
+    background: rgba(217,119,6,0.12); color: #b45309;
+  }
+  .featured-pill .material-symbols-outlined { font-size: 12px; color: #f59e0b; font-variation-settings:'FILL' 1,'wght' 400; }
+  .sessions-badge { font-size: 11px; font-weight: 600; color: var(--on-surface-variant); }
+  .price-row { display: flex; align-items: baseline; gap: 3px; margin-top: 8px; }
+  .price-from { font-size: 11px; color: var(--outline); }
+  .price-amount { font-size: 20px; font-weight: 800; color: var(--on-surface); letter-spacing: -0.02em; }
+  .price-unit { font-size: 11px; color: var(--outline); }
+  .cta-row { display: flex; gap: 10px; margin-top: 14px; padding-bottom: 18px; }
+  .btn-book {
+    flex: 1; height: 48px; background: var(--primary);
+    border: none; border-radius: 24px; font-size: 14px; font-weight: 700;
+    color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-book .material-symbols-outlined { font-size: 18px; font-variation-settings:'FILL' 0,'wght' 400; }
+  .btn-book:active { filter: brightness(0.88); }
+  .btn-fav {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--surface-container); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+  }
+  .btn-fav .material-symbols-outlined { font-size: 20px; color: var(--primary); font-variation-settings:'FILL' 0,'wght' 300; }
+  .btn-fav:active { background: var(--surface-container-high); }
+
+  /* ── Stats row ── */
+  .stats-strip {
+    display: flex; background: white;
+    border-top: 1px solid var(--outline-variant);
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .stat-col { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 12px 8px; }
+  .stat-col + .stat-col { border-left: 1px solid var(--outline-variant); }
+  .stat-val { font-size: 18px; font-weight: 800; color: var(--on-surface); letter-spacing: -0.02em; line-height: 1; }
+  .stat-lbl { font-size: 9px; font-weight: 700; color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 3px; }
+
+  /* ── Divider / Section ── */
+  .section-divider { height: 8px; background: var(--surface-container); flex-shrink: 0; }
+  .section { background: white; padding: 18px; }
+  .section-title { font-size: 14px; font-weight: 700; color: var(--on-surface); margin-bottom: 13px; }
+  .about-text { font-size: 13px; line-height: 1.65; color: var(--on-surface-variant); }
+
+  /* ── Specialties (tags) ── */
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag-pill {
+    display: inline-flex; align-items: center;
+    padding: 5px 13px; border-radius: 9999px;
+    border: 1.5px solid var(--outline-variant); background: white;
+    font-size: 11px; font-weight: 600; color: var(--on-surface-variant);
+  }
+
+  /* ── Session types ── */
+  .session-type-row {
+    display: flex; align-items: center; gap: 13px;
+    padding: 12px 0; border-bottom: 1px solid var(--outline-variant);
+  }
+  .session-type-row:last-child { border-bottom: none; }
+  .stype-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: rgba(18,95,169,0.10);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .stype-icon .material-symbols-outlined { font-size: 20px; color: var(--primary); font-variation-settings:'FILL' 0,'wght' 400; }
+  .stype-icon.group-icon { background: rgba(13,148,136,0.10); }
+  .stype-icon.group-icon .material-symbols-outlined { color: var(--pickle); }
+  .stype-info { flex: 1; }
+  .stype-name { font-size: 13px; font-weight: 700; color: var(--on-surface); }
+  .stype-desc { font-size: 11px; color: var(--on-surface-variant); margin-top: 2px; }
+  .stype-price { font-size: 15px; font-weight: 800; color: var(--on-surface); }
+  .stype-dur { font-size: 10px; color: var(--outline); font-weight: 600; }
+
+  /* ── Reviews ── */
+  .rating-overview { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+  .rating-big { font-size: 46px; font-weight: 800; color: var(--on-surface); line-height: 1; letter-spacing: -0.03em; }
+  .rating-right { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .rating-stars-row { display: flex; gap: 2px; margin-bottom: 3px; }
+  .rating-stars-row .material-symbols-outlined { font-size: 14px; color: var(--star); font-variation-settings:'FILL' 1,'wght' 400; }
+  .rating-count { font-size: 11px; color: var(--outline); }
+  .bar-row { display: flex; align-items: center; gap: 5px; }
+  .bar-label { font-size: 10px; color: var(--outline); width: 8px; text-align: center; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 3px; background: var(--outline-variant); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--star); border-radius: 2px; }
+  .bar-pct { font-size: 9px; color: var(--outline); width: 26px; text-align: right; flex-shrink: 0; }
+  .review-card { padding: 13px 0; border-top: 1px solid var(--outline-variant); }
+  .review-header { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+  .review-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+  .review-author { flex: 1; }
+  .review-author-name { font-size: 12px; font-weight: 700; color: var(--on-surface); }
+  .review-date { font-size: 10px; color: var(--outline); margin-top: 1px; }
+  .review-stars { display: flex; gap: 2px; }
+  .review-stars .material-symbols-outlined { font-size: 12px; color: var(--star); font-variation-settings:'FILL' 1,'wght' 400; }
+  .review-text { font-size: 12px; line-height: 1.6; color: var(--on-surface-variant); }
+  .content-end { height: 12px; }
+
+  /* ── Bottom Nav ── */
+  .bottom-nav {
+    position: sticky; bottom: 0; z-index: 50;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0; display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px 28px; box-shadow: 0 -1px 0 rgba(15,23,42,0.08), 0 -8px 32px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    text-decoration: none; cursor: pointer; transition: all 0.2s; min-width: 48px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-item .material-symbols-outlined { font-size: 24px; }
+  .nav-item-label { font-size: 9px; font-weight: 600; }
+  .nav-item.active .material-symbols-outlined { color: var(--primary); font-variation-settings: 'FILL' 1, 'wght' 400; }
+  .nav-item.active .nav-item-label { color: var(--primary); }
+  .nav-item:not(.active) .material-symbols-outlined { color: var(--on-surface-variant); }
+  .nav-item:not(.active) .nav-item-label { color: var(--on-surface-variant); }
+</style>
+</head>
+<body>
+
+<!-- ═══ FRAME 1 · Kavindra Silva · Featured · Padel + Pickle ═══ -->
+<div class="phone-wrapper">
+  <div class="screen-label">Coach Profile — Featured</div>
+  <div class="phone-frame">
+
+    <!-- Floating App Bar -->
+    <div class="app-bar" id="ab1">
+      <div class="app-bar-bg"></div>
+      <div class="app-bar-status">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C5.2 2.5 2.7 3.7 1 5.7L0 4.5C2 2.1 4.8.7 8 .7s6 1.4 8 3.8L15 5.7C13.3 3.7 10.8 2.5 8 2.5zm0 4C6.2 6.5 4.6 7.3 3.5 8.5L2.4 7.3C3.8 5.8 5.8 4.7 8 4.7s4.2 1.1 5.6 2.6L12.5 8.5C11.4 7.3 9.8 6.5 8 6.5zm0 4c-.8 0-1.5.3-2 .8L8 12l2-.7c-.5-.5-1.2-.8-2-.8z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><rect x="23" y="4" width="2" height="4" rx="1" fill="white" opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="app-bar-actions">
+        <button class="app-bar-btn" onclick="window.location='padel-chief-coaching.html'"><span class="material-symbols-outlined">arrow_back</span></button>
+        <div class="app-bar-spacer"></div>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">favorite</span></button>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">share</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="s1">
+      <!-- Hero -->
+      <div class="coach-hero">
+        <div class="coach-hero-bg" style="background: linear-gradient(160deg, #0f2a4a 0%, #1e3a8a 45%, #0d6b7a 100%);"></div>
+        <div class="coach-hero-content">
+          <div class="coach-avatar-hero">KS</div>
+          <div class="coach-hero-name">Kavindra Silva</div>
+          <div class="coach-hero-sub">Head Coach · Colombo Padel Academy</div>
+          <div class="coach-hero-tags">
+            <span class="hero-tag featured">★ Featured</span>
+            <span class="hero-tag certified">Certified</span>
+            <span class="hero-tag padel">Padel</span>
+            <span class="hero-tag pickle">Pickleball</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coach Info (mirrors venue-info) -->
+      <div class="coach-info">
+        <div class="coach-info-name">Kavindra Silva</div>
+        <div class="coach-meta-row">
+          <div class="rating-pill"><span class="material-symbols-outlined">star</span><span class="rating-num">4.9</span><span class="rating-cnt">(48)</span></div>
+          <span class="sport-tag padel">Padel</span>
+          <span class="sport-tag pickle">Pickleball</span>
+          <div class="featured-pill"><span class="material-symbols-outlined">star</span>Featured</div>
+        </div>
+        <div class="coach-meta-row" style="margin-top:4px;">
+          <span class="sessions-badge">312 sessions · 87 students · 6 years experience</span>
+        </div>
+        <div class="price-row">
+          <span class="price-from">From</span>
+          <span class="price-amount">LKR 2,500</span>
+          <span class="price-unit">/ session</span>
+        </div>
+        <div class="cta-row">
+          <button class="btn-book" onclick="window.location='padel-chief-session-booking.html'">
+            <span class="material-symbols-outlined">calendar_month</span>Book a Session
+          </button>
+          <button class="btn-fav"><span class="material-symbols-outlined">favorite</span></button>
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="stats-strip">
+        <div class="stat-col"><div class="stat-val">312</div><div class="stat-lbl">Sessions</div></div>
+        <div class="stat-col"><div class="stat-val">87</div><div class="stat-lbl">Students</div></div>
+        <div class="stat-col"><div class="stat-val">4.9 ★</div><div class="stat-lbl">Rating</div></div>
+        <div class="stat-col"><div class="stat-val">6 yrs</div><div class="stat-lbl">Exp.</div></div>
+      </div>
+
+      <!-- About -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">About</div>
+        <p class="about-text">Kavindra is a certified padel and pickleball coach with 6+ years of professional coaching experience. He specialises in technical skill development and tactical game awareness, working with players from beginner to competitive club level. Former national padel team member.</p>
+      </div>
+
+      <!-- Specialties -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Specialties</div>
+        <div class="tags-wrap">
+          <span class="tag-pill">Technique</span>
+          <span class="tag-pill">Tactical Play</span>
+          <span class="tag-pill">Serve &amp; Return</span>
+          <span class="tag-pill">Volleys</span>
+          <span class="tag-pill">Match Fitness</span>
+          <span class="tag-pill">Competitive</span>
+        </div>
+      </div>
+
+      <!-- Session Types -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Session Types</div>
+        <div class="session-type-row">
+          <div class="stype-icon"><span class="material-symbols-outlined">person</span></div>
+          <div class="stype-info">
+            <div class="stype-name">Private Session</div>
+            <div class="stype-desc">1-on-1 · Personalised training · 60 min</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="stype-price">LKR 4,500</div>
+            <div class="stype-dur">per session</div>
+          </div>
+        </div>
+        <div class="session-type-row">
+          <div class="stype-icon group-icon"><span class="material-symbols-outlined">group</span></div>
+          <div class="stype-info">
+            <div class="stype-name">Group Session</div>
+            <div class="stype-desc">Up to 4 players · 90 min</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="stype-price">LKR 2,500</div>
+            <div class="stype-dur">per person</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Reviews</div>
+        <div class="rating-overview">
+          <div class="rating-big">4.9</div>
+          <div class="rating-right">
+            <div class="rating-stars-row">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span>
+            </div>
+            <div class="rating-count">48 reviews</div>
+            <div style="margin-top:7px;display:flex;flex-direction:column;gap:3px;">
+              <div class="bar-row"><span class="bar-label">5</span><div class="bar-track"><div class="bar-fill" style="width:72%"></div></div><span class="bar-pct">72%</span></div>
+              <div class="bar-row"><span class="bar-label">4</span><div class="bar-track"><div class="bar-fill" style="width:22%"></div></div><span class="bar-pct">22%</span></div>
+              <div class="bar-row"><span class="bar-label">3</span><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><span class="bar-pct">6%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:linear-gradient(135deg,#1e3a5f,#2563eb)">SL</div>
+            <div class="review-author">
+              <div class="review-author-name">Sanjay Liyanage</div>
+              <div class="review-date">Private session · Apr 2026</div>
+            </div>
+            <div class="review-stars">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span>
+            </div>
+          </div>
+          <p class="review-text">Kavindra completely transformed my backhand. Incredibly patient and breaks everything down so clearly. Best coaching investment I've made.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:linear-gradient(135deg,#4c1d95,#7c3aed)">NF</div>
+            <div class="review-author">
+              <div class="review-author-name">Nisha Fernando</div>
+              <div class="review-date">Group session · Mar 2026</div>
+            </div>
+            <div class="review-stars">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span>
+            </div>
+          </div>
+          <p class="review-text">Our whole group loved the session. He adapts to everyone's level and keeps it fun while being technical. Highly recommended!</p>
+        </div>
+      </div>
+
+      <div class="content-end"></div>
+
+      <!-- Bottom Nav -->
+      <nav class="bottom-nav">
+        <a class="nav-item active" href="padel-chief-dashboard.html">
+          <span class="material-symbols-outlined">home</span>
+          <span class="nav-item-label">Home</span>
+        </a>
+        <a class="nav-item" href="padel-chief-venues.html">
+          <span class="material-symbols-outlined">search</span>
+          <span class="nav-item-label">Venues</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="material-symbols-outlined">calendar_month</span>
+          <span class="nav-item-label">Bookings</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="material-symbols-outlined">person</span>
+          <span class="nav-item-label">Profile</span>
+        </a>
+      </nav>
+    </div><!-- /screen -->
+  </div><!-- /phone-frame -->
+</div>
+
+<!-- ═══ FRAME 2 · Amali Perera · Regular · Padel only ═══ -->
+<div class="phone-wrapper">
+  <div class="screen-label">Coach Profile — Regular</div>
+  <div class="phone-frame">
+
+    <!-- Floating App Bar -->
+    <div class="app-bar" id="ab2">
+      <div class="app-bar-bg"></div>
+      <div class="app-bar-status">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C5.2 2.5 2.7 3.7 1 5.7L0 4.5C2 2.1 4.8.7 8 .7s6 1.4 8 3.8L15 5.7C13.3 3.7 10.8 2.5 8 2.5zm0 4C6.2 6.5 4.6 7.3 3.5 8.5L2.4 7.3C3.8 5.8 5.8 4.7 8 4.7s4.2 1.1 5.6 2.6L12.5 8.5C11.4 7.3 9.8 6.5 8 6.5zm0 4c-.8 0-1.5.3-2 .8L8 12l2-.7c-.5-.5-1.2-.8-2-.8z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="white" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="white"/><rect x="23" y="4" width="2" height="4" rx="1" fill="white" opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="app-bar-actions">
+        <button class="app-bar-btn" onclick="window.location='padel-chief-coaching.html'"><span class="material-symbols-outlined">arrow_back</span></button>
+        <div class="app-bar-spacer"></div>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">favorite</span></button>
+        <button class="app-bar-btn"><span class="material-symbols-outlined">share</span></button>
+      </div>
+    </div>
+
+    <div class="screen" id="s2">
+      <!-- Hero -->
+      <div class="coach-hero">
+        <div class="coach-hero-bg" style="background: linear-gradient(160deg, #3d1a0a 0%, #7c2d12 45%, #c2410c 100%);"></div>
+        <div class="coach-hero-content">
+          <div class="coach-avatar-hero">AP</div>
+          <div class="coach-hero-name">Amali Perera</div>
+          <div class="coach-hero-sub">Padel Coach · Beginner Specialist</div>
+          <div class="coach-hero-tags">
+            <span class="hero-tag certified">Certified</span>
+            <span class="hero-tag padel">Padel</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coach Info -->
+      <div class="coach-info">
+        <div class="coach-info-name">Amali Perera</div>
+        <div class="coach-meta-row">
+          <div class="rating-pill"><span class="material-symbols-outlined">star</span><span class="rating-num">4.5</span><span class="rating-cnt">(22)</span></div>
+          <span class="sport-tag padel">Padel</span>
+        </div>
+        <div class="coach-meta-row" style="margin-top:4px;">
+          <span class="sessions-badge">134 sessions · 41 students · 3 years experience</span>
+        </div>
+        <div class="price-row">
+          <span class="price-from">From</span>
+          <span class="price-amount">LKR 1,800</span>
+          <span class="price-unit">/ session</span>
+        </div>
+        <div class="cta-row">
+          <button class="btn-book" onclick="window.location='padel-chief-session-booking.html'">
+            <span class="material-symbols-outlined">calendar_month</span>Book a Session
+          </button>
+          <button class="btn-fav"><span class="material-symbols-outlined">favorite</span></button>
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="stats-strip">
+        <div class="stat-col"><div class="stat-val">134</div><div class="stat-lbl">Sessions</div></div>
+        <div class="stat-col"><div class="stat-val">41</div><div class="stat-lbl">Students</div></div>
+        <div class="stat-col"><div class="stat-val">4.5 ★</div><div class="stat-lbl">Rating</div></div>
+        <div class="stat-col"><div class="stat-val">3 yrs</div><div class="stat-lbl">Exp.</div></div>
+      </div>
+
+      <!-- About -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">About</div>
+        <p class="about-text">Amali is a friendly padel coach who specialises in helping beginners build confidence and core fundamentals. She creates a welcoming, low-pressure environment and is particularly popular with adult beginners and groups picking up the sport for the first time.</p>
+      </div>
+
+      <!-- Specialties -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Specialties</div>
+        <div class="tags-wrap">
+          <span class="tag-pill">Beginners</span>
+          <span class="tag-pill">Fundamentals</span>
+          <span class="tag-pill">Footwork</span>
+          <span class="tag-pill">Ball Control</span>
+          <span class="tag-pill">Women's Groups</span>
+        </div>
+      </div>
+
+      <!-- Session Types -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Session Types</div>
+        <div class="session-type-row">
+          <div class="stype-icon"><span class="material-symbols-outlined">person</span></div>
+          <div class="stype-info">
+            <div class="stype-name">Private Session</div>
+            <div class="stype-desc">1-on-1 · Fundamentals focus · 60 min</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="stype-price">LKR 3,000</div>
+            <div class="stype-dur">per session</div>
+          </div>
+        </div>
+        <div class="session-type-row">
+          <div class="stype-icon group-icon"><span class="material-symbols-outlined">group</span></div>
+          <div class="stype-info">
+            <div class="stype-name">Group Session</div>
+            <div class="stype-desc">Up to 6 beginners · 90 min</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div class="stype-price">LKR 1,800</div>
+            <div class="stype-dur">per person</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="section-divider"></div>
+      <div class="section">
+        <div class="section-title">Reviews</div>
+        <div class="rating-overview">
+          <div class="rating-big">4.5</div>
+          <div class="rating-right">
+            <div class="rating-stars-row">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span>
+            </div>
+            <div class="rating-count">22 reviews</div>
+            <div style="margin-top:7px;display:flex;flex-direction:column;gap:3px;">
+              <div class="bar-row"><span class="bar-label">5</span><div class="bar-track"><div class="bar-fill" style="width:50%"></div></div><span class="bar-pct">50%</span></div>
+              <div class="bar-row"><span class="bar-label">4</span><div class="bar-track"><div class="bar-fill" style="width:36%"></div></div><span class="bar-pct">36%</span></div>
+              <div class="bar-row"><span class="bar-label">3</span><div class="bar-track"><div class="bar-fill" style="width:14%"></div></div><span class="bar-pct">14%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:linear-gradient(135deg,#064e3b,#059669)">KR</div>
+            <div class="review-author">
+              <div class="review-author-name">Kasun Ranasinghe</div>
+              <div class="review-date">Group session · Feb 2026</div>
+            </div>
+            <div class="review-stars">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span>
+            </div>
+          </div>
+          <p class="review-text">Amali made our whole group feel so comfortable. We all had zero experience and by the end we were actually rallying. Great experience.</p>
+        </div>
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-avatar" style="background:linear-gradient(135deg,#7c2d12,#ea580c)">TW</div>
+            <div class="review-author">
+              <div class="review-author-name">Thilini Wijesekera</div>
+              <div class="review-date">Private session · Jan 2026</div>
+            </div>
+            <div class="review-stars">
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+              <span class="material-symbols-outlined">star</span><span class="material-symbols-outlined">star</span>
+            </div>
+          </div>
+          <p class="review-text">Very patient and encouraging. I was nervous at first but Amali kept the session fun. Good pacing for absolute beginners.</p>
+        </div>
+      </div>
+
+      <div class="content-end"></div>
+
+      <!-- Bottom Nav -->
+      <nav class="bottom-nav">
+        <a class="nav-item active" href="padel-chief-dashboard.html">
+          <span class="material-symbols-outlined">home</span>
+          <span class="nav-item-label">Home</span>
+        </a>
+        <a class="nav-item" href="padel-chief-venues.html">
+          <span class="material-symbols-outlined">search</span>
+          <span class="nav-item-label">Venues</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="material-symbols-outlined">calendar_month</span>
+          <span class="nav-item-label">Bookings</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="material-symbols-outlined">person</span>
+          <span class="nav-item-label">Profile</span>
+        </a>
+      </nav>
+    </div><!-- /screen -->
+  </div><!-- /phone-frame -->
+</div>
+
+<script>
+function initAppBar(screenId, barId) {
+  const screen = document.getElementById(screenId);
+  const bar    = document.getElementById(barId);
+  screen.addEventListener('scroll', () => {
+    bar.classList.toggle('scrolled', screen.scrollTop > 220);
+  });
+}
+initAppBar('s1', 'ab1');
+initAppBar('s2', 'ab2');
+</script>
+</body>
+</html>

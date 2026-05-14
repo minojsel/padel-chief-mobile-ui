@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Book a Session – Padel Chief</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --primary: #125fa9;
+  --surface: #FFFFFF;
+  --background: #F8FAFC;
+  --on-surface: #0F172A;
+  --on-surface-variant: #475569;
+  --outline: #94A3B8;
+  --outline-variant: #E2E8F0;
+  --surface-container: #F1F5F9;
+  --surface-container-high: #E2E8F0;
+  --pickle: #0d9488;
+  --success: #10b981;
+  --star: #f59e0b;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #0a0c10;
+  display: flex; justify-content: center; align-items: flex-start;
+  min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* ── Phone frame ── */
+.phone-wrapper { display: flex; flex-direction: column; align-items: center; }
+.screen-label {
+  color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+}
+.phone-frame {
+  width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+  position: relative; background: var(--background); flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+              0 0 0 2px rgba(255,255,255,0.06),
+              0 40px 80px rgba(0,0,0,0.5);
+}
+.phone-frame::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 126px; height: 30px; background: #0F172A;
+  border-radius: 0 0 18px 18px; z-index: 100;
+}
+
+/* ── App bar (solid white, identical to booking.html) ── */
+.app-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 96px; z-index: 60;
+  background: rgba(255,255,255,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--outline-variant);
+  display: flex; flex-direction: column;
+}
+.ab-status {
+  height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+.ab-time { font-size: 15px; font-weight: 700; color: var(--on-surface); }
+.ab-icons { display: flex; align-items: center; gap: 6px; }
+.ab-icons svg { fill: var(--on-surface); }
+.ab-actions {
+  flex: 1; display: flex; align-items: center; padding: 0 16px; gap: 0;
+}
+.ab-back {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface-container); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+}
+.ab-back .material-symbols-outlined { font-size: 20px; color: var(--on-surface); font-variation-settings:'FILL' 0,'wght' 400; }
+.ab-back:active { background: var(--surface-container-high); }
+.ab-title {
+  flex: 1; text-align: center;
+  font-size: 15px; font-weight: 800; color: var(--on-surface);
+}
+.step-pips { display: flex; align-items: center; gap: 5px; min-width: 36px; justify-content: flex-end; }
+.step-pip {
+  height: 6px; border-radius: 3px;
+  transition: width 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+}
+.step-pip.active   { width: 18px; background: var(--primary); }
+.step-pip.done     { width: 6px;  background: rgba(18,95,169,0.35); }
+.step-pip.inactive { width: 6px;  background: var(--outline-variant); }
+
+/* ── Screen ── */
+.screen {
+  position: absolute; inset: 96px 0 0 0;
+  overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+
+/* ── Coach mini header (mirrors venue-mini) ── */
+.coach-mini {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--outline-variant);
+  display: flex; align-items: center; gap: 12px;
+}
+.cm-avatar {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: white;
+}
+.cm-info { flex: 1; min-width: 0; }
+.cm-name { font-size: 13px; font-weight: 700; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cm-sub  { font-size: 11px; color: var(--outline); margin-top: 1px; }
+.cm-price { text-align: right; flex-shrink: 0; }
+.cm-rate  { font-size: 15px; font-weight: 800; color: var(--on-surface); }
+.cm-unit  { font-size: 10px; color: var(--outline); }
+
+/* ── Calendar section ── */
+.cal-section {
+  background: var(--surface); border-bottom: 1px solid var(--outline-variant);
+  padding: 14px 18px;
+}
+.cal-month-nav {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+}
+.cal-month-title { font-size: 14px; font-weight: 700; color: var(--on-surface); }
+.cal-nav-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface-container); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent; transition: background 0.12s;
+}
+.cal-nav-btn .material-symbols-outlined { font-size: 18px; color: var(--on-surface); font-variation-settings:'FILL' 0,'wght' 400; }
+.cal-nav-btn:active { background: var(--surface-container-high); }
+.cal-nav-btn:disabled { opacity: 0.3; pointer-events: none; }
+.cal-day-headers { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 4px; }
+.cal-day-hdr {
+  text-align: center; font-size: 10px; font-weight: 700;
+  color: var(--outline); text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 0;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.cal-cell {
+  aspect-ratio: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border-radius: 10px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s; position: relative;
+}
+.cal-cell-num { font-size: 13px; font-weight: 600; color: var(--on-surface); line-height: 1; }
+.cal-cell-dot { width: 4px; height: 4px; border-radius: 2px; background: var(--primary); margin-top: 2px; }
+.cal-cell.empty { cursor: default; }
+.cal-cell.past .cal-cell-num { color: var(--outline-variant); }
+.cal-cell.past { cursor: default; }
+.cal-cell.today:not(.selected) { background: rgba(18,95,169,0.08); }
+.cal-cell.today:not(.selected) .cal-cell-num { color: var(--primary); font-weight: 800; }
+.cal-cell.selected { background: var(--primary); }
+.cal-cell.selected .cal-cell-num { color: white; font-weight: 800; }
+.cal-cell.selected .cal-cell-dot { background: rgba(255,255,255,0.7); }
+.cal-cell:not(.empty):not(.past):not(.selected):hover { background: var(--surface-container); }
+
+/* ── Session list ── */
+.sessions-section { padding: 0 18px 120px; }
+.sec-label { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; padding: 12px 0 8px; }
+.sessions-hint {
+  text-align: center; padding: 36px 0;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.sessions-hint .material-symbols-outlined { font-size: 40px; color: var(--outline-variant); font-variation-settings:'FILL' 0,'wght' 200; }
+.sessions-hint-text { font-size: 13px; color: var(--outline); font-weight: 500; }
+
+/* Session card (mirrors slot-row feel but as card) */
+.session-card {
+  background: white; border-radius: 14px;
+  border: 1.5px solid var(--outline-variant);
+  padding: 13px 14px; margin-bottom: 10px; cursor: pointer;
+  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.session-card:active { transform: scale(0.984); }
+.session-card.selected { border-color: var(--primary); background: rgba(18,95,169,0.04); }
+.sc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.sc-time { font-size: 14px; font-weight: 800; color: var(--on-surface); }
+.sc-dur { font-size: 11px; color: var(--outline); margin-top: 2px; }
+.sc-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.sc-tag {
+  display: inline-flex; align-items: center;
+  padding: 3px 9px; border-radius: 9999px; font-size: 10px; font-weight: 700;
+}
+.sc-tag.private { background: rgba(18,95,169,0.10); color: var(--primary); }
+.sc-tag.group   { background: rgba(13,148,136,0.10); color: var(--pickle); }
+.sc-tag.padel   { background: rgba(18,95,169,0.08); color: var(--primary); }
+.sc-tag.pickle  { background: rgba(13,148,136,0.08); color: var(--pickle); }
+.sc-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+.sc-spots { font-size: 11px; font-weight: 600; color: var(--on-surface-variant); display: flex; align-items: center; gap: 4px; }
+.sc-spots .material-symbols-outlined { font-size: 13px; font-variation-settings:'FILL' 0,'wght' 300; }
+.sc-spots.few { color: #d97706; }
+.sc-price { font-size: 14px; font-weight: 800; color: var(--on-surface); }
+.sc-check {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--primary);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sc-check .material-symbols-outlined { font-size: 12px; color: white; font-variation-settings:'FILL' 1,'wght' 600; }
+
+/* ── Step 2 ── */
+.step2 { padding: 20px 18px 120px; }
+.s2-section-label { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+.summary-card {
+  background: var(--surface-container); border-radius: 18px;
+  overflow: hidden; margin-bottom: 20px;
+}
+.sum-row {
+  display: flex; align-items: center; gap: 13px;
+  padding: 13px 15px; border-bottom: 1px solid rgba(148,163,184,0.25);
+}
+.sum-row:last-child { border-bottom: none; }
+.sum-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(18,95,169,0.10);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sum-icon .material-symbols-outlined { font-size: 18px; color: var(--primary); font-variation-settings:'FILL' 0,'wght' 400; }
+.sum-texts { flex: 1; }
+.sum-lbl { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.08em; }
+.sum-val { font-size: 14px; font-weight: 700; color: var(--on-surface); margin-top: 1px; }
+.sum-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 10px; font-weight: 700; margin-top: 3px;
+}
+.sum-tag.private { background: rgba(18,95,169,0.12); color: var(--primary); }
+.sum-tag.group   { background: rgba(13,148,136,0.12); color: var(--pickle); }
+
+/* Players card */
+.players-card {
+  background: var(--surface-container); border-radius: 16px;
+  padding: 14px 15px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.players-info .p-title { font-size: 14px; font-weight: 700; color: var(--on-surface); }
+.players-info .p-sub   { font-size: 11px; color: var(--outline); margin-top: 2px; }
+.players-ctrl { display: flex; align-items: center; gap: 14px; }
+.p-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid var(--outline-variant); background: white;
+  cursor: pointer; font-size: 18px; font-weight: 700; color: var(--on-surface);
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent; font-family: inherit;
+  transition: all 0.15s;
+}
+.p-btn:active { background: var(--surface-container); }
+.p-btn:disabled { opacity: 0.3; pointer-events: none; }
+.p-count { font-size: 18px; font-weight: 800; color: var(--on-surface); min-width: 22px; text-align: center; }
+
+/* Price card */
+.price-card {
+  background: white; border-radius: 16px;
+  border: 1.5px solid var(--outline-variant);
+  overflow: hidden; margin-bottom: 8px;
+}
+.price-line {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 15px; border-bottom: 1px solid var(--outline-variant);
+}
+.price-line:last-child { border-bottom: none; }
+.pl-label { font-size: 13px; color: var(--on-surface-variant); font-weight: 500; }
+.pl-val   { font-size: 13px; font-weight: 700; color: var(--on-surface); }
+.pl-total-label { font-size: 14px; font-weight: 800; color: var(--on-surface); }
+.pl-total-val   { font-size: 18px; font-weight: 800; color: var(--primary); }
+.pay-note {
+  text-align: center; font-size: 11px; color: var(--outline);
+  padding: 6px 0; display: flex; align-items: center; justify-content: center; gap: 4px;
+}
+.pay-note .material-symbols-outlined { font-size: 13px; font-variation-settings:'FILL' 0,'wght' 300; }
+
+/* ── Step 3 (Success) ── */
+.step3 {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 44px 24px 120px; text-align: center;
+}
+.success-ring {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: rgba(16,185,129,0.12);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 22px;
+}
+.success-ring .material-symbols-outlined { font-size: 50px; color: var(--success); font-variation-settings:'FILL' 1,'wght' 400; }
+.s3-title { font-size: 24px; font-weight: 800; color: var(--on-surface); letter-spacing: -0.02em; margin-bottom: 8px; }
+.s3-sub   { font-size: 13px; color: var(--on-surface-variant); line-height: 1.6; max-width: 270px; }
+.ref-box  {
+  margin: 22px 0 20px; background: var(--surface-container); border-radius: 16px;
+  padding: 14px 28px; width: 100%;
+}
+.ref-lbl  { font-size: 9px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; }
+.ref-num  { font-size: 21px; font-weight: 800; color: var(--on-surface); letter-spacing: 0.06em; margin-top: 3px; }
+.s3-card {
+  width: 100%; background: white; border-radius: 16px;
+  border: 1.5px solid var(--outline-variant);
+  overflow: hidden; text-align: left; margin-bottom: 16px;
+}
+.s3-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; border-bottom: 1px solid var(--outline-variant);
+}
+.s3-row:last-child { border-bottom: none; }
+.s3-row .material-symbols-outlined { font-size: 15px; color: var(--primary); flex-shrink: 0; font-variation-settings:'FILL' 0,'wght' 400; }
+.s3-row-text { font-size: 13px; font-weight: 600; color: var(--on-surface); }
+.share-btn {
+  width: 100%; height: 46px; border-radius: 23px;
+  border: 1.5px solid var(--outline-variant); background: white;
+  color: var(--on-surface); font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  -webkit-tap-highlight-color: transparent;
+}
+.share-btn .material-symbols-outlined { font-size: 16px; font-variation-settings:'FILL' 0,'wght' 400; }
+.share-btn:active { background: var(--surface-container); }
+
+/* ── Sticky CTA ── */
+.sticky-cta {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 14px 18px 28px;
+  background: rgba(255,255,255,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--outline-variant); z-index: 50;
+}
+.cta-content { display: flex; align-items: center; gap: 10px; }
+.cta-sel-info { flex: 0; min-width: 0; overflow: hidden; }
+.cta-sel-date  { font-size: 12px; font-weight: 700; color: var(--on-surface); white-space: nowrap; }
+.cta-sel-type  { font-size: 10px; color: var(--outline); margin-top: 1px; white-space: nowrap; }
+.cta-btn {
+  flex: 1; height: 50px; border-radius: 25px;
+  border: none; background: var(--primary);
+  color: white; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  -webkit-tap-highlight-color: transparent; transition: background 0.2s;
+}
+.cta-btn .material-symbols-outlined { font-size: 17px; font-variation-settings:'FILL' 0,'wght' 400; }
+.cta-btn:disabled { background: var(--surface-container-high); color: var(--outline); }
+.cta-btn:not(:disabled):active { filter: brightness(0.88); }
+.cta-btn.green  { background: var(--success); }
+.cta-btn.dark   { background: var(--on-surface); }
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+  <div class="screen-label">Book a Session — Kavindra Silva</div>
+  <div class="phone-frame">
+
+    <!-- App Bar -->
+    <div class="app-bar" id="appBar">
+      <div class="ab-status">
+        <span class="ab-time">9:41</span>
+        <div class="ab-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C5.2 2.5 2.7 3.7 1 5.7L0 4.5C2 2.1 4.8.7 8 .7s6 1.4 8 3.8L15 5.7C13.3 3.7 10.8 2.5 8 2.5zm0 4C6.2 6.5 4.6 7.3 3.5 8.5L2.4 7.3C3.8 5.8 5.8 4.7 8 4.7s4.2 1.1 5.6 2.6L12.5 8.5C11.4 7.3 9.8 6.5 8 6.5zm0 4c-.8 0-1.5.3-2 .8L8 12l2-.7c-.5-.5-1.2-.8-2-.8z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/><rect x="23" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="ab-actions">
+        <button class="ab-back" id="abBack"><span class="material-symbols-outlined">arrow_back</span></button>
+        <div class="ab-title" id="abTitle">Book a Session</div>
+        <div class="step-pips" id="stepPips"></div>
+      </div>
+    </div>
+
+    <!-- Screen -->
+    <div class="screen" id="screen">
+
+      <!-- ═══ STEP 1 ═══ -->
+      <div id="step1">
+
+        <!-- Coach mini -->
+        <div class="coach-mini">
+          <div class="cm-avatar">KS</div>
+          <div class="cm-info">
+            <div class="cm-name">Kavindra Silva</div>
+            <div class="cm-sub">Colombo Padel Academy</div>
+          </div>
+          <div class="cm-price">
+            <div class="cm-rate" id="cmRate">LKR 4,500</div>
+            <div class="cm-unit">private session</div>
+          </div>
+        </div>
+
+        <!-- Calendar -->
+        <div class="cal-section">
+          <div class="cal-month-nav">
+            <button class="cal-nav-btn" id="prevMonth" onclick="changeMonth(-1)">
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div class="cal-month-title" id="calMonthTitle"></div>
+            <button class="cal-nav-btn" id="nextMonth" onclick="changeMonth(1)">
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+          <div class="cal-day-headers">
+            <div class="cal-day-hdr">M</div><div class="cal-day-hdr">T</div>
+            <div class="cal-day-hdr">W</div><div class="cal-day-hdr">T</div>
+            <div class="cal-day-hdr">F</div><div class="cal-day-hdr">S</div>
+            <div class="cal-day-hdr">S</div>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+
+        <!-- Sessions -->
+        <div class="sessions-section">
+          <div class="sec-label" id="sessionsLabel">Select a date</div>
+          <div id="sessionList"></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 2 ═══ -->
+      <div id="step2" style="display:none" class="step2">
+        <div class="s2-section-label" style="margin-bottom:14px;">Session Summary</div>
+        <div class="summary-card" id="summaryCard"></div>
+
+        <div class="s2-section-label">Participants</div>
+        <div class="players-card">
+          <div class="players-info">
+            <div class="p-title">Number of Players</div>
+            <div class="p-sub" id="pSubLabel">Max spots per session</div>
+          </div>
+          <div class="players-ctrl">
+            <button class="p-btn" id="pMinus" onclick="adjustPlayers(-1)">−</button>
+            <span class="p-count" id="pCount">1</span>
+            <button class="p-btn" id="pPlus"  onclick="adjustPlayers(+1)">+</button>
+          </div>
+        </div>
+
+        <div class="s2-section-label">Price</div>
+        <div class="price-card" id="priceCard"></div>
+        <div class="pay-note">
+          <span class="material-symbols-outlined">info</span>
+          Payment collected at the venue
+        </div>
+      </div>
+
+      <!-- ═══ STEP 3 (Success) ═══ -->
+      <div id="step3" style="display:none" class="step3">
+        <div class="success-ring">
+          <span class="material-symbols-outlined">check_circle</span>
+        </div>
+        <div class="s3-title">Session Booked!</div>
+        <div class="s3-sub">Your session with Kavindra has been confirmed. See you on the court!</div>
+        <div class="ref-box">
+          <div class="ref-lbl">Booking Reference</div>
+          <div class="ref-num" id="refNum">SK-2026-00000</div>
+        </div>
+        <div class="s3-card" id="s3Card"></div>
+        <button class="share-btn">
+          <span class="material-symbols-outlined">share</span>Share Booking
+        </button>
+      </div>
+
+    </div><!-- /screen -->
+
+    <!-- Sticky CTA -->
+    <div class="sticky-cta">
+      <div class="cta-content" id="ctaContent">
+        <button class="cta-btn" id="ctaBtn" onclick="handleCta()" disabled>
+          <span class="material-symbols-outlined" id="ctaIcon">arrow_forward</span>
+          <span id="ctaLabel">Review Session</span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /phone-frame -->
+</div>
+
+<script>
+// ── Session data ──────────────────────────────────────────────────────
+const SESSIONS = {
+  '2026-05-12': [
+    { id:'s1', type:'private', sport:'padel',  start:'09:00', end:'10:00', dur:'60 min', spots:1, price:4500 },
+    { id:'s2', type:'group',   sport:'padel',  start:'11:00', end:'12:30', dur:'90 min', spots:3, price:2500 }
+  ],
+  '2026-05-14': [
+    { id:'s3', type:'private', sport:'pickle', start:'08:00', end:'09:00', dur:'60 min', spots:1, price:4500 },
+    { id:'s4', type:'group',   sport:'padel',  start:'16:00', end:'17:30', dur:'90 min', spots:2, price:2500 }
+  ],
+  '2026-05-16': [
+    { id:'s5', type:'private', sport:'padel',  start:'10:00', end:'11:00', dur:'60 min', spots:1, price:4500 }
+  ],
+  '2026-05-19': [
+    { id:'s6', type:'group',   sport:'padel',  start:'09:00', end:'10:30', dur:'90 min', spots:4, price:2500 },
+    { id:'s7', type:'private', sport:'pickle', start:'14:00', end:'15:00', dur:'60 min', spots:1, price:4500 }
+  ],
+  '2026-05-21': [
+    { id:'s8', type:'private', sport:'padel',  start:'08:00', end:'09:00', dur:'60 min', spots:1, price:4500 },
+    { id:'s9', type:'group',   sport:'pickle', start:'10:00', end:'11:30', dur:'90 min', spots:3, price:2200 }
+  ],
+  '2026-05-23': [
+    { id:'s10', type:'group',  sport:'padel',  start:'15:00', end:'16:30', dur:'90 min', spots:2, price:2500 }
+  ],
+  '2026-05-26': [
+    { id:'s11', type:'private', sport:'padel',  start:'09:00', end:'10:00', dur:'60 min', spots:1, price:4500 },
+    { id:'s12', type:'private', sport:'pickle', start:'11:00', end:'12:00', dur:'60 min', spots:1, price:4500 }
+  ],
+  '2026-05-28': [
+    { id:'s13', type:'group',  sport:'padel',  start:'17:00', end:'18:30', dur:'90 min', spots:3, price:2500 }
+  ],
+  '2026-06-02': [
+    { id:'s14', type:'private', sport:'padel',  start:'09:00', end:'10:00', dur:'60 min', spots:1, price:4500 },
+    { id:'s15', type:'group',   sport:'padel',  start:'11:00', end:'12:30', dur:'90 min', spots:4, price:2500 }
+  ],
+  '2026-06-09': [
+    { id:'s16', type:'group',  sport:'padel',  start:'09:00', end:'10:30', dur:'90 min', spots:2, price:2500 },
+    { id:'s17', type:'private', sport:'padel', start:'14:00', end:'15:00', dur:'60 min', spots:1, price:4500 }
+  ],
+  '2026-06-16': [
+    { id:'s18', type:'private', sport:'padel',  start:'08:00', end:'09:00', dur:'60 min', spots:1, price:4500 }
+  ],
+  '2026-06-23': [
+    { id:'s19', type:'group',  sport:'pickle', start:'10:00', end:'11:30', dur:'90 min', spots:3, price:2200 },
+    { id:'s20', type:'private', sport:'padel', start:'13:00', end:'14:00', dur:'60 min', spots:1, price:4500 }
+  ]
+};
+
+const TODAY       = new Date(2026, 4, 11);
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAY_NAMES   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MON_SHORT   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const state = {
+  viewYear:  TODAY.getFullYear(),
+  viewMonth: TODAY.getMonth(),
+  selectedDate: null,
+  selectedSession: null,
+  players: 1,
+  step: 1
+};
+
+// ── Helpers ──────────────────────────────────────────────────────────
+function dk(y,m,d) { return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function todayKey() { return dk(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()); }
+function isPast(y,m,d) {
+  const td = TODAY;
+  return new Date(y,m,d) < new Date(td.getFullYear(), td.getMonth(), td.getDate());
+}
+function friendlyDate(k) {
+  const [y,m,d] = k.split('-').map(Number);
+  const dt = new Date(y,m-1,d);
+  return `${DAY_NAMES[dt.getDay()]}, ${d} ${MON_SHORT[m-1]} ${y}`;
+}
+
+// ── Calendar ─────────────────────────────────────────────────────────
+function changeMonth(delta) {
+  state.viewMonth += delta;
+  if (state.viewMonth > 11) { state.viewMonth = 0; state.viewYear++; }
+  if (state.viewMonth < 0)  { state.viewMonth = 11; state.viewYear--; }
+  const minY = TODAY.getFullYear(), minM = TODAY.getMonth();
+  if (state.viewYear < minY || (state.viewYear === minY && state.viewMonth < minM)) {
+    state.viewYear = minY; state.viewMonth = minM;
+  }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const y = state.viewYear, m = state.viewMonth;
+  document.getElementById('calMonthTitle').textContent = `${MONTH_NAMES[m]} ${y}`;
+  document.getElementById('prevMonth').disabled =
+    (y === TODAY.getFullYear() && m === TODAY.getMonth());
+
+  const firstDay   = new Date(y,m,1).getDay();
+  const startPad   = firstDay === 0 ? 6 : firstDay - 1;
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  const tk = todayKey();
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  for (let i = 0; i < startPad; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-cell empty';
+    grid.appendChild(el);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const k = dk(y,m,d);
+    const past   = isPast(y,m,d);
+    const isToday = k === tk;
+    const isSel   = k === state.selectedDate;
+    const hasSes  = !!SESSIONS[k];
+
+    const el = document.createElement('div');
+    let cls = 'cal-cell';
+    if (past)        cls += ' past';
+    else if (isSel)  cls += ' selected';
+    else if (isToday) cls += ' today';
+    el.className = cls;
+
+    el.innerHTML = `<span class="cal-cell-num">${d}</span>${hasSes && !past ? '<span class="cal-cell-dot"></span>' : ''}`;
+
+    if (!past) {
+      const capturedK = k;
+      el.onclick = () => selectDate(capturedK);
+    }
+    grid.appendChild(el);
+  }
+}
+
+function selectDate(k) {
+  state.selectedDate = k;
+  state.selectedSession = null;
+  updateCta();
+  renderCalendar();
+  renderSessions();
+}
+
+// ── Sessions ─────────────────────────────────────────────────────────
+function renderSessions() {
+  const list = document.getElementById('sessionList');
+  const lbl  = document.getElementById('sessionsLabel');
+
+  if (!state.selectedDate) {
+    lbl.textContent = 'Select a date';
+    list.innerHTML  = `<div class="sessions-hint"><span class="material-symbols-outlined">touch_app</span><div class="sessions-hint-text">Tap a highlighted date above</div></div>`;
+    return;
+  }
+
+  const sessions = SESSIONS[state.selectedDate];
+  lbl.textContent = friendlyDate(state.selectedDate);
+
+  if (!sessions || sessions.length === 0) {
+    list.innerHTML = `<div class="sessions-hint"><span class="material-symbols-outlined">event_busy</span><div class="sessions-hint-text">No sessions available this day</div></div>`;
+    return;
+  }
+
+  list.innerHTML = sessions.map(s => {
+    const isSel = state.selectedSession && state.selectedSession.id === s.id;
+    const few   = s.spots <= 2;
+    return `
+      <div class="session-card${isSel ? ' selected' : ''}" onclick="selectSession('${s.id}')">
+        <div class="sc-top">
+          <div>
+            <div class="sc-time">${s.start} – ${s.end}</div>
+            <div class="sc-dur">${s.dur}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+            <div class="sc-tags">
+              <span class="sc-tag ${s.type}">${s.type === 'private' ? 'Private' : 'Group'}</span>
+              <span class="sc-tag ${s.sport}">${s.sport === 'pickle' ? 'Pickleball' : 'Padel'}</span>
+            </div>
+            ${isSel ? `<div class="sc-check"><span class="material-symbols-outlined">check</span></div>` : ''}
+          </div>
+        </div>
+        <div class="sc-bottom">
+          <div class="sc-spots${few ? ' few' : ''}">
+            <span class="material-symbols-outlined">group</span>
+            ${few ? `Only ${s.spots} spot${s.spots > 1 ? 's' : ''} left` : `${s.spots} spots available`}
+          </div>
+          <div class="sc-price">LKR ${s.price.toLocaleString()}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectSession(id) {
+  const sessions = SESSIONS[state.selectedDate] || [];
+  state.selectedSession = sessions.find(s => s.id === id) || null;
+  updateCta();
+  renderSessions();
+}
+
+// ── Step pips ─────────────────────────────────────────────────────────
+function renderPips(step) {
+  const pips = document.getElementById('stepPips');
+  pips.innerHTML = [1,2].map(i =>
+    `<div class="step-pip ${i === step ? 'active' : i < step ? 'done' : 'inactive'}"></div>`
+  ).join('');
+}
+
+// ── CTA ───────────────────────────────────────────────────────────────
+function updateCta() {
+  const btn = document.getElementById('ctaBtn');
+  const info = document.getElementById('ctaContent');
+  const s = state.selectedSession;
+  if (!s) {
+    btn.disabled = true;
+    btn.querySelector('#ctaIcon').textContent = 'arrow_forward';
+    btn.querySelector('#ctaLabel').textContent = 'Review Session';
+    info.innerHTML = `<button class="cta-btn" id="ctaBtn" onclick="handleCta()" disabled>
+      <span class="material-symbols-outlined" id="ctaIcon">arrow_forward</span>
+      <span id="ctaLabel">Review Session</span></button>`;
+    document.getElementById('ctaBtn').disabled = true;
+    return;
+  }
+  info.innerHTML = `
+    <div class="cta-sel-info">
+      <div class="cta-sel-date">${s.start}–${s.end}</div>
+      <div class="cta-sel-type">${s.type === 'private' ? 'Private' : 'Group'} · ${s.sport === 'pickle' ? 'Pickleball' : 'Padel'}</div>
+    </div>
+    <button class="cta-btn" id="ctaBtn" onclick="handleCta()">
+      <span class="material-symbols-outlined" id="ctaIcon">arrow_forward</span>
+      <span id="ctaLabel">Review Session</span>
+    </button>
+  `;
+}
+
+// ── Step navigation ───────────────────────────────────────────────────
+function showStep(n) {
+  state.step = n;
+  document.getElementById('step1').style.display = n === 1 ? '' : 'none';
+  document.getElementById('step2').style.display = n === 2 ? '' : 'none';
+  document.getElementById('step3').style.display = n === 3 ? '' : 'none';
+  document.getElementById('screen').scrollTop = 0;
+  renderPips(n);
+
+  if (n === 1) {
+    document.getElementById('abTitle').textContent = 'Book a Session';
+    updateCta();
+  } else if (n === 2) {
+    document.getElementById('abTitle').textContent = 'Confirm Session';
+    populateSummary();
+    document.getElementById('ctaContent').innerHTML = `
+      <button class="cta-btn green" id="ctaBtn" onclick="handleCta()">
+        <span class="material-symbols-outlined" id="ctaIcon">check_circle</span>
+        <span id="ctaLabel">Confirm Booking</span>
+      </button>`;
+  } else if (n === 3) {
+    document.getElementById('abTitle').textContent = 'Confirmed';
+    document.getElementById('ctaContent').innerHTML = `
+      <button class="cta-btn dark" id="ctaBtn" onclick="handleCta()">
+        <span class="material-symbols-outlined" id="ctaIcon">check</span>
+        <span id="ctaLabel">Done</span>
+      </button>`;
+  }
+}
+
+function handleCta() {
+  if (state.step === 1 && state.selectedSession) { showStep(2); }
+  else if (state.step === 2) { confirmBooking(); }
+  else if (state.step === 3) { window.location = 'padel-chief-coach-profile.html'; }
+}
+
+document.getElementById('abBack').onclick = () => {
+  if (state.step > 1) showStep(state.step - 1);
+  else window.location = 'padel-chief-coach-profile.html';
+};
+
+// ── Summary ───────────────────────────────────────────────────────────
+function populateSummary() {
+  const s = state.selectedSession;
+  document.getElementById('pSubLabel').textContent = `Max ${s.spots} spot${s.spots > 1 ? 's' : ''} per session`;
+  document.getElementById('pMinus').disabled = state.players <= 1;
+  document.getElementById('pPlus').disabled  = state.players >= s.spots;
+
+  document.getElementById('summaryCard').innerHTML = `
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">person</span></div>
+      <div class="sum-texts"><div class="sum-lbl">Coach</div><div class="sum-val">Kavindra Silva</div></div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">calendar_month</span></div>
+      <div class="sum-texts"><div class="sum-lbl">Date</div><div class="sum-val">${friendlyDate(state.selectedDate)}</div></div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">schedule</span></div>
+      <div class="sum-texts"><div class="sum-lbl">Time</div><div class="sum-val">${s.start} – ${s.end} (${s.dur})</div></div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">sports_tennis</span></div>
+      <div class="sum-texts">
+        <div class="sum-lbl">Session Type</div>
+        <div class="sum-val">
+          <span class="sum-tag ${s.type}">${s.type === 'private' ? 'Private' : 'Group'}</span>
+          &nbsp;${s.sport === 'pickle' ? 'Pickleball' : 'Padel'}
+        </div>
+      </div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">location_on</span></div>
+      <div class="sum-texts"><div class="sum-lbl">Venue</div><div class="sum-val">Colombo Padel Academy</div></div>
+    </div>
+  `;
+  updatePriceCard();
+}
+
+function adjustPlayers(delta) {
+  const s = state.selectedSession;
+  state.players = Math.max(1, Math.min(s.spots, state.players + delta));
+  document.getElementById('pCount').textContent = state.players;
+  document.getElementById('pMinus').disabled = state.players <= 1;
+  document.getElementById('pPlus').disabled  = state.players >= s.spots;
+  updatePriceCard();
+}
+
+function updatePriceCard() {
+  const s = state.selectedSession;
+  const base  = s.price * state.players;
+  const fee   = 150;
+  const total = base + fee;
+  document.getElementById('priceCard').innerHTML = `
+    <div class="price-line">
+      <span class="pl-label">${state.players} × ${s.type === 'private' ? 'Private' : 'Group'} Session</span>
+      <span class="pl-val">LKR ${base.toLocaleString()}</span>
+    </div>
+    <div class="price-line">
+      <span class="pl-label">Booking fee</span>
+      <span class="pl-val">LKR ${fee.toLocaleString()}</span>
+    </div>
+    <div class="price-line">
+      <span class="pl-total-label">Total</span>
+      <span class="pl-total-val">LKR ${total.toLocaleString()}</span>
+    </div>
+  `;
+}
+
+// ── Confirm ───────────────────────────────────────────────────────────
+function confirmBooking() {
+  const s   = state.selectedSession;
+  const ref = 'SK-2026-' + String(Math.floor(10000 + Math.random() * 90000));
+  document.getElementById('refNum').textContent = ref;
+  document.getElementById('s3Card').innerHTML = `
+    <div class="s3-row"><span class="material-symbols-outlined">person</span><span class="s3-row-text">Kavindra Silva</span></div>
+    <div class="s3-row"><span class="material-symbols-outlined">calendar_month</span><span class="s3-row-text">${friendlyDate(state.selectedDate)}</span></div>
+    <div class="s3-row"><span class="material-symbols-outlined">schedule</span><span class="s3-row-text">${s.start} – ${s.end} (${s.dur})</span></div>
+    <div class="s3-row"><span class="material-symbols-outlined">sports_tennis</span><span class="s3-row-text">${s.type === 'private' ? 'Private' : 'Group'} · ${s.sport === 'pickle' ? 'Pickleball' : 'Padel'} · ${state.players} player${state.players > 1 ? 's' : ''}</span></div>
+  `;
+  showStep(3);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+renderCalendar();
+renderSessions();
+renderPips(1);
+updateCta();
+</script>
+</body>
+</html>

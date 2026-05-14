@@ -372,11 +372,12 @@
   .qac-join .qac-icon .material-symbols-outlined { color: white; }
   .qac-join .qac-title { color: white; }
   .qac-join .qac-sub { color: rgba(255,255,255,0.65); }
-  .qac-learn { background: var(--surface-container); cursor: default; }
-  .qac-learn:active { transform: none; }
-  .qac-learn .qac-icon { background: rgba(0,0,0,0.06); }
-  .qac-learn .qac-icon .material-symbols-outlined { color: var(--outline); }
-  .qac-learn .qac-title { color: var(--on-surface-variant); }
+  .qac-learn { background: linear-gradient(135deg, #1a0b38 0%, #3b1e7a 100%); position: relative; overflow: hidden; }
+  .qac-learn::before { content: ''; position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(167,139,250,0.25) 0%, transparent 70%); pointer-events: none; }
+  .qac-learn .qac-icon { background: rgba(167,139,250,0.18); }
+  .qac-learn .qac-icon .material-symbols-outlined { color: #a78bfa; }
+  .qac-learn .qac-title { color: white; }
+  .qac-learn .qac-sub { color: rgba(255,255,255,0.65); }
   .qac-coming-soon {
     display: inline-flex; align-self: flex-start;
     padding: 2px 6px; border-radius: 9999px;
@@ -1134,13 +1135,13 @@
             <div class="qac-title">Join a Game</div>
             <div class="qac-sub">Find opponents</div>
           </button>
-          <div class="qac qac-learn">
+          <a class="qac qac-learn" href="padel-chief-coaching.html">
             <div class="qac-icon">
-              <span class="material-symbols-outlined">menu_book</span>
+              <span class="material-symbols-outlined">school</span>
             </div>
             <div class="qac-title">Learn</div>
-            <div class="qac-coming-soon">Coming Soon</div>
-          </div>
+            <div class="qac-sub">Find a coach</div>
+          </a>
         </div>
 
         <!-- Ongoing Match (always visible) -->

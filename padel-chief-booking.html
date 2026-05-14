@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Book a Court – Padel Chief</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --primary: #125fa9;
+  --surface: #FFFFFF;
+  --background: #F8FAFC;
+  --on-surface: #0F172A;
+  --on-surface-variant: #475569;
+  --outline: #94A3B8;
+  --outline-variant: #E2E8F0;
+  --surface-container: #F1F5F9;
+  --surface-container-high: #E2E8F0;
+  --pickle: #0d9488;
+  --success: #10b981;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #0a0c10;
+  display: flex; justify-content: center; align-items: flex-start;
+  min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* ── Phone frame ── */
+.phone-wrapper { display: flex; flex-direction: column; align-items: center; }
+.screen-label {
+  color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+}
+.phone-frame {
+  width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+  position: relative; background: var(--background); flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+              0 0 0 2px rgba(255,255,255,0.06),
+              0 40px 80px rgba(0,0,0,0.5);
+}
+.phone-frame::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 126px; height: 30px; background: #0F172A;
+  border-radius: 0 0 18px 18px; z-index: 100;
+}
+
+/* ── App bar (solid white) ── */
+.app-bar {
+  position: absolute; top: 0; left: 0; right: 0; height: 96px; z-index: 60;
+  background: rgba(255,255,255,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--outline-variant);
+  display: flex; flex-direction: column;
+}
+.ab-status {
+  height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+.ab-time { font-size: 15px; font-weight: 700; color: var(--on-surface); }
+.ab-icons { display: flex; align-items: center; gap: 6px; }
+.ab-icons svg { fill: var(--on-surface); }
+.ab-actions {
+  flex: 1; display: flex; align-items: center; padding: 0 16px; gap: 0;
+}
+.ab-back {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface-container); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+}
+.ab-back .material-symbols-outlined { font-size: 20px; color: var(--on-surface); font-variation-settings:'FILL' 0,'wght' 400; }
+.ab-back:active { background: var(--surface-container-high); }
+.ab-title {
+  flex: 1; text-align: center;
+  font-size: 15px; font-weight: 800; color: var(--on-surface);
+}
+.step-pips { display: flex; align-items: center; gap: 5px; min-width: 36px; justify-content: flex-end; }
+.step-pip {
+  height: 6px; border-radius: 3px;
+  transition: width 0.3s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+}
+.step-pip.active   { width: 18px; background: var(--primary); }
+.step-pip.done     { width: 6px;  background: rgba(18,95,169,0.35); }
+.step-pip.inactive { width: 6px;  background: var(--outline-variant); }
+
+/* ── Scrollable screen ── */
+.screen {
+  position: absolute; inset: 96px 0 0 0;
+  overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+
+/* ─────────────────────────── STEP 1 ─────────────────────────── */
+
+/* Venue mini header */
+.venue-mini {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--outline-variant);
+  display: flex; align-items: center; gap: 12px;
+}
+.vm-icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: #0b2d52; flex-shrink: 0; position: relative; overflow: hidden;
+}
+.vm-icon::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, transparent 14%, #0f4b8a 14%, #1156a0 86%, transparent 86%),
+    linear-gradient(90deg, transparent 49.5%, rgba(255,255,255,0.28) 49.5%, rgba(255,255,255,0.28) 50.5%, transparent 50.5%),
+    linear-gradient(180deg, transparent 48%, rgba(255,255,255,0.28) 48%, rgba(255,255,255,0.28) 52%, transparent 52%);
+}
+.vm-info { flex: 1; min-width: 0; }
+.vm-name { font-size: 13px; font-weight: 700; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vm-sub  { font-size: 11px; color: var(--outline); margin-top: 1px; }
+.vm-price { text-align: right; flex-shrink: 0; }
+.vm-rate  { font-size: 15px; font-weight: 800; color: var(--on-surface); }
+.vm-unit  { font-size: 10px; color: var(--outline); }
+
+/* Date strip (sticky) */
+.date-section {
+  position: sticky; top: 0; z-index: 30;
+  background: var(--background);
+  border-bottom: 1px solid var(--outline-variant);
+  padding: 12px 0;
+}
+.date-strip {
+  display: flex; gap: 7px; padding: 0 18px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.date-strip::-webkit-scrollbar { display: none; }
+.date-chip {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 52px; padding: 8px 4px 7px; border-radius: 14px;
+  border: 1.5px solid var(--outline-variant); background: white;
+  cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.date-chip:active { transform: scale(0.94); }
+.date-chip.today-chip:not(.selected) { border-color: var(--primary); }
+.date-chip.selected { background: var(--primary); border-color: var(--primary); }
+.dc-day { font-size: 8px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.08em; }
+.dc-num { font-size: 19px; font-weight: 800; color: var(--on-surface); line-height: 1.1; margin: 1px 0; }
+.dc-mon { font-size: 8px; font-weight: 600; color: var(--outline); }
+.date-chip.today-chip:not(.selected) .dc-day { color: var(--primary); }
+.date-chip.selected .dc-day,
+.date-chip.selected .dc-num,
+.date-chip.selected .dc-mon { color: white; }
+
+/* Duration picker */
+.duration-section { padding: 14px 18px 0; }
+.sec-label { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
+.dur-pills { display: flex; gap: 8px; margin-bottom: 16px; }
+.dur-pill {
+  flex: 1; height: 36px; border-radius: 10px;
+  border: 1.5px solid var(--outline-variant); background: white;
+  cursor: pointer; font-family: inherit;
+  font-size: 12px; font-weight: 700; color: var(--on-surface-variant);
+  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.dur-pill.active { background: rgba(18,95,169,0.08); border-color: var(--primary); color: var(--primary); }
+.dur-pill:not(.active):active { background: var(--surface-container); }
+
+/* Slot list */
+.slots-section { padding: 0 18px 120px; }
+.slot-group-label {
+  font-size: 10px; font-weight: 700; color: var(--outline);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  padding: 12px 0 6px;
+}
+.slot-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--outline-variant);
+}
+.slot-row:last-child { border-bottom: none; }
+.slot-time {
+  font-size: 13px; font-weight: 700; color: var(--on-surface);
+  min-width: 74px; flex-shrink: 0;
+}
+.slot-courts { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.slot-full-label { font-size: 12px; font-weight: 600; color: var(--outline-variant); font-style: italic; }
+.slot-past .slot-time { color: var(--outline-variant); }
+
+/* Court chips */
+.court-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 11px; border-radius: 9px;
+  font-size: 12px; font-weight: 700;
+  background: white; color: var(--on-surface);
+  border: 1.5px solid var(--outline-variant);
+  cursor: pointer; font-family: inherit;
+  transition: all 0.15s; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.court-chip .chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.court-chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
+.court-chip.selected .chip-dot { background: rgba(255,255,255,0.55) !important; }
+.court-chip.unavail { opacity: 0.28; pointer-events: none; text-decoration: line-through; }
+.court-chip:not(.unavail):not(.selected):active { background: var(--surface-container); }
+
+.slots-hint {
+  text-align: center; padding: 40px 0;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.slots-hint .material-symbols-outlined { font-size: 40px; color: var(--outline-variant); font-variation-settings:'FILL' 0,'wght' 200; }
+.slots-hint-text { font-size: 13px; color: var(--outline); font-weight: 500; }
+
+/* ─────────────────────────── STEP 2 ─────────────────────────── */
+.step2 { padding: 20px 18px 120px; }
+
+.s2-section-label { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+
+/* Summary card */
+.summary-card {
+  background: var(--surface-container); border-radius: 18px;
+  overflow: hidden; margin-bottom: 20px;
+}
+.sum-row {
+  display: flex; align-items: center; gap: 13px;
+  padding: 13px 15px; border-bottom: 1px solid rgba(148,163,184,0.25);
+}
+.sum-row:last-child { border-bottom: none; }
+.sum-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(18,95,169,0.10);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sum-icon .material-symbols-outlined { font-size: 18px; color: var(--primary); font-variation-settings:'FILL' 0,'wght' 400; }
+.sum-texts { flex: 1; }
+.sum-lbl { font-size: 10px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.08em; }
+.sum-val { font-size: 14px; font-weight: 700; color: var(--on-surface); margin-top: 1px; }
+.sum-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 10px; font-weight: 700; margin-top: 3px;
+}
+.sum-tag.padel  { background: rgba(18,95,169,0.12);  color: var(--primary); }
+.sum-tag.clay   { background: rgba(179,51,24,0.12);  color: #b33318; }
+.sum-tag.pickle { background: rgba(25,122,74,0.12);  color: #197a4a; }
+.sum-tag.padel2 { background: rgba(62,42,135,0.12);  color: #3e2a87; }
+
+/* Players counter */
+.players-card {
+  background: var(--surface-container); border-radius: 16px;
+  padding: 14px 15px; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.players-info .p-title { font-size: 14px; font-weight: 700; color: var(--on-surface); }
+.players-info .p-sub   { font-size: 11px; color: var(--outline); margin-top: 2px; }
+.players-ctrl { display: flex; align-items: center; gap: 14px; }
+.p-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid var(--outline-variant); background: white;
+  cursor: pointer; font-size: 18px; font-weight: 700; color: var(--on-surface);
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent; font-family: inherit;
+  transition: all 0.15s;
+}
+.p-btn:active { background: var(--surface-container); }
+.p-btn:disabled { opacity: 0.3; pointer-events: none; }
+.p-count { font-size: 18px; font-weight: 800; color: var(--on-surface); min-width: 22px; text-align: center; }
+
+/* Price breakdown */
+.price-card {
+  background: white; border-radius: 16px;
+  border: 1.5px solid var(--outline-variant);
+  overflow: hidden; margin-bottom: 8px;
+}
+.price-line {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 15px; border-bottom: 1px solid var(--outline-variant);
+}
+.price-line:last-child { border-bottom: none; }
+.pl-label { font-size: 13px; color: var(--on-surface-variant); font-weight: 500; }
+.pl-val   { font-size: 13px; font-weight: 700; color: var(--on-surface); }
+.pl-total-label { font-size: 14px; font-weight: 800; color: var(--on-surface); }
+.pl-total-val   { font-size: 18px; font-weight: 800; color: var(--primary); }
+.pay-note {
+  text-align: center; font-size: 11px; color: var(--outline);
+  padding: 6px 0; display: flex; align-items: center; justify-content: center; gap: 4px;
+}
+.pay-note .material-symbols-outlined { font-size: 13px; font-variation-settings:'FILL' 0,'wght' 300; }
+
+/* ─────────────────────────── STEP 3 (Success) ─────────────────────────── */
+.step3 {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 44px 24px 120px; text-align: center;
+}
+.success-ring {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: rgba(16,185,129,0.12);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 22px;
+}
+.success-ring .material-symbols-outlined { font-size: 50px; color: var(--success); font-variation-settings:'FILL' 1,'wght' 400; }
+.s3-title { font-size: 24px; font-weight: 800; color: var(--on-surface); letter-spacing: -0.02em; margin-bottom: 8px; }
+.s3-sub   { font-size: 13px; color: var(--on-surface-variant); line-height: 1.6; max-width: 270px; }
+.ref-box  {
+  margin: 22px 0 20px; background: var(--surface-container); border-radius: 16px;
+  padding: 14px 28px; width: 100%;
+}
+.ref-lbl  { font-size: 9px; font-weight: 700; color: var(--outline); text-transform: uppercase; letter-spacing: 0.12em; }
+.ref-num  { font-size: 21px; font-weight: 800; color: var(--on-surface); letter-spacing: 0.06em; margin-top: 3px; }
+
+.s3-card {
+  width: 100%; background: white; border-radius: 16px;
+  border: 1.5px solid var(--outline-variant);
+  overflow: hidden; text-align: left; margin-bottom: 16px;
+}
+.s3-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; border-bottom: 1px solid var(--outline-variant);
+}
+.s3-row:last-child { border-bottom: none; }
+.s3-row .material-symbols-outlined { font-size: 15px; color: var(--primary); flex-shrink: 0; font-variation-settings:'FILL' 0,'wght' 400; }
+.s3-row-text { font-size: 13px; font-weight: 600; color: var(--on-surface); }
+.share-btn {
+  width: 100%; height: 46px; border-radius: 23px;
+  border: 1.5px solid var(--outline-variant); background: white;
+  color: var(--on-surface); font-size: 13px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  -webkit-tap-highlight-color: transparent;
+}
+.share-btn .material-symbols-outlined { font-size: 16px; font-variation-settings:'FILL' 0,'wght' 400; }
+.share-btn:active { background: var(--surface-container); }
+
+/* ── Sticky CTA ── */
+.sticky-cta {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 14px 18px 28px;
+  background: rgba(255,255,255,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--outline-variant); z-index: 50;
+}
+.cta-content { display: flex; align-items: center; gap: 10px; }
+.cta-sel-info { flex: 0; min-width: 0; overflow: hidden; }
+.cta-sel-time  { font-size: 12px; font-weight: 700; color: var(--on-surface); white-space: nowrap; }
+.cta-sel-court { font-size: 10px; color: var(--outline); margin-top: 1px; white-space: nowrap; }
+.cta-btn {
+  flex: 1; height: 50px; border-radius: 25px;
+  border: none; background: var(--primary);
+  color: white; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  -webkit-tap-highlight-color: transparent; transition: background 0.2s;
+}
+.cta-btn .material-symbols-outlined { font-size: 17px; font-variation-settings:'FILL' 0,'wght' 400; }
+.cta-btn:disabled { background: var(--surface-container-high); color: var(--outline); }
+.cta-btn:not(:disabled):active { filter: brightness(0.88); }
+.cta-btn.green  { background: var(--success); }
+.cta-btn.dark   { background: var(--on-surface); }
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+  <div class="screen-label">Booking — Colombo Padel Academy</div>
+  <div class="phone-frame">
+
+    <!-- App Bar -->
+    <div class="app-bar" id="appBar">
+      <div class="ab-status">
+        <span class="ab-time">9:41</span>
+        <div class="ab-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.5C5.2 2.5 2.7 3.7 1 5.7L0 4.5C2 2.1 4.8.7 8 .7s6 1.4 8 3.8L15 5.7C13.3 3.7 10.8 2.5 8 2.5zm0 4C6.2 6.5 4.6 7.3 3.5 8.5L2.4 7.3C3.8 5.8 5.8 4.7 8 4.7s4.2 1.1 5.6 2.6L12.5 8.5C11.4 7.3 9.8 6.5 8 6.5zm0 4c-.8 0-1.5.3-2 .8L8 12l2-.7c-.5-.5-1.2-.8-2-.8z"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none"/><rect x="1.5" y="2.5" width="16" height="7" rx="1.5" fill="currentColor"/><rect x="23" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="ab-actions">
+        <button class="ab-back" id="abBack"><span class="material-symbols-outlined">arrow_back</span></button>
+        <div class="ab-title" id="abTitle">Book a Court</div>
+        <div class="step-pips" id="stepPips"></div>
+      </div>
+    </div>
+
+    <!-- Screen -->
+    <div class="screen" id="screen">
+
+      <!-- ═══ STEP 1 ═══ -->
+      <div id="step1">
+        <!-- Venue mini -->
+        <div class="venue-mini">
+          <div class="vm-icon"></div>
+          <div class="vm-info">
+            <div class="vm-name">Colombo Padel Academy</div>
+            <div class="vm-sub">45 Galle Road, Colombo 3</div>
+          </div>
+          <div class="vm-price">
+            <div class="vm-rate" id="vmRate">LKR 3,500</div>
+            <div class="vm-unit">per hour</div>
+          </div>
+        </div>
+
+        <!-- Date strip -->
+        <div class="date-section">
+          <div class="date-strip" id="dateStrip"></div>
+        </div>
+
+        <!-- Duration -->
+        <div class="duration-section">
+          <div class="sec-label">Duration</div>
+          <div class="dur-pills" id="durPills"></div>
+        </div>
+
+        <!-- Slots -->
+        <div class="slots-section">
+          <div class="sec-label">Available Slots</div>
+          <div id="slotList"></div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 2 ═══ -->
+      <div id="step2" style="display:none" class="step2">
+        <div class="s2-section-label" style="margin-bottom:14px;">Booking Summary</div>
+        <div class="summary-card" id="summaryCard"></div>
+
+        <div class="s2-section-label">Players</div>
+        <div class="players-card">
+          <div class="players-info">
+            <div class="p-title">Number of Players</div>
+            <div class="p-sub">Max 4 per court</div>
+          </div>
+          <div class="players-ctrl">
+            <button class="p-btn" id="pMinus" onclick="adjustPlayers(-1)">−</button>
+            <span class="p-count" id="pCount">2</span>
+            <button class="p-btn" id="pPlus"  onclick="adjustPlayers(+1)">+</button>
+          </div>
+        </div>
+
+        <div class="s2-section-label">Price</div>
+        <div class="price-card" id="priceCard"></div>
+        <div class="pay-note">
+          <span class="material-symbols-outlined">info</span>
+          Payment collected at venue
+        </div>
+      </div>
+
+      <!-- ═══ STEP 3 (Success) ═══ -->
+      <div id="step3" style="display:none" class="step3">
+        <div class="success-ring">
+          <span class="material-symbols-outlined">check_circle</span>
+        </div>
+        <div class="s3-title">Booking Confirmed!</div>
+        <div class="s3-sub">Your court has been reserved. See you on the court!</div>
+        <div class="ref-box">
+          <div class="ref-lbl">Booking Reference</div>
+          <div class="ref-num" id="refNum">BK-2026-00000</div>
+        </div>
+        <div class="s3-card" id="s3Card"></div>
+        <button class="share-btn">
+          <span class="material-symbols-outlined">share</span>Share Booking
+        </button>
+      </div>
+
+    </div><!-- /screen -->
+
+    <!-- Sticky CTA -->
+    <div class="sticky-cta">
+      <div class="cta-content" id="ctaContent">
+        <button class="cta-btn" id="ctaBtn" onclick="handleCta()" disabled>
+          <span class="material-symbols-outlined" id="ctaIcon">arrow_forward</span>
+          <span id="ctaLabel">Review Booking</span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /phone-frame -->
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+
+const COURTS = [
+  { id:'A', name:'Court A', surface:'Padel',      color:'#0f4b8a', tag:'padel'  },
+  { id:'B', name:'Court B', surface:'Padel',      color:'#3e2a87', tag:'padel2' },
+  { id:'C', name:'Court C', surface:'Clay',       color:'#b33318', tag:'clay'   },
+  { id:'D', name:'Court D', surface:'Pickleball', color:'#197a4a', tag:'pickle' },
+];
+
+const DURATIONS = [
+  { val:1,   label:'1 hr',   priceLabel:'1 hour' },
+  { val:1.5, label:'1.5 hr', priceLabel:'1.5 hours' },
+  { val:2,   label:'2 hr',   priceLabel:'2 hours'  },
+];
+
+const PRICE_PER_HOUR = 3500;
+
+const DAYS_SHORT   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAYS_FULL    = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_FULL  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// Opening/closing by day-of-week (0=Sun)
+const OPEN_H  = [7, 6, 6, 6, 6, 6, 6];
+const CLOSE_H = [21,22,22,22,22,23,23];
+
+// ── Seeded deterministic random ──────────────────────────────
+function srnd(seed) {
+  let s = seed >>> 0;
+  s ^= s << 13; s = (s >>> 0);
+  s ^= s >> 17; s = (s >>> 0);
+  s ^= s << 5;  s = (s >>> 0);
+  return s / 0xFFFFFFFF;
+}
+
+// ── Date helpers ─────────────────────────────────────────────
+const ORIGIN = new Date(2026, 4, 8); // May 8 2026
+
+function fmtDate(d) {
+  return d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+}
+function dateFromKey(k) {
+  const [y,m,d] = k.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function fmtHour(h) {
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const h12  = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return h12 + ':00 ' + ampm;
+}
+function fmtHourShort(h) {
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const h12  = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return h12 + ampm;
+}
+
+// ── Generate 14 days of availability ────────────────────────
+function genAvailability() {
+  const av = {};
+  for (let day = 0; day < 14; day++) {
+    const d = new Date(ORIGIN);
+    d.setDate(ORIGIN.getDate() + day);
+    const dk  = fmtDate(d);
+    const dow = d.getDay();
+    av[dk] = {};
+    const oh = OPEN_H[dow], ch = CLOSE_H[dow];
+    for (let h = oh; h < ch; h++) {
+      const sk = String(h).padStart(2,'0') + ':00';
+      av[dk][sk] = {};
+      const isPeak = (h>=7&&h<=9)||(h===12)||(h>=17&&h<=19);
+      const isWknd = dow===0||dow===6;
+      for (const ct of COURTS) {
+        const seed = day*200003 + h*1009 + ct.id.charCodeAt(0)*7 + 13;
+        const r    = srnd(seed);
+        const prob = isPeak ? (isWknd?0.20:0.36) : (isWknd?0.56:0.72);
+        av[dk][sk][ct.id] = r < prob;
+      }
+    }
+    // Today: hand-crafted patterns to show variety
+    if (day === 0) {
+      Object.assign(av[dk], {
+        '06:00':{A:true, B:true, C:true, D:true },
+        '07:00':{A:false,B:false,C:true, D:true },
+        '08:00':{A:false,B:false,C:false,D:false},
+        '09:00':{A:true, B:false,C:true, D:true },
+        '10:00':{A:true, B:true, C:true, D:true },
+        '11:00':{A:false,B:false,C:true, D:false},
+        '12:00':{A:false,B:false,C:false,D:false},
+        '13:00':{A:true, B:false,C:false,D:false},
+        '14:00':{A:true, B:true, C:false,D:false},
+        '15:00':{A:true, B:true, C:true, D:true },
+        '16:00':{A:true, B:true, C:true, D:true },
+        '17:00':{A:false,B:false,C:false,D:false},
+        '18:00':{A:false,B:false,C:false,D:false},
+        '19:00':{A:true, B:false,C:true, D:false},
+        '20:00':{A:true, B:true, C:true, D:true },
+        '21:00':{A:true, B:true, C:true, D:true },
+        '22:00':{A:true, B:true, C:true, D:true },
+      });
+    }
+  }
+  return av;
+}
+
+const AV = genAvailability();
+
+function isCourtAvail(dateKey, startH, courtId, durVal) {
+  const slotsNeeded = Math.ceil(durVal);
+  for (let i = 0; i < slotsNeeded; i++) {
+    const h  = startH + i;
+    const sk = String(h).padStart(2,'0') + ':00';
+    const dd = AV[dateKey];
+    if (!dd || !dd[sk] || dd[sk][courtId] !== true) return false;
+  }
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+const state = {
+  dateKey:   fmtDate(ORIGIN),
+  duration:  1,
+  selection: null,   // { hour, courtId }
+  players:   2,
+  step:      1,
+};
+
+// ══════════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════════
+
+function render() {
+  renderAppBar();
+  renderDateStrip();
+  renderDurationPills();
+  renderSlots();
+  renderCta();
+  // Show/hide steps
+  document.getElementById('step1').style.display = state.step === 1 ? '' : 'none';
+  document.getElementById('step2').style.display = state.step === 2 ? '' : 'none';
+  document.getElementById('step3').style.display = state.step === 3 ? '' : 'none';
+  if (state.step === 2) renderStep2();
+  if (state.step === 3) renderStep3();
+  // Scroll to top on step change
+  document.getElementById('screen').scrollTop = 0;
+}
+
+// ── App bar ──────────────────────────────────────────────────
+function renderAppBar() {
+  const titles = { 1:'Book a Court', 2:'Booking Summary', 3:'Confirmed!' };
+  document.getElementById('abTitle').textContent = titles[state.step] || 'Book a Court';
+
+  // Step pips (only for steps 1+2)
+  const pipsEl = document.getElementById('stepPips');
+  if (state.step === 3) { pipsEl.innerHTML = ''; return; }
+  let html = '';
+  for (let i = 1; i <= 2; i++) {
+    const cls = i === state.step ? 'active' : i < state.step ? 'done' : 'inactive';
+    html += `<div class="step-pip ${cls}"></div>`;
+  }
+  pipsEl.innerHTML = html;
+}
+
+// ── Date strip ───────────────────────────────────────────────
+function renderDateStrip() {
+  if (state.step !== 1) return;
+  let html = '';
+  for (let i = 0; i < 14; i++) {
+    const d   = new Date(ORIGIN);
+    d.setDate(ORIGIN.getDate() + i);
+    const dk  = fmtDate(d);
+    const sel = dk === state.dateKey ? 'selected' : '';
+    const tod = i === 0 ? 'today-chip' : '';
+    const day = i === 0 ? 'Today' : DAYS_SHORT[d.getDay()];
+    html += `<div class="date-chip ${sel} ${tod}" onclick="selectDate('${dk}')">
+      <div class="dc-day">${day}</div>
+      <div class="dc-num">${d.getDate()}</div>
+      <div class="dc-mon">${MONTHS_SHORT[d.getMonth()]}</div>
+    </div>`;
+  }
+  document.getElementById('dateStrip').innerHTML = html;
+}
+
+// ── Duration pills ───────────────────────────────────────────
+function renderDurationPills() {
+  if (state.step !== 1) return;
+  let html = '';
+  for (const dur of DURATIONS) {
+    const act = dur.val === state.duration ? 'active' : '';
+    html += `<button class="dur-pill ${act}" onclick="setDuration(${dur.val})">${dur.label}</button>`;
+  }
+  document.getElementById('durPills').innerHTML = html;
+}
+
+// ── Slot list ────────────────────────────────────────────────
+function renderSlots() {
+  if (state.step !== 1) return;
+  const listEl = document.getElementById('slotList');
+  const dk     = state.dateKey;
+  const dayData = AV[dk];
+  if (!dayData) { listEl.innerHTML = '<div class="slots-hint"><span class="material-symbols-outlined">event_busy</span><span class="slots-hint-text">No slots available</span></div>'; return; }
+
+  const now     = new Date();
+  const isToday = dk === fmtDate(ORIGIN);
+  const curHour = isToday ? now.getHours() : -1;
+
+  // Group slots
+  const groups = [
+    { label: 'Morning',   range: [6,12],  rows: [] },
+    { label: 'Afternoon', range: [12,17], rows: [] },
+    { label: 'Evening',   range: [17,24], rows: [] },
+  ];
+
+  const slots = Object.keys(dayData).sort();
+  for (const sk of slots) {
+    const h = parseInt(sk);
+    if (h <= curHour) continue; // skip past
+    const g = groups.find(g => h >= g.range[0] && h < g.range[1]);
+    if (g) g.rows.push(h);
+  }
+
+  let html = '';
+  for (const grp of groups) {
+    if (!grp.rows.length) continue;
+    html += `<div class="slot-group-label">${grp.label}</div>`;
+    for (const h of grp.rows) {
+      const sk = String(h).padStart(2,'0') + ':00';
+      const availCourts = COURTS.filter(ct => isCourtAvail(dk, h, ct.id, state.duration));
+      const isFull  = availCourts.length === 0;
+      const selHour = state.selection?.hour === h;
+
+      if (isFull) {
+        html += `<div class="slot-row">
+          <span class="slot-time">${fmtHour(h)}</span>
+          <span class="slot-full-label">Fully Booked</span>
+        </div>`;
+      } else {
+        let chips = '';
+        for (const ct of COURTS) {
+          const avail = isCourtAvail(dk, h, ct.id, state.duration);
+          const isSel = selHour && state.selection?.courtId === ct.id;
+          const cls   = [avail ? '' : 'unavail', isSel ? 'selected' : ''].join(' ').trim();
+          chips += `<button class="court-chip ${cls}" onclick="selectSlot(${h},'${ct.id}')">
+            <span class="chip-dot" style="background:${avail ? ct.color : '#94a3b8'}"></span>${ct.id}
+          </button>`;
+        }
+        html += `<div class="slot-row">
+          <span class="slot-time">${fmtHour(h)}</span>
+          <div class="slot-courts">${chips}</div>
+        </div>`;
+      }
+    }
+  }
+
+  if (!html) {
+    html = `<div class="slots-hint">
+      <span class="material-symbols-outlined">event_available</span>
+      <span class="slots-hint-text">No more slots today — try another date</span>
+    </div>`;
+  }
+  listEl.innerHTML = html;
+}
+
+// ── CTA bar ──────────────────────────────────────────────────
+function renderCta() {
+  const btn   = document.getElementById('ctaBtn');
+  const lbl   = document.getElementById('ctaLabel');
+  const ico   = document.getElementById('ctaIcon');
+  const content = document.getElementById('ctaContent');
+
+  btn.className = 'cta-btn';
+
+  if (state.step === 1) {
+    ico.textContent  = 'arrow_forward';
+    lbl.textContent  = 'Review Booking';
+    btn.disabled     = !state.selection;
+    content.innerHTML = '';
+    content.appendChild(btn);
+
+    // Show selection info beside button when something is selected
+    if (state.selection) {
+      const ct = COURTS.find(c => c.id === state.selection.courtId);
+      const info = document.createElement('div');
+      info.className = 'cta-sel-info';
+      info.innerHTML = `<div class="cta-sel-time">${fmtHour(state.selection.hour)}</div>
+        <div class="cta-sel-court">${ct.name} · ${ct.surface}</div>`;
+      content.insertBefore(info, btn);
+    }
+  } else if (state.step === 2) {
+    ico.textContent = 'check';
+    lbl.textContent = 'Confirm Booking';
+    btn.disabled    = false;
+    btn.classList.add('green');
+    content.innerHTML = '';
+    content.appendChild(btn);
+  } else {
+    ico.textContent = 'home';
+    lbl.textContent = 'Done';
+    btn.disabled    = false;
+    btn.classList.add('dark');
+    content.innerHTML = '';
+    content.appendChild(btn);
+  }
+}
+
+// ── Step 2: summary + price ──────────────────────────────────
+function renderStep2() {
+  if (!state.selection) return;
+  const { hour, courtId } = state.selection;
+  const ct   = COURTS.find(c => c.id === courtId);
+  const d    = dateFromKey(state.dateKey);
+  const dur  = DURATIONS.find(x => x.val === state.duration);
+
+  // End time
+  const endH = hour + state.duration;
+  const endHFloor = Math.floor(endH);
+  const endMin    = endH % 1 ? '30' : '00';
+  const endAmpm   = endHFloor < 12 ? 'AM' : 'PM';
+  const endH12    = endHFloor > 12 ? endHFloor-12 : endHFloor;
+  const endLabel  = `${endH12}:${endMin} ${endAmpm}`;
+
+  const dateLabel = `${DAYS_FULL[d.getDay()]}, ${d.getDate()} ${MONTHS_FULL[d.getMonth()]} 2026`;
+  const timeLabel = `${fmtHour(hour)} – ${endLabel}`;
+
+  document.getElementById('summaryCard').innerHTML = `
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">calendar_month</span></div>
+      <div class="sum-texts">
+        <div class="sum-lbl">Date</div>
+        <div class="sum-val">${dateLabel}</div>
+      </div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">schedule</span></div>
+      <div class="sum-texts">
+        <div class="sum-lbl">Time</div>
+        <div class="sum-val">${timeLabel}</div>
+      </div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">sports_tennis</span></div>
+      <div class="sum-texts">
+        <div class="sum-lbl">Court</div>
+        <div class="sum-val">${ct.name}</div>
+        <div class="sum-tag ${ct.tag}">${ct.surface}</div>
+      </div>
+    </div>
+    <div class="sum-row">
+      <div class="sum-icon"><span class="material-symbols-outlined">timer</span></div>
+      <div class="sum-texts">
+        <div class="sum-lbl">Duration</div>
+        <div class="sum-val">${dur.priceLabel}</div>
+      </div>
+    </div>`;
+
+  // Players display
+  document.getElementById('pCount').textContent  = state.players;
+  document.getElementById('pMinus').disabled      = state.players <= 1;
+  document.getElementById('pPlus').disabled       = state.players >= 4;
+
+  // Price breakdown
+  const total = Math.round(PRICE_PER_HOUR * state.duration);
+  document.getElementById('priceCard').innerHTML = `
+    <div class="price-line">
+      <span class="pl-label">LKR ${PRICE_PER_HOUR.toLocaleString()} × ${dur.priceLabel}</span>
+      <span class="pl-val">LKR ${total.toLocaleString()}</span>
+    </div>
+    <div class="price-line">
+      <span class="pl-label">Booking fee</span>
+      <span class="pl-val">Free</span>
+    </div>
+    <div class="price-line">
+      <span class="pl-total-label">Total</span>
+      <span class="pl-total-val">LKR ${total.toLocaleString()}</span>
+    </div>`;
+}
+
+// ── Step 3: success ──────────────────────────────────────────
+function renderStep3() {
+  const ref = 'BK-2026-' + String(Math.floor(10000 + srnd(Date.now() % 99999) * 89999)).slice(0,5);
+  document.getElementById('refNum').textContent = ref;
+
+  if (!state.selection) return;
+  const { hour, courtId } = state.selection;
+  const ct   = COURTS.find(c => c.id === courtId);
+  const d    = dateFromKey(state.dateKey);
+  const dur  = DURATIONS.find(x => x.val === state.duration);
+
+  const endH      = hour + state.duration;
+  const endHFloor = Math.floor(endH);
+  const endMin    = endH % 1 ? '30' : '00';
+  const endAmpm   = endHFloor < 12 ? 'AM' : 'PM';
+  const endH12    = endHFloor > 12 ? endHFloor-12 : endHFloor;
+  const endLabel  = `${endH12}:${endMin} ${endAmpm}`;
+
+  document.getElementById('s3Card').innerHTML = `
+    <div class="s3-row">
+      <span class="material-symbols-outlined">location_on</span>
+      <span class="s3-row-text">Colombo Padel Academy, Colombo 3</span>
+    </div>
+    <div class="s3-row">
+      <span class="material-symbols-outlined">calendar_month</span>
+      <span class="s3-row-text">${DAYS_FULL[d.getDay()]}, ${d.getDate()} ${MONTHS_FULL[d.getMonth()]} 2026</span>
+    </div>
+    <div class="s3-row">
+      <span class="material-symbols-outlined">schedule</span>
+      <span class="s3-row-text">${fmtHour(hour)} – ${endLabel} &nbsp;·&nbsp; ${dur.priceLabel}</span>
+    </div>
+    <div class="s3-row">
+      <span class="material-symbols-outlined">sports_tennis</span>
+      <span class="s3-row-text">${ct.name} &nbsp;·&nbsp; ${ct.surface}</span>
+    </div>
+    <div class="s3-row">
+      <span class="material-symbols-outlined">group</span>
+      <span class="s3-row-text">${state.players} player${state.players > 1 ? 's' : ''}</span>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// INTERACTIONS
+// ══════════════════════════════════════════════════════════════
+
+function selectDate(dk) {
+  state.dateKey   = dk;
+  state.selection = null; // reset selection on date change
+  render();
+}
+
+function setDuration(val) {
+  state.duration = val;
+  // If current selection is invalid with new duration, clear it
+  if (state.selection) {
+    const { hour, courtId } = state.selection;
+    if (!isCourtAvail(state.dateKey, hour, courtId, val)) state.selection = null;
+  }
+  render();
+}
+
+function selectSlot(hour, courtId) {
+  // Toggle off if already selected
+  if (state.selection?.hour === hour && state.selection?.courtId === courtId) {
+    state.selection = null;
+  } else {
+    state.selection = { hour, courtId };
+  }
+  renderSlots();
+  renderCta();
+}
+
+function adjustPlayers(delta) {
+  state.players = Math.max(1, Math.min(4, state.players + delta));
+  document.getElementById('pCount').textContent = state.players;
+  document.getElementById('pMinus').disabled    = state.players <= 1;
+  document.getElementById('pPlus').disabled     = state.players >= 4;
+}
+
+function handleCta() {
+  if (state.step === 1 && state.selection) {
+    state.step = 2; render();
+  } else if (state.step === 2) {
+    state.step = 3; render();
+  } else if (state.step === 3) {
+    window.location = 'padel-chief-venue-detail.html';
+  }
+}
+
+// Back button
+document.getElementById('abBack').onclick = () => {
+  if (state.step > 1) {
+    state.step--;
+    render();
+  } else {
+    window.location = 'padel-chief-venue-detail.html';
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+render();
+
+// Auto-scroll date strip to today
+setTimeout(() => {
+  const strip = document.getElementById('dateStrip');
+  const today = strip.querySelector('.today-chip');
+  if (today) today.scrollIntoView({ inline: 'start', behavior: 'smooth' });
+}, 80);
+</script>
+</body>
+</html>

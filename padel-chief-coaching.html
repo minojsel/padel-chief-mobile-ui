@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Padel Chief — Coaching</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --surface: #FFFFFF;
+    --background: #F8FAFC;
+    --on-background: #0F172A;
+    --on-surface: #0F172A;
+    --on-surface-variant: #475569;
+    --primary: #125fa9;
+    --secondary-fixed: #d8ef00;
+    --outline: #94A3B8;
+    --outline-variant: #E2E8F0;
+    --surface-container: #F1F5F9;
+    --surface-container-high: #E2E8F0;
+    --pickle: #0d9488;
+    --star: #f59e0b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #0a0c10;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 100vh; padding: 32px 24px; gap: 32px; flex-wrap: wrap;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ── Phone Frame ── */
+  .phone-wrapper { display: flex; flex-direction: column; align-items: center; }
+  .screen-label {
+    color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .phone-frame {
+    width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+    position: relative; background: var(--background); flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04),
+                0 0 0 2px rgba(255,255,255,0.06),
+                0 40px 80px rgba(0,0,0,0.5);
+  }
+  .phone-frame::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 126px; height: 30px; background: #0F172A;
+    border-radius: 0 0 18px 18px; z-index: 100;
+  }
+  .screen {
+    width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;
+    scrollbar-width: none; display: flex; flex-direction: column;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* ── Sticky Header (mirrors venue-header) ── */
+  .venue-header {
+    position: sticky; top: 0; z-index: 50; flex-shrink: 0;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(15,23,42,0.07);
+  }
+  .venue-header-inner { padding: 44px 18px 10px; }
+  .vh-title-row { display: flex; align-items: flex-start; justify-content: space-between; }
+  .venue-page-title { font-size: 24px; font-weight: 800; color: var(--on-background); letter-spacing: -0.02em; line-height: 1; }
+  .venue-page-sub { font-size: 11px; font-weight: 500; color: var(--on-surface-variant); margin-top: 4px; }
+  .vh-btn-row { display: flex; gap: 8px; padding-top: 2px; }
+  .vh-icon-btn {
+    width: 38px; height: 38px; border-radius: 12px; border: none; cursor: pointer;
+    background: var(--surface-container);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--on-surface-variant); transition: all 0.18s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .vh-icon-btn:active { transform: scale(0.92); }
+  .vh-icon-btn .material-symbols-outlined { font-size: 20px; }
+  .vh-icon-btn.active { background: rgba(18,95,169,0.10); color: var(--primary); }
+
+  /* Search bar */
+  .venue-search-section { padding: 8px 18px 0; display: none; }
+  .venue-header.search-active .venue-search-section { display: flex; align-items: center; gap: 8px; }
+  .venue-header.search-active .vh-title-row { display: none; }
+  .venue-header.search-active .venue-header-inner { padding-bottom: 0; }
+  .v-search-wrap {
+    flex: 1; display: flex; align-items: center; position: relative;
+    background: var(--surface-container); border-radius: 14px; overflow: hidden;
+  }
+  .v-search-icon { position: absolute; left: 12px; font-size: 18px; color: var(--outline); pointer-events: none; }
+  .v-search-input {
+    width: 100%; padding: 11px 34px 11px 38px; border: none; background: transparent;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 500;
+    color: var(--on-surface); outline: none;
+  }
+  .v-search-input::placeholder { color: var(--outline); }
+  .v-cancel-btn {
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--primary); border: none; background: none; cursor: pointer; white-space: nowrap;
+    padding: 0 2px 0 6px;
+  }
+
+  /* ── Controls ── */
+  .venue-controls { background: var(--surface); padding: 10px 0 0; flex-shrink: 0; }
+  .chips-scroll {
+    display: flex; gap: 6px; overflow-x: auto; padding: 0 18px 10px;
+    scrollbar-width: none;
+  }
+  .chips-scroll::-webkit-scrollbar { display: none; }
+  .v-chip {
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+    padding: 6px 13px; border-radius: 9999px; border: 1.5px solid var(--outline-variant);
+    background: var(--surface); font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px; font-weight: 600; color: var(--on-surface-variant);
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .v-chip .material-symbols-outlined { font-size: 14px; }
+  .v-chip.active { border-color: var(--primary); background: rgba(18,95,169,0.08); color: var(--primary); font-weight: 700; }
+  .v-chip.pickle.active { border-color: var(--pickle); background: rgba(13,148,136,0.08); color: var(--pickle); }
+  .controls-divider { height: 1px; background: var(--outline-variant); }
+
+  /* ── Results count ── */
+  .results-meta { display: flex; align-items: center; padding: 10px 18px 4px; }
+  .results-count { font-size: 11px; font-weight: 600; color: var(--on-surface-variant); }
+  .results-count strong { color: var(--on-surface); }
+
+  /* ── Featured section ── */
+  .featured-label {
+    font-size: 10px; font-weight: 700; color: var(--outline);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    padding: 12px 18px 4px;
+  }
+  .featured-scroll {
+    display: flex; gap: 10px; overflow-x: auto; padding: 4px 18px 14px;
+    scrollbar-width: none;
+  }
+  .featured-scroll::-webkit-scrollbar { display: none; }
+
+  /* Featured coach card (horizontal scroll) */
+  .fc-card {
+    flex-shrink: 0; width: 138px; background: var(--surface); border-radius: 16px;
+    overflow: hidden; cursor: pointer; transition: transform 0.15s;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.04);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fc-card:active { transform: scale(0.96); }
+  .fc-img {
+    height: 96px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .fc-img::before {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.38) 100%);
+  }
+  .fc-initials {
+    width: 48px; height: 48px; border-radius: 24px;
+    background: rgba(255,255,255,0.18); border: 2px solid rgba(255,255,255,0.30);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: white; position: relative; z-index: 2;
+  }
+  .fc-badge {
+    position: absolute; top: 7px; left: 7px; z-index: 3;
+    padding: 2px 7px; border-radius: 9999px;
+    background: var(--secondary-fixed); color: #1a2200;
+    font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .fc-sport-row {
+    position: absolute; bottom: 6px; left: 7px; z-index: 3; display: flex; gap: 3px;
+  }
+  .fc-sport {
+    display: inline-flex; align-items: center;
+    padding: 2px 6px; border-radius: 9999px; font-size: 8px; font-weight: 700;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .fc-sport.padel { background: rgba(18,95,169,0.82); color: white; }
+  .fc-sport.pickle { background: rgba(13,148,136,0.82); color: white; }
+  .fc-body { padding: 8px 10px 10px; }
+  .fc-name { font-size: 12px; font-weight: 700; color: var(--on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fc-spec { font-size: 10px; font-weight: 500; color: var(--on-surface-variant); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fc-rating { display: flex; align-items: center; gap: 3px; margin-top: 4px; }
+  .fc-rating .material-symbols-outlined { font-size: 12px; color: var(--star); font-variation-settings: 'FILL' 1, 'wght' 400; }
+  .fc-rating-val { font-size: 11px; font-weight: 700; color: var(--on-surface); }
+
+  /* ── Coach list (vertical) ── */
+  .coach-list { padding: 4px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+
+  /* Coach card (adapts venue-card pattern) */
+  .coach-card {
+    background: var(--surface); border-radius: 20px; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.04);
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none; display: block;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .coach-card:active { transform: scale(0.984); box-shadow: 0 1px 2px rgba(15,23,42,0.06); }
+  .coach-img { height: 100px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .coach-img::before {
+    content: ''; position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.35) 100%);
+  }
+  .coach-img-initials {
+    width: 56px; height: 56px; border-radius: 28px;
+    background: rgba(255,255,255,0.18); border: 2px solid rgba(255,255,255,0.30);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: white; position: relative; z-index: 2;
+  }
+  .coach-featured-badge {
+    position: absolute; top: 8px; left: 8px; z-index: 3;
+    padding: 3px 8px; border-radius: 9999px;
+    background: var(--secondary-fixed); color: #1a2200;
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .coach-sports-img {
+    position: absolute; bottom: 7px; left: 8px; z-index: 3; display: flex; gap: 4px;
+  }
+  .csi {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 3px 8px; border-radius: 9999px; font-size: 9px; font-weight: 700;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .csi.padel { background: rgba(18,95,169,0.82); color: white; }
+  .csi.pickle { background: rgba(13,148,136,0.82); color: white; }
+
+  .coach-card-body { padding: 11px 14px 12px; }
+  .ccb-row1 { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .coach-name { font-size: 14px; font-weight: 700; color: var(--on-surface); line-height: 1.25; flex: 1; min-width: 0; }
+  .coach-rating { display: flex; align-items: center; gap: 3px; flex-shrink: 0; margin-top: 1px; }
+  .coach-rating .material-symbols-outlined { font-size: 14px; color: var(--star); font-variation-settings: 'FILL' 1, 'wght' 400; }
+  .rating-val { font-size: 12px; font-weight: 700; color: var(--on-surface); }
+  .rating-ct { font-size: 11px; font-weight: 500; color: var(--on-surface-variant); }
+  .ccb-row2 { display: flex; align-items: center; justify-content: space-between; margin-top: 5px; }
+  .coach-spec { font-size: 11px; font-weight: 600; color: var(--on-surface-variant); }
+  .coach-price { font-size: 12px; font-weight: 700; color: var(--on-surface); }
+
+  /* ── Empty state ── */
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 24px; text-align: center; gap: 10px;
+  }
+  .empty-state .material-symbols-outlined { font-size: 44px; color: var(--outline-variant); font-variation-settings: 'FILL' 0, 'wght' 200; }
+  .empty-title { font-size: 16px; font-weight: 700; color: var(--on-surface); }
+  .empty-sub { font-size: 13px; font-weight: 500; color: var(--on-surface-variant); line-height: 1.6; max-width: 240px; }
+
+  /* ── Bottom Nav ── */
+  .bottom-nav {
+    position: sticky; bottom: 0; z-index: 50;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px 28px 0 0; display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px 28px; box-shadow: 0 -1px 0 rgba(15,23,42,0.08), 0 -8px 32px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    text-decoration: none; cursor: pointer; transition: all 0.2s; min-width: 48px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-item .material-symbols-outlined { font-size: 24px; }
+  .nav-item-label { font-size: 9px; font-weight: 600; }
+  .nav-item.active .material-symbols-outlined { color: var(--primary); font-variation-settings: 'FILL' 1, 'wght' 400; }
+  .nav-item.active .nav-item-label { color: var(--primary); }
+  .nav-item:not(.active) .material-symbols-outlined { color: var(--on-surface-variant); }
+  .nav-item:not(.active) .nav-item-label { color: var(--on-surface-variant); }
+</style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+  <div class="screen-label">Coaching — Find a Coach</div>
+  <div class="phone-frame">
+    <div class="screen" id="screen">
+
+      <!-- Sticky header -->
+      <header class="venue-header" id="vHeader">
+        <div class="venue-header-inner">
+          <div class="vh-title-row">
+            <div>
+              <div class="venue-page-title">Coaching</div>
+              <div class="venue-page-sub" id="vSub">Find your coach · 5 available</div>
+            </div>
+            <div class="vh-btn-row">
+              <button class="vh-icon-btn" id="searchBtn" onclick="toggleSearch()">
+                <span class="material-symbols-outlined">search</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="venue-search-section">
+          <div class="v-search-wrap">
+            <span class="material-symbols-outlined v-search-icon">search</span>
+            <input class="v-search-input" id="searchInput" placeholder="Search coaches…" oninput="render()">
+          </div>
+          <button class="v-cancel-btn" onclick="cancelSearch()">Cancel</button>
+        </div>
+      </header>
+
+      <!-- Filter chips -->
+      <div class="venue-controls" id="controls">
+        <div class="chips-scroll" id="chipScroll"></div>
+        <div class="controls-divider"></div>
+      </div>
+
+      <!-- Dynamic content -->
+      <div id="content" style="flex:1;display:flex;flex-direction:column;"></div>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav">
+        <a class="nav-item active" href="padel-chief-dashboard.html">
+          <span class="material-symbols-outlined">home</span>
+          <span class="nav-item-label">Home</span>
+        </a>
+        <a class="nav-item" href="padel-chief-venues.html">
+          <span class="material-symbols-outlined">search</span>
+          <span class="nav-item-label">Venues</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="material-symbols-outlined">calendar_month</span>
+          <span class="nav-item-label">Bookings</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="material-symbols-outlined">person</span>
+          <span class="nav-item-label">Profile</span>
+        </a>
+      </nav>
+
+    </div><!-- /screen -->
+  </div><!-- /phone-frame -->
+</div>
+
+<script>
+const COACHES = [
+  {
+    id: 'kavindra', name: 'Kavindra Silva', initials: 'KS', featured: true,
+    sports: ['padel','pickle'], rating: 4.9, reviews: 48, sessions: 312,
+    specialty: 'Technique & Tactical Play',
+    gradient: 'linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)',
+    price: 'From LKR 2,500', profile: 'padel-chief-coach-profile.html#f1'
+  },
+  {
+    id: 'priya', name: 'Priya Jayasekera', initials: 'PJ', featured: true,
+    sports: ['padel'], rating: 4.8, reviews: 36, sessions: 245,
+    specialty: 'Padel Specialist · Women\'s Training',
+    gradient: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%)',
+    price: 'From LKR 2,200', profile: 'padel-chief-coach-profile.html'
+  },
+  {
+    id: 'marco', name: 'Marco de Silva', initials: 'MS', featured: false,
+    sports: ['pickle'], rating: 4.6, reviews: 29, sessions: 178,
+    specialty: 'Pickleball Specialist',
+    gradient: 'linear-gradient(135deg, #064e3b 0%, #059669 100%)',
+    price: 'From LKR 2,000', profile: 'padel-chief-coach-profile.html'
+  },
+  {
+    id: 'amali', name: 'Amali Perera', initials: 'AP', featured: false,
+    sports: ['padel'], rating: 4.5, reviews: 22, sessions: 134,
+    specialty: 'Beginner Friendly',
+    gradient: 'linear-gradient(135deg, #7c2d12 0%, #ea580c 100%)',
+    price: 'From LKR 1,800', profile: 'padel-chief-coach-profile.html#f2'
+  },
+  {
+    id: 'rahul', name: 'Rahul Nair', initials: 'RN', featured: false,
+    sports: ['padel','pickle'], rating: 4.4, reviews: 18, sessions: 98,
+    specialty: 'Strategy & Multi-sport',
+    gradient: 'linear-gradient(135deg, #1e3a5f 0%, #0284c7 100%)',
+    price: 'From LKR 2,000', profile: 'padel-chief-coach-profile.html'
+  }
+];
+
+const FILTERS = [
+  { id: 'all', label: 'All Coaches' },
+  { id: 'padel', label: 'Padel' },
+  { id: 'pickle', label: 'Pickleball', cls: 'pickle' }
+];
+
+const state = { filter: 'all', search: '' };
+
+function toggleSearch() {
+  const h = document.getElementById('vHeader');
+  const btn = document.getElementById('searchBtn');
+  h.classList.add('search-active');
+  btn.classList.add('active');
+  document.getElementById('searchInput').focus();
+}
+function cancelSearch() {
+  const h = document.getElementById('vHeader');
+  const btn = document.getElementById('searchBtn');
+  h.classList.remove('search-active');
+  btn.classList.remove('active');
+  document.getElementById('searchInput').value = '';
+  state.search = '';
+  render();
+}
+
+function setFilter(id) { state.filter = id; render(); }
+
+function filteredCoaches() {
+  let list = COACHES;
+  if (state.filter !== 'all') list = list.filter(c => c.sports.includes(state.filter));
+  const q = (document.getElementById('searchInput') || {}).value || '';
+  state.search = q.toLowerCase();
+  if (state.search) list = list.filter(c =>
+    c.name.toLowerCase().includes(state.search) ||
+    c.specialty.toLowerCase().includes(state.search) ||
+    c.sports.some(s => s.includes(state.search))
+  );
+  return list;
+}
+
+function sportChipsHTML(sports) {
+  return sports.map(s => `<span class="csi ${s}">${s === 'pickle' ? 'Pickleball' : 'Padel'}</span>`).join('');
+}
+function fcSportHTML(sports) {
+  return sports.map(s => `<span class="fc-sport ${s}">${s === 'pickle' ? 'Pickle' : 'Padel'}</span>`).join('');
+}
+
+function render() {
+  const coaches = filteredCoaches();
+  const featured = coaches.filter(c => c.featured);
+  const isSearch = !!state.search;
+
+  // Render filter chips
+  document.getElementById('chipScroll').innerHTML = FILTERS.map(f => `
+    <button class="v-chip${f.cls ? ' '+f.cls : ''}${state.filter === f.id ? ' active' : ''}" onclick="setFilter('${f.id}')">
+      ${f.label}
+    </button>
+  `).join('');
+
+  let html = '';
+
+  // Featured section (only when not searching)
+  if (featured.length > 0 && !isSearch) {
+    html += `<div class="featured-label">Featured Coaches</div>`;
+    html += `<div class="featured-scroll">`;
+    featured.forEach(c => {
+      html += `
+        <a class="fc-card" href="${c.profile}">
+          <div class="fc-img" style="background:${c.gradient};">
+            <div class="fc-badge">Featured</div>
+            <div class="fc-initials">${c.initials}</div>
+            <div class="fc-sport-row">${fcSportHTML(c.sports)}</div>
+          </div>
+          <div class="fc-body">
+            <div class="fc-name">${c.name}</div>
+            <div class="fc-spec">${c.specialty}</div>
+            <div class="fc-rating">
+              <span class="material-symbols-outlined">star</span>
+              <span class="fc-rating-val">${c.rating}</span>
+            </div>
+          </div>
+        </a>
+      `;
+    });
+    html += `</div>`;
+    html += `<div style="height:1px;background:var(--outline-variant);margin:0 18px 0;"></div>`;
+  }
+
+  // Results count
+  html += `
+    <div class="results-meta">
+      <span class="results-count"><strong>${coaches.length}</strong> ${coaches.length === 1 ? 'coach' : 'coaches'} ${isSearch ? 'found' : 'available'}</span>
+    </div>
+  `;
+
+  if (coaches.length === 0) {
+    html += `
+      <div class="empty-state">
+        <span class="material-symbols-outlined">person_search</span>
+        <div class="empty-title">No coaches found</div>
+        <div class="empty-sub">Try a different sport filter or search term.</div>
+      </div>
+    `;
+  } else {
+    html += `<div class="coach-list">`;
+    coaches.forEach(c => {
+      html += `
+        <a class="coach-card" href="${c.profile}">
+          <div class="coach-img" style="background:${c.gradient};">
+            ${c.featured ? `<div class="coach-featured-badge">Featured</div>` : ''}
+            <div class="coach-img-initials">${c.initials}</div>
+            <div class="coach-sports-img">${sportChipsHTML(c.sports)}</div>
+          </div>
+          <div class="coach-card-body">
+            <div class="ccb-row1">
+              <span class="coach-name">${c.name}</span>
+              <div class="coach-rating">
+                <span class="material-symbols-outlined">star</span>
+                <span class="rating-val">${c.rating}</span>
+                <span class="rating-ct">(${c.reviews})</span>
+              </div>
+            </div>
+            <div class="ccb-row2">
+              <span class="coach-spec">${c.specialty} · ${c.sessions} sessions</span>
+              <span class="coach-price">${c.price}</span>
+            </div>
+          </div>
+        </a>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('content').innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
